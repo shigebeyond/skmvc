@@ -11,7 +11,8 @@
  */
 class Sk_Loader{
 	/**
-	 * @var array 顶级目录
+	 * 顶级目录
+	 * @var array 
 	 */
 	protected static $_paths = array(APPPATH, SYSPATH);
 
