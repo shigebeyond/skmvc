@@ -63,7 +63,7 @@ class Sk_Loader{
 	 */
 	public static function load_class($class){
 		//类名转文件名：直接将类名连接符_变为/路径连接符
-		$file .= str_replace('_', DIRECTORY_SEPARATOR, $class);
+		$file = str_replace('_', DIRECTORY_SEPARATOR, $class);
 
 		// 在classes目录下查找类文件
 		if ($path = static::find('classes', $file))
