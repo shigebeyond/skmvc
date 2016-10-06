@@ -10,13 +10,16 @@
  */
 class Sk_Singleton
 {
-    private static $instance = array();
+    private static $instance = NULL;
 
+    /**
+     * 获得单例
+     * @return Sk_Singleton
+     */
     public static function instance()
     {
-        if (self::$instance === null) {
+        if (self::$instance == NULL) 
             self::$instance = new static;
-        }
 
         return self::$instance;
     }
