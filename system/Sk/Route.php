@@ -18,8 +18,8 @@ class Sk_Route{
 	protected $_pattern;
 	
 	/**
-	 * 路由的预设参数
-	 * @var string
+	 * 路由的预设参数，可以是数组，也可以是映射函数（从匹配结果中获得参数）
+	 * @var array|function
 	 */
 	protected $_params;
 	
@@ -30,7 +30,7 @@ class Sk_Route{
 	 * @param string $pattern
 	 * @param array $params
 	 */
-	public function __construct($pattern, array $params){
+	public function __construct($pattern, array $params = array()){
 		$this->_pattern = $pattern;
 		$this->_params = $params;
 	}
@@ -47,7 +47,13 @@ class Sk_Route{
 		if ( ! preg_match($this->_pattern, $uri, $matches))
 			return FALSE;
 		
+		
+		$params = $this->_params;
+		// 如果预设参数是映射函数，则调用该函数来从匹配结果中获得参数
+		if(is_callable($params))
+			$params = $params($matches);
+		
 		//返回 匹配的参数 + 预设的参数
-		return array_merge($matches, $this->_params);
+		return array_merge($matches, $params);
 	}
 }
