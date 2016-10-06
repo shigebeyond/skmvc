@@ -2,6 +2,8 @@
 
 /**
  * 路由器
+ *	1 加载路由规则
+ *	2 解析路由：匹配规则
  *
  * @Package package_name
  * @category
@@ -18,19 +20,22 @@ class Sk_Router{
 	protected $_routes = [];
 	
 	public function __construct($config = NULL){
-		//TODO:从配置文件中加载路由规则
-		if (!$config) {
-			
-		}
+		// 从配置文件中加载路由规则
+		if (!$config) 
+			$config = Config::load('routes');
 		
 		// 创建路由规则
-		foreach ($config as $patter => $params){
-			$this->_routes[] = new Route($pattern, $params);
+		foreach ($config as $pattern => $params){
+			if(is_int($pattern)) // 普通数组
+				$this->_routes[] = new Route($params);
+			else // 关联数组
+				$this->_routes[] = new Route($pattern, $params);
+			
 		}
 	}
 	
 	/**
-	 * 解析路由
+	 * 解析路由：匹配规则
 	 * @param string $uri
 	 * @return array|boolean
 	 */
