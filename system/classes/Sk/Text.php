@@ -20,7 +20,7 @@ class Sk_Text
 	 * @param   string  $delimiter  分隔符
 	 * @return  string
 	 */
-	public static function ucfirst($string, $delimiter = '-')
+	public static function ucfirst($string, $delimiter = '_')
 	{
 		return implode($delimiter, array_map('ucfirst', explode($delimiter, $string)));
 	}
