@@ -14,7 +14,15 @@ class Sk_Loader{
 	 * 顶级目录
 	 * @var array 
 	 */
-	protected static $_paths = array(APPPATH, SYSPATH);
+	protected static $_paths = array(APPPATH, /* SYSPATH */); // 排除系统目录，因为要支持动态插入顶级目录
+	
+	/**
+	 * 插入顶级目录
+	 * @param string $path
+	 */
+	public static function add_path($path){
+		static::$_paths[] = $path;
+	}
 
 	/**
 	 * 查找文件
@@ -26,13 +34,19 @@ class Sk_Loader{
 	 * @return string|boolean 文件的绝对路径
 	*/
 	public static function find($dir, $file, $ext = 'php'){
-		// 遍历顶级目录，找查找文件
+		// 相对路径
+		$relative_path = $dir.DIRECTORY_SEPARATOR.$file.'.'.$ext;
+		
+		// 1 遍历顶级目录，找查找文件
 		foreach (static::$_paths as $top_path){
-			$path = $top_path.$file.'.'.$ext;
-				
-			if(is_file($path))
-				return $path;
+			if(is_file($top_path.$relative_path))
+				return $top_path.$relative_path;
 		}
+		
+		// 2 在系统目录下查找文件
+		if(is_file(SYSPATH.$relative_path))
+			return SYSPATH.$relative_path;
+		
 		return false;
 	}
 
