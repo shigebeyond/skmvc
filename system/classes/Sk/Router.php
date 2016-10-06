@@ -39,7 +39,7 @@ class Sk_Router extends Singleton_Configurable{
 		// 逐个匹配路由规则
 		foreach ($this->_routes as $route){
 			//匹配路由规则	
-			$params = $route->matche($uri);	
+			$params = $route->match($uri);	
 			if($params)
 				return $params;
 		}
