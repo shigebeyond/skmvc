@@ -26,7 +26,6 @@ class Sk_Router extends Singleton_Configurable{
 				$this->_routes[] = new Route($params);
 			else // 关联数组
 				$this->_routes[] = new Route($pattern, $params);
-			
 		}
 	}
 	
@@ -41,7 +40,7 @@ class Sk_Router extends Singleton_Configurable{
 			//匹配路由规则	
 			$params = $route->match($uri);	
 			if($params)
-				return $params;
+				return [$params, $route];
 		}
 		
 		return FALSE;
