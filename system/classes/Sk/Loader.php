@@ -51,24 +51,6 @@ class Sk_Loader{
 	}
 
 	/**
-	 * 加载文件
-	 * @param string $dir
-	 * @param string $file
-	 * @param string $ext
-	 */
-	public static function load($dir, $file = NULL, $ext = 'php'){
-		//先find，后include
-		$path = $dir;
-		if($file)
-			$path = static::find($dir, $file, $ext);
-
-		if(!$file)
-			return FALSE;
-
-		return include $path;
-	}
-
-	/**
 	 * 加载类
 	 * 	TODO：支持命名空间
 	 *
