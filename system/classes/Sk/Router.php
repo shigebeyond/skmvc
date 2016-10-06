@@ -11,7 +11,7 @@
  * @date 2016-10-6 上午12:01:17
  *
  */
-class Sk_Router{
+class Sk_Router extends Singleton_Configurable{
 	
 	/**
 	 * 路由规则
@@ -19,11 +19,7 @@ class Sk_Router{
 	 */
 	protected $_routes = [];
 	
-	public function __construct($config = NULL){
-		// 从配置文件中加载路由规则
-		if (!$config) 
-			$config = Config::load('routes');
-		
+	public function __construct($config){
 		// 创建路由规则
 		foreach ($config as $pattern => $params){
 			if(is_int($pattern)) // 普通数组
