@@ -14,13 +14,22 @@
 class Sk_Router extends Singleton_Configurable{
 	
 	/**
-	 * 路由规则
+	 * 全部路由规则
 	 * @var array
 	 */
-	protected $_routes = [];
+	protected static $_routes;
 	
-	public function __construct($config){
+	/**
+	 * 加载路由规则
+	 */
+	public static function load(){
+		if(static::$_routes !== NULL)
+			return;
+		
+		// 加载配置
+		$config = Config::load('router');
 		// 创建路由规则
+		static::$_routes = array();
 		foreach ($config as $pattern => $params){
 			if(is_int($pattern)) // 普通数组
 				$this->_routes[] = new Route($params);
@@ -34,15 +43,22 @@ class Sk_Router extends Singleton_Configurable{
 	 * @param string $uri
 	 * @return array|boolean [路由参数, 路由规则]
 	 */
-	public function parse($uri){
+	public static function parse($uri){
+		// 先尝试加载路由规则
+		static::load();
+		
 		// 逐个匹配路由规则
 		foreach ($this->_routes as $route){
 			//匹配路由规则	
 			$params = $route->match($uri);	
-			if($params)
-				return [$params, $route];
+			if($params){
+				$this->_params = $params;
+				$this->_route = $route;
+			}
 		}
 		
 		return FALSE;
 	}
+	
+
 }

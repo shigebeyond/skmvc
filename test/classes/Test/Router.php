@@ -3,8 +3,7 @@
 class Test_Router extends PHPUnit_Framework_TestCase
 {
 	public function test_parse(){
-		$router = Router::instance();
-		list($params, $route) = $router->parse('blog/show/12');
+		list($params, $route) = Router::parse('blog/show/12');
 		$this->assertNotNull($params);
 // 		print_r($params);
 		$this->assertEquals('blog', $params['controller']);
