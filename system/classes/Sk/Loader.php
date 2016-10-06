@@ -30,9 +30,8 @@ class Sk_Loader{
 		foreach (static::$_paths as $top_path){
 			$path = $top_path.$file.'.'.$ext;
 				
-			if(is_file($path)){
+			if(is_file($path))
 				return $path;
-			}
 		}
 		return false;
 	}
