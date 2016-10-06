@@ -39,13 +39,13 @@ class Sk_Loader{
 		
 		// 1 遍历顶级目录，找查找文件
 		foreach (static::$_paths as $top_path){
-			if(is_file($top_path.$relative_path))
-				return $top_path.$relative_path;
+			if(is_file($path = $top_path.$relative_path))
+				return $path;
 		}
 		
 		// 2 在系统目录下查找文件
-		if(is_file(SYSPATH.$relative_path))
-			return SYSPATH.$relative_path;
+		if(is_file($path = SYSPATH.$relative_path))
+			return $path;
 		
 		return false;
 	}
