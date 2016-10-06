@@ -9,6 +9,4 @@
  * @date 2016-10-6 上午9:27:56 
  *
  */
-class Request extends Sk_Request {
-
-}
+class Request extends Sk_Request {}
