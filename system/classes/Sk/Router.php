@@ -32,7 +32,7 @@ class Sk_Router extends Singleton_Configurable{
 	/**
 	 * 解析路由：匹配规则
 	 * @param string $uri
-	 * @return array|boolean
+	 * @return array|boolean [路由参数, 路由规则]
 	 */
 	public function parse($uri){
 		// 逐个匹配路由规则
