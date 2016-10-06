@@ -30,7 +30,7 @@ class Sk_Singleton_Configurable
     	if($config_group === NULL)
     		$config_group = strtolower($class);
     		
-    	if(is_string($config_group))
+    	if(!is_string($config_group))
     		throw new Exception('单例方法 '.$class.'::instance($config_group) 中的参数 $config_group 必须是字符串');
     	
         if (!isset(self::$instances[$config_group])) {
