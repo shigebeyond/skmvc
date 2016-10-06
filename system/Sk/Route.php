@@ -30,7 +30,7 @@ class Sk_Route{
 	 * @param string $pattern
 	 * @param array $params
 	 */
-	public function __construct($pattern, array $params = array()){
+	public function __construct($pattern, $params = array()){
 		$this->_pattern = $pattern;
 		$this->_params = $params;
 	}
