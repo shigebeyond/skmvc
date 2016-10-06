@@ -45,6 +45,23 @@ class Sk_Request{
 	}
 	
 	/**
+	 * 从$_SERVER中解析出相对路径
+	 * @return string
+	 */
+	public static function detect_uri(){
+		// 1 如果重写了url，则直接使用PATH_INFO，不含index.php与query string
+		if ( ! empty($_SERVER['PATH_INFO']))
+			return $_SERVER['PATH_INFO'];
+	
+		// 2 使用REQUEST_URI
+		$uri = $_SERVER['REQUEST_URI'];
+	
+		// 去掉base url与入口文件部分
+		$pref = [static::$base_url.static::$index_file, static::$base_url]; // 匹配顺序：先长后短
+		return str_replace($pref, "", $uri);
+	}
+	
+	/**
 	 * 当前uri
 	 * @var string
 	 */
@@ -76,21 +93,25 @@ class Sk_Request{
 	
 	
 	public function __construct($uri = NULL){
-		// 解析uri
-		if($uri === NULL)
-			$uri = $this->parse_uri();
-		
 		$this->_uri = $uri;
-		
+		static::$current = $this;
+	}
+	
+	/**
+	 * 解析路由
+	 * @return bool
+	 */
+	public function parse_route(){
 		// 解析路由
-		list($params, $route) = $this->parse_route();
+		list($params, $route) = Router::parse($this->uri());
 		
 		if($params){
 			$this->_params = $params;
 			$this->_route = $route;
+			return TRUE;
 		}
 		
-		static::$current = $this;
+		return FALSE;
 	}
 
 	/**
@@ -100,19 +121,18 @@ class Sk_Request{
 	{
 		return $this->_uri;
 	}
-	
 
 	/**
 	 * 获得当前匹配的路由规则
+	 * @return Route
 	 */
-	public function route()
-	{
+	public function route(){
 		return $this->_route;
 	}
 	
 	/**
 	 * 获得当前匹配路由的所有参数/单个参数
-	 * 
+	 *
 	 * @param string $key 如果是null，则返回所有参数，否则，返回该key对应的单个参数
 	 * @param string $default 单个参数的默认值
 	 * @return multitype
@@ -121,59 +141,54 @@ class Sk_Request{
 	{
 		if ($key === NULL)
 			return $this->_params;
-
+	
 		return isset($this->_params[$key]) ? $this->_params[$key] : $default;
 	}
 	
 	/**
 	 * 获得当前目录
+	 * @return string
 	 */
 	public function directory()
 	{
-		return $this->_params['directory'];
+		return $this->param('directory');
 	}
 	
 	/**
 	 * 获得当前controller
+	 * @return string
 	 */
 	public function controller()
 	{
-		return $this->_params['controller'];
+		return $this->param('controller');
+	}
+	
+	/**
+	 * 获得当前controller的类名
+	 * @return string
+	 */
+	public function controller_class()
+	{
+		// 类前缀
+		$class = 'Controller_';
+		
+		// 目录
+		if($this->directory())
+			$class .= Text::ucfirst($this->directory());
+		
+		// controller
+		return $class.Text::ucfirst($this->controller());
 	}
 	
 	/**
 	 * 获得当前action
+	 * @return string
 	 */
 	public function action()
 	{
-		return $this->_params['action'];
+		return $this->param('action');
 	}
-	
-	/**
-	 * 从$_SERVER中解析出相对路径
-	 * @return string
-	 */
-	public static function parse_uri(){
-		// 1 如果重写了url，则直接使用PATH_INFO，不含index.php与query string
-		if ( ! empty($_SERVER['PATH_INFO']))
-			return $_SERVER['PATH_INFO'];
-	
-		// 2 使用REQUEST_URI
-		$uri = $_SERVER['REQUEST_URI'];
-	
-		// 去掉base url与入口文件部分
-		$pref = [static::$base_url.static::$index_file, static::$base_url]; // 匹配顺序：先长后短
-		return str_replace($pref, "", $uri);
-	}
-	
-	/**
-	 * 解析路由
-	 * @return boolean
-	 */
-	public function parse_route(){
-		return Router::instance()->parse($this->_uri);
-	}
-	
+
 	/**
 	 * 获得get参数
 	 *
