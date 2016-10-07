@@ -42,8 +42,8 @@ class Sk_Server{
 		// 调用controller的action方法
 		$controller->$action();
 		
-		// 输出响应
-		echo $controller->response();
+		// 输出响应: 先头部，后主体
+		echo $res->send_headers()->body();
 	}
 	
 }
