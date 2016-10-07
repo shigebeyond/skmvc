@@ -35,8 +35,11 @@ class Sk_Cookie {
 	 * @param   mixed   $default    默认值
 	 * @return  string
 	 */
-	public static function get($key, $default = NULL)
+	public static function get($key = NULL, $default = NULL)
 	{
+		if($key === NULL)
+			return $_COOKIE;
+		
 		return Arr::get($_COOKIE, $key, $default);
 	}
 
@@ -48,10 +51,19 @@ class Sk_Cookie {
 	 * @param   string  $name       cookie名
 	 * @param   string  $value      cookie值
 	 * @param   integer $expiration 期限
-	 * @return  boolean
 	 */
-	public static function set($name, $value, $expiration = NULL)
+	public static function set($name, $value = NULL, $expiration = NULL)
 	{
+		// 多个值，则遍历递归调用
+		if(is_array($name)) 
+		{
+			foreach ($name as $key => $value)
+			{
+				// 递归调用
+				static::set($key, $value['value'], $value['expiration']);
+			}
+		}
+		
 		// 获得配置
 		$config = static::config();
 		
@@ -63,8 +75,11 @@ class Sk_Cookie {
 		if ($expiration !== 0)
 			$expiration += time();
 
-		// 设置cookie
-		return setcookie($name, $value, $expiration, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
+		// 写内存的cookie
+		 $_COOKIE[$name] = $value;
+		
+		// 写客户端的cookie
+		setcookie($name, $value, $expiration, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
 	}
 
 	/**
