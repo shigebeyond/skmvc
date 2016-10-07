@@ -139,10 +139,12 @@ class Sk_Request{
 	 */
 	public function param($key = NULL, $default = NULL)
 	{
+		// 全部参数
 		if ($key === NULL)
 			return $this->_params;
 	
-		return isset($this->_params[$key]) ? $this->_params[$key] : $default;
+		// 单个参数
+		return Arr::get($this->_params, $key, $default);
 	}
 	
 	/**
@@ -270,7 +272,7 @@ class Sk_Request{
 	
 	/**
 	 * 获得协议
-	 * @return unknown|string
+	 * @return string
 	 */
 	public function scheme()
 	{
@@ -300,7 +302,7 @@ class Sk_Request{
 	 */
 	public function accept_types()
 	{
-		return isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : NULL;
+		return Arr::get($_SERVER, 'HTTP_ACCEPT');
 	}
 	
 	/**
@@ -338,6 +340,6 @@ class Sk_Request{
 	 */
 	public function user_agent()
 	{
-		return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+		return Arr::get($_SERVER, 'HTTP_USER_AGENT');
 	}
 }
