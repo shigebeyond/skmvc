@@ -13,20 +13,6 @@
 class Sk_Cookie {
 
 	/**
-	 * 获得cookie配置
-	 * 
-	 * @param string $key
-	 * @return array|string
-	 */
-	public static function config($key = NULL){
-		$group = 'cookie';
-		if($key)
-			$group .= ".$key";
-		
-		return Config::load($group);
-	}
-
-	/**
 	 * 获得cookie值
 	 *
 	 *     $theme = Cookie::get('theme', 'blue');
@@ -65,7 +51,7 @@ class Sk_Cookie {
 		}
 		
 		// 获得配置
-		$config = static::config();
+		$config = Config::load('cookie');
 		
 		// 取默认期限
 		if ($expiration === NULL)
@@ -93,7 +79,7 @@ class Sk_Cookie {
 	public static function delete($name)
 	{
 		// 获得配置
-		$config = static::config();
+		$config = Config::load('cookie');
 		
 		// 删除内存的cookie
 		unset($_COOKIE[$name]);
