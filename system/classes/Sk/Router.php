@@ -20,22 +20,26 @@ class Sk_Router extends Singleton_Configurable{
 	protected static $_routes;
 	
 	/**
-	 * 加载路由规则
+	 * 加载/获得路由规则
 	 */
-	public static function load(){
-		if(static::$_routes !== NULL)
-			return;
+	public static function routes()
+	{
+		if(static::$_routes === NULL)
+		{
+			// 加载配置
+			$config = Config::load('router');
+			// 创建路由规则
+			static::$_routes = array();
+			foreach ($config as $pattern => $params){
+				if(is_int($pattern)) // 普通数组
+					static::$_routes[] = new Route($params);
+				else // 关联数组
+					static::$_routes[] = new Route($pattern, $params);
+			}
+		}		
 		
-		// 加载配置
-		$config = Config::load('router');
-		// 创建路由规则
-		static::$_routes = array();
-		foreach ($config as $pattern => $params){
-			if(is_int($pattern)) // 普通数组
-				$this->_routes[] = new Route($params);
-			else // 关联数组
-				$this->_routes[] = new Route($pattern, $params);
-		}
+		
+		return static::$_routes;
 	}
 	
 	/**
@@ -43,12 +47,10 @@ class Sk_Router extends Singleton_Configurable{
 	 * @param string $uri
 	 * @return array|boolean [路由参数, 路由规则]
 	 */
-	public static function parse($uri){
-		// 先尝试加载路由规则
-		static::load();
-		
+	public static function parse($uri)
+	{
 		// 逐个匹配路由规则
-		foreach ($this->_routes as $route){
+		foreach (static::routes() as $route){
 			//匹配路由规则	
 			$params = $route->match($uri);	
 			if($params)
