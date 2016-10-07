@@ -297,6 +297,15 @@ class Sk_Request{
 	}
 	
 	/**
+	 * 获得cookie
+	 * @param string $key
+	 * @param string $default
+	 */
+	public static function get($key, $default = NULL){
+		return Cookie::get($key, $default);
+	}
+	
+	/**
 	 * 客户端要接受的数据类型
 	 * @return string
 	 */
