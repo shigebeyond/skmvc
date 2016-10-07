@@ -119,6 +119,9 @@ class Sk_Request{
 	 */
 	public function uri()
 	{
+		if($this->_uri === NULL)
+			$this->_uri = static::detect_uri();
+		
 		return $this->_uri;
 	}
 
