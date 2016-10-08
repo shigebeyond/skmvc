@@ -230,4 +230,13 @@ class Sk_Response{
 		return $this;
 	}
 	
+	/**
+	 * 发送响应该客户端
+	 */
+	public function send()
+	{
+		//先头部，后主体
+		echo $this->send_headers()->body();
+	}
+	
 }
