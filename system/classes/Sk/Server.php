@@ -18,32 +18,36 @@ class Sk_Server{
 	 */
 	public static function run()
 	{
-		// 构建请求与响应对象
-		$req = new Request(); 
-		$res = new Response();
-		
-		// 解析路由
-		if(!$req->parse_route())
-			throw new Exception('当前uri没有匹配路由：'.$req->uri());
-		
-		// 获得controller类
-		$class = $req->controller_class();
-		if (!class_exists($class))
-			throw new Exception('Controller类不存在：'.$req->controller());
-		
-		// 创建controller
-		$controller = new $class($req, $res);
-		
-		// 获得action方法
-		$action = 'action_'.$req->action();
-		if (!method_exists($controller, $action))
-			throw new Exception($class.'类不存在方法：'.$action);
-		
-		// 调用controller的action方法
-		$controller->$action();
-		
-		// 输出响应
-		$res->send();
+		try {
+			// 构建请求与响应对象
+			$req = new Request();
+			$res = new Response();
+			
+			// 解析路由
+			if(!$req->parse_route())
+				throw new Exception('当前uri没有匹配路由：'.$req->uri());
+			
+			// 获得controller类
+			$class = $req->controller_class();
+			if (!class_exists($class))
+				throw new Exception('Controller类不存在：'.$req->controller());
+			
+			// 创建controller
+			$controller = new $class($req, $res);
+			
+			// 获得action方法
+			$action = 'action_'.$req->action();
+			if (!method_exists($controller, $action))
+				throw new Exception($class.'类不存在方法：'.$action);
+			
+			// 调用controller的action方法
+			$controller->$action();
+			
+			// 输出响应
+			$res->send();
+		} catch (Exception $e) {
+			echo '异常 - ', $e->getMessage();
+		}
 	}
 	
 }
