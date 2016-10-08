@@ -39,21 +39,15 @@ class Sk_Request{
 	public static function prepare_uri(){
 		// 1 如果重写了url，则直接使用PATH_INFO，不含index.php与query string
 		if ( ! empty($_SERVER['PATH_INFO']))
-		{
-			$uri = $_SERVER['PATH_INFO'];
-		}
-		else // 2 使用REQUEST_URI，不含query string
-		{
-			$uri = $_SERVER['REQUEST_URI'];
-			
-			// 去掉base url与入口文件部分
-			$config = Config::load('sk');
-			$pref = [$config['base_url'].$config['index_file'], $config['base_url']]; // 匹配顺序：先长后短
-			$uri = str_replace($pref, "", $uri);
-		}
+			return $_SERVER['PATH_INFO'];
 		
-		// 去掉最后的/
-		return rtrim($uri, DIRECTORY_SEPARATOR);
+		// 2 使用REQUEST_URI，不含query string
+		$uri = $_SERVER['REQUEST_URI'];
+		
+		// 去掉base url与入口文件部分
+		$config = Config::load('sk');
+		$pref = [$config['base_url'].$config['index_file'], $config['base_url']]; // 匹配顺序：先长后短
+		return str_replace($pref, "", $uri);
 	}
 	
 	/**
