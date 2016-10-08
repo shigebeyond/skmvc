@@ -12,18 +12,6 @@
 class Sk_Request{
 	
 	/**
-	 * base url
-	 * @var  string 
-	 */
-	public static $base_url = '/';
-	
-	/**
-	 * 入口文件
-	 * @var  string
-	 */
-	public static $index_file = 'index.php';
-	
-	/**
 	 * 当前请求对象
 	 * @var  Request
 	 */
@@ -57,7 +45,8 @@ class Sk_Request{
 		$uri = $_SERVER['REQUEST_URI'];
 	
 		// 去掉base url与入口文件部分
-		$pref = [static::$base_url.static::$index_file, static::$base_url]; // 匹配顺序：先长后短
+		$config = Config::load('sk');
+		$pref = [$config['base_url'].$config['index_file'], $config['base_url']]; // 匹配顺序：先长后短
 		return str_replace($pref, "", $uri);
 	}
 	
@@ -120,7 +109,7 @@ class Sk_Request{
 	public function uri()
 	{
 		if($this->_uri === NULL)
-			$this->_uri = static::detect_uri();
+			$this->_uri = static::prepare_uri();
 		
 		return $this->_uri;
 	}
