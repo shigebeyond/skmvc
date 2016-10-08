@@ -163,14 +163,14 @@ class Sk_Response{
 	 * @param array $headers 头部字段 
 	 * @return mixed
 	 */
-	public function headers(array $headers = NULL)
+	public function headers(array $headers = NULL, $merge = TRUE)
 	{
 		// getter
 		if ($headers === NULL)
 			return $this->_headers;
 		
 		// setter
-		$this->_headers = merge_array($this->_headers, $headers);
+		$this->_headers = $merge ? merge_array($this->_headers, $headers) : $headers;
 		return $this;
 	}
 	
@@ -189,34 +189,12 @@ class Sk_Response{
 	 */
 	public function header($key, $value = NULL)
 	{
-		// 读写cookie
-		if($key == 'Set-Cookie')
-			return $this->cookie($key, $value);
-		
 		// getter
 		if ($value === NULL)
 			return Arr::get($this->_headers, $key);
 		
 		// setter
 		$this->_headers[$key] = $value;
-		return $this;
-	}
-	
-	/**
-	 * 获得与设置cookie
-	 * 
-	 * @param string $key
-	 * @param string $value
-	 * @return string|Sk_Response
-	 */
-	public function cookie($key, $value = NULL)
-	{
-		// getter
-		if ($value === NULL)
-			return Cookie::get($key);
-		
-		// setter
-		Cookie::set($key, $value);
 		return $this;
 	}
 	
@@ -235,14 +213,20 @@ class Sk_Response{
 		// 2 各个头部字段
 		foreach ($this->_headers as $header => $value)
 		{
+			// cookie字段
+			if($key == 'Set-Cookie')
+			{
+				Cookie::set($value);
+				continue;
+			}
+			
+			// 其他字段
 			if (is_array($value)) // 多值拼接
 				$value = implode(', ', $value);
 		
 			header(Text::ucfirst($header).': '.$value, TRUE);
 		}
 	
-		// cookie：已在 $response->header('Set-Cookie', 'xxx'); 中处理
-		
 		return $this;
 	}
 	
