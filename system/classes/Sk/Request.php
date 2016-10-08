@@ -48,7 +48,7 @@ class Sk_Request{
 	 * 从$_SERVER中解析出相对路径
 	 * @return string
 	 */
-	public static function detect_uri(){
+	public static function prepare_uri(){
 		// 1 如果重写了url，则直接使用PATH_INFO，不含index.php与query string
 		if ( ! empty($_SERVER['PATH_INFO']))
 			return $_SERVER['PATH_INFO'];
