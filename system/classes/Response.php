@@ -1,5 +1,4 @@
-<?php use ManaPHP\Http\Response;
-defined('SYSPATH') OR die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
  * 响应对象
