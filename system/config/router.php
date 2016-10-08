@@ -1,5 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
+// 路由规则配置
 return array(
 	// 1 自带参数的正则
 	'/(?P<controller>.+)\/(?P<action>.+)\/(?P<id>\d+)/',

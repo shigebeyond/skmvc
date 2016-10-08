@@ -1,5 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
+// cookie参数配置
 return array(
 	'expiration' => 0, // 过期时间
 	'path' => '/', // 路径
