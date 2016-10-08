@@ -198,6 +198,33 @@ class Sk_Response{
 	}
 	
 	/**
+	 * 设置响应缓存
+	 *
+	 * @param int|string $expires 过期时间
+	 * @return Response
+	 */
+	public function cache($expires = FALSE) {
+		if ($expires === FALSE) {
+			$this->headers['Expires'] = 'Mon, 26 Jul 1997 05:00:00 GMT';
+			$this->headers['Cache-Control'] = array(
+					'no-store, no-cache, must-revalidate',
+					'post-check=0, pre-check=0',
+					'max-age=0'
+			);
+			$this->headers['Pragma'] = 'no-cache';
+		}
+		else 
+		{
+			$expires = is_int($expires) ? $expires : strtotime($expires);
+			$this->headers['Expires'] = gmdate('D, d M Y H:i:s', $expires) . ' GMT';
+			$this->headers['Cache-Control'] = 'max-age='.($expires - time());
+			if (isset($this->headers['Pragma']) && $this->headers['Pragma'] == 'no-cache')
+				unset($this->headers['Pragma']);
+		}
+		return $this;
+	}
+	
+	/**
 	 * 发送头部给客户端
 	 * @return Response
 	 */
@@ -225,6 +252,11 @@ class Sk_Response{
 		
 			header(Text::ucfirst($header).': '.$value, TRUE);
 		}
+		
+		// 正文大小
+		if (($length = strlen($this->_body)) > 0) {
+			header('Content-Length: '.$length);
+		}
 	
 		return $this;
 	}
@@ -234,8 +266,36 @@ class Sk_Response{
 	 */
 	public function send()
 	{
-		//先头部，后主体
+		// 清空内容缓存
+		if (ob_get_length() > 0)
+			ob_end_clean();
+		
+		// 先头部，后主体
 		echo $this->send_headers()->body();
+		
+		// 输出内容缓存
+		$this->flush();
 	}
 	
+	/**
+	 * 将响应内容刷到客户端
+	 */
+	public function flush()
+	{
+		if (function_exists('fastcgi_finish_request')) {
+			fastcgi_finish_request();
+		} elseif ('cli' !== PHP_SAPI) {
+			// ob_get_level() never returns 0 on some Windows configurations, so if
+			// the level is the same two times in a row, the loop should be stopped.
+			$previous = null;
+			$obStatus = ob_get_status(1);
+			while (($level = ob_get_level()) > 0 && $level !== $previous) {
+				$previous = $level;
+				if ($obStatus[$level - 1] && isset($obStatus[$level - 1]['del']) && $obStatus[$level - 1]['del']) {
+					ob_end_flush();
+				}
+			}
+			flush();
+		}
+	}
 }
