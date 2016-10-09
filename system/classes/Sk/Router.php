@@ -30,11 +30,11 @@ class Sk_Router extends Singleton_Configurable{
 			$config = Config::load('router');
 			// 创建路由规则
 			static::$_routes = array();
-			foreach ($config as $pattern => $params){
-				if(is_int($pattern)) // 普通数组
-					static::$_routes[] = new Route($params);
+			foreach ($config as $regex => $params_config){
+				if(is_int($regex)) // 普通数组
+					static::$_routes[] = new Route($regex);
 				else // 关联数组
-					static::$_routes[] = new Route($pattern, $params);
+					static::$_routes[] = new Route($regex, Arr::get($params_config, 'params'), Arr::get($params_config, 'defaults'));
 			}
 		}		
 		
