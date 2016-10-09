@@ -1,0 +1,30 @@
+# 开启
+# Turn on URL rewriting
+RewriteEngine On
+
+# 根目录
+# Installation directory
+RewriteBase /skmvc/
+
+# 禁止访问所有文件
+# Protect hidden files from being viewed
+<Files .*>
+	Order Deny,Allow
+	Deny From All
+</Files>
+
+# 将app、mod、sys的请求重写到index.php
+# Protect application and system files from being viewed
+RewriteRule ^(?:application|modules|system)\b.* index.php/$0 [L]
+
+# 允许显示目录与文件
+# Allow any files or directories that exist to be displayed directly
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# 
+# Rewrite all other URLs to index.php/URL
+# linux
+RewriteRule .* index.php/$0 [PT]
+# window
+# RewriteRule ^(.*)$ index.php [L,E=PATH_INFO:$1]
