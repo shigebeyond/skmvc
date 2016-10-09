@@ -272,30 +272,5 @@ class Sk_Response{
 		
 		// 先头部，后主体
 		echo $this->send_headers()->body();
-		
-		// 输出内容缓存
-		$this->flush();
-	}
-	
-	/**
-	 * 将响应内容刷到客户端
-	 */
-	public function flush()
-	{
-		if (function_exists('fastcgi_finish_request')) {
-			fastcgi_finish_request();
-		} elseif ('cli' !== PHP_SAPI) {
-			// ob_get_level() never returns 0 on some Windows configurations, so if
-			// the level is the same two times in a row, the loop should be stopped.
-			$previous = null;
-			$obStatus = ob_get_status(1);
-			while (($level = ob_get_level()) > 0 && $level !== $previous) {
-				$previous = $level;
-				if ($obStatus[$level - 1] && isset($obStatus[$level - 1]['del']) && $obStatus[$level - 1]['del']) {
-					ob_end_flush();
-				}
-			}
-			flush();
-		}
 	}
 }
