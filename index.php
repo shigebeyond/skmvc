@@ -2,7 +2,7 @@
 
 // 定义环境常量
 define('ENV', 'debug');
-define('DEBUG', Env == 'debug');
+define('DEBUG', ENV == 'debug');
 
 // 定义相关目录的常量
 define('ROOTPATH', dirname(__FILE__).DIRECTORY_SEPARATOR);
