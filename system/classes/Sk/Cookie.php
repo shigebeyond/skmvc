@@ -48,6 +48,7 @@ class Sk_Cookie {
 				// 递归调用
 				static::set($key, $value['value'], $value['expiration']);
 			}
+			return;
 		}
 		
 		// 获得配置
