@@ -61,8 +61,7 @@ class Sk_Route{
 		
 		//编译简化的路由正则
 		$this->_compile_regex = static::compile($regex, $params);
-		
-		echo "regex = $regex, compile_regex = {$this->_compile_regex}";
+		//Log::info("regex = $regex, compile_regex = {$this->_compile_regex}");
 	}
 	
 	/**
