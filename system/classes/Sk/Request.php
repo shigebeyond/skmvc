@@ -80,7 +80,10 @@ class Sk_Request{
 	 */
 	protected $_client_ip;
 	
-	
+	/**
+	 * 构建函数，可以指定uri，主要是为了应对单元测试
+	 * @param string $uri
+	 */
 	public function __construct($uri = NULL){
 		$this->_uri = $uri;
 		static::$current = $this;
