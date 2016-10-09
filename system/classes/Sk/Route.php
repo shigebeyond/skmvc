@@ -65,7 +65,7 @@ class Sk_Route{
 	}
 	
 	/**
-	 * 将简化的路由正则，转换为完整的正则：主要是将参数替换为子正则
+	 * 将简化的路由正则，转换为完整的正则：主要是将<参数>替换为子正则
 	 *
 	 *     $compiled = Route::compile(
 	 *        '<controller>(\/<action>(\/<id>)?)?',
