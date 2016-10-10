@@ -17,25 +17,24 @@ class Sk_Singleton_Configurable
     /**
      * 根据不同的配置来获得不同的实例
      * 
-     * @param string $config_group
+     * @param string $group
      * @throws Exception
      * @return multitype
      */
-    public static function instance($config_group = NULL)
+    public static function instance($name = NULL)
     {
     	// 获得当前类
     	$class = get_called_class();
     	
-    	// 默认使用类名小写作为配置组名，如 Database_Mysql 类对应的配置组名为 database.mysql
-    	if($config_group === NULL)
-    		$config_group = str_replace('_', '.', strtolower($class)); 
-    		
-    	if(!is_string($config_group))
-    		throw new Exception('单例方法 '.$class.'::instance($config_group) 中的参数 $config_group 必须是字符串');
+    	// 使用类名小写作为配置组名，使用 $name 做为路径
+    	$group = strtolower($class);
+    	if($name !== NULL)
+    		$group .= '.'.$name;
     	
-        if (!isset(self::$_instances[$config_group])) {
+    	// 缓存 or 加载
+        if (!isset(self::$_instances[$group])) {
         	// 加载配置项
-        	$config = Config::load($config_group);
+        	$config = Config::load($group);
         	// 根据配置项来创建实例
             self::$_instances = new static($config);
         }
