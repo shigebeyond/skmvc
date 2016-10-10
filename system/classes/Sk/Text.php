@@ -26,18 +26,16 @@ class Sk_Text
 	}
 	
 	/**
-	 * 判断子串的位置是否等于指定的位置 $target_pos
+	 * 获得子串的位置
 	 * 
 	 * @param string $str 被找的字符串
 	 * @param string $substr 要找的子字符串
-	 * @param int $target_pos 要比较的位置
 	 * @param string $ignore_case 忽略大小写
 	 * @return boolean
 	 */
-	protected static function _pos_equal($str, $substr, $target_pos, $ignore_case = false)
+	PROTECTED STATIC FUNCTION POS($STR, $SUBSTR, $IGNORE_CASE = FALSE)
 	{
-		$pos = $ignore_case ? stripos($str, $substr) : strpos($str, $substr);
-		return $pos === $target_pos;
+		return $ignore_case ? stripos($str, $substr) : strpos($str, $substr);
 	}
 	
 	/**
@@ -48,9 +46,9 @@ class Sk_Text
 	 * @param string $ignore_case 忽略大小写
 	 * @return boolean
 	 */
-	public static function contains($str, $substr, $ignore_case = false)
+	public static function contains($str, $substr, $ignore_case = FALSE)
 	{
-		return !static::_pos_equal($str, $substr, FALSE, $ignore_case); // pos不为false
+		return static::pos($str, $substr, $ignore_case) !== FALSE; // pos不为false
 	}
 	
 	/**
@@ -61,9 +59,9 @@ class Sk_Text
 	 * @param string $ignore_case 忽略大小写
 	 * @return boolean
 	 */
-	public static function start_with($str, $substr, $ignore_case = false)
+	public static function start_with($str, $substr, $ignore_case = FALSE)
 	{
-		return static::_pos_equal($str, $substr, 0, $ignore_case); // pos为0
+		return static::pos($str, $substr, $ignore_case) === 0; // pos为0
 	}
 	
 	/**
@@ -77,6 +75,6 @@ class Sk_Text
 	public static function end_with($str, $substr, $ignore_case = false)
 	{
 		$end_pos = strlen($str) - strlen($substr);
-		return static::_pos_equal($str, $substr, $end_pos, $ignore_case); // pos为$end_pos
+		return static::pos($str, $substr, $ignore_case) === $end_pos; // pos为$end_pos
 	}
 }
