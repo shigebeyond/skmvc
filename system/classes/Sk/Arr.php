@@ -38,9 +38,15 @@ class Sk_Arr
 	 * @param   mixed   $other				要等于的值
 	 * @return  mixed
 	 */
-	public static function equal($array, $key, $other)
+	public static function equal($array, $key, $other, $ignore_case = FALSE)
 	{
-		return isset($array[$key]) && $array[$key] == $other;
+		if(!isset($array[$key]))
+			return FALSE;
+		
+		if ($ignore_case) 
+			return $array[$key] == $other;
+		else 
+			return strcasecmp($array[$key], $other) == 0; // 忽略大小写的比较，相等为0，大于为1，小于为-1
 	}
 	
 	/**
