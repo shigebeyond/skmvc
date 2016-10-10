@@ -4,5 +4,10 @@ return array(
 	'name' => 'shi', 
 	'fun' => function(){
 		echo 'hello world';
-	}
+	},
+	'a' => array(
+		'b' => array(
+			'c' => 1
+		)
+	)
 );
