@@ -12,7 +12,7 @@
  */
 class Sk_Singleton_Configurable
 {
-    private static $instances = array();
+    protected static $_instances = array();
 
     /**
      * 根据不同的配置来获得不同的实例
@@ -33,13 +33,13 @@ class Sk_Singleton_Configurable
     	if(!is_string($config_group))
     		throw new Exception('单例方法 '.$class.'::instance($config_group) 中的参数 $config_group 必须是字符串');
     	
-        if (!isset(self::$instances[$config_group])) {
+        if (!isset(self::$_instances[$config_group])) {
         	// 加载配置项
         	$config = Config::load($config_group);
         	// 根据配置项来创建实例
-            self::$instances = new static($config);
+            self::$_instances = new static($config);
         }
 
-        return self::$instances;
+        return self::$_instances;
     }
 }
