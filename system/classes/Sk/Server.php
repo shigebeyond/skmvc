@@ -12,17 +12,9 @@
 class Sk_Server{
 	
 	/**
-	 * 开始输出缓冲
-	 */
-	public static function start()
-	{
-		ob_start();
-	}
-	
-	/**
 	 * 结束输出缓冲
 	 */
-	public static function end()
+	public static function ob_end()
 	{
 		if (function_exists('fastcgi_finish_request')) {
 			fastcgi_finish_request();
@@ -50,7 +42,7 @@ class Sk_Server{
 	public static function run()
 	{
 		// 开始输出缓冲
-		static::start();
+		ob_start();
 		
 		try {
 			// 构建请求与响应对象
@@ -71,7 +63,8 @@ class Sk_Server{
 		}
 		
 		//结束输出缓冲
-		static::end();
+		//die();
+		static::ob_end();
 	}
 	
 	/**
