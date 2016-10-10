@@ -25,10 +25,11 @@ class Sk_Config extends ArrayObject{
 	 * @param string $group
 	 * @return array
 	 */
-	public static function load($group)
+	public static function load($group, $path = NULL)
 	{
 		// 分割分组与路径
-		list($group, $path) = explode('.', $group, 2);
+		if($path === NULL && Text::contains($group, '.'))
+			list($group, $path) = explode('.', $group, 2);
 		
 		// 加载某组配置
 		$config = static::_load_group($group);
