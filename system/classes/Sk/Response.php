@@ -91,12 +91,6 @@ class Sk_Response{
 	protected $_body = '';
 	
 	/**
-	 * cookies
-	 * @var array
-	 */
-	protected $_cookies = array();
-	
-	/**
 	 * 获得与设置响应主体
 	 * 
 	 * @param string $content
