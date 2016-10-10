@@ -252,7 +252,7 @@ class Sk_Request{
 	 */
 	public function is_ajax()
 	{
-		return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest' // 通过XMLHttpRequest发送请求
+		return Arr::equal($_SERVER, 'HTTP_X_REQUESTED_WITH', 'XMLHttpRequest') // 通过XMLHttpRequest发送请求
 				|| $this->accept_types() == 'text/javascript, application/javascript, */*'; // 通过jsonp来发送请求
 	}
 	
@@ -262,7 +262,7 @@ class Sk_Request{
 	 */
 	public function is_https()
 	{
-		return isset($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'], 'off'); // 忽略大小写的比较，相等为0，大于为1，小于为-1
+		return Arr::equal($_SERVER, 'HTTPS', 'off', TRUE);
 	}
 	
 	/**
