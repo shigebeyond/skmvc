@@ -9,13 +9,103 @@
  * @date 2016-10-10 上午12:52:34 
  *
  */
-class Sk_Orm_Entity
+abstract class Sk_Orm_Entity
 {
 	/**
-	 * 字段
+	 * 当前数据
 	 * @var array
 	 */
-	protected $_fields = array();
+	protected $_object = array();
 	
+	/**
+	 * 记录变化的字段
+	 * @var array
+	*/
+	protected $_changed = array();
 	
+	/**
+	 * 原始的数据
+	 * @var array
+	*/
+	protected $_original = array();
+	
+	/**
+	 * 获得对象属性
+	 *
+	 * @param   string $column 属性名
+	 * @return  mixed
+	 */
+	public function __get($column)
+	{
+		// 尝试获得对象属性
+		if($this->try_get($column, $value))
+			return $value;
+		
+		// 如果获得失败,则抛出异常
+		$class = get_class($this);
+		throw new Exception("类 $class 没有属性 $column");
+	}
+	
+	/**
+	 * 尝试获得对象属性
+	 *
+	 * @param   string $column 属性名
+	 * @return  mixed
+	 */
+	public function try_get($column, &$value)
+	{
+		if(isset($this->_object, $column))
+		{
+			$value = $this->_object[$column];
+			return TRUE;
+		}
+	}
+	
+	/**
+	 * 设置对象属性值
+	 *
+	 * @param  string $column 属性名
+	 * @param  mixed  $value  属性值
+	 */
+	public function __set($column, $value)
+	{
+		// 尝试设置对象属性, 如果失败, 则跑出异常
+		if(!$this->try_set($column, $value))
+		{
+			$class = get_class($this);
+			throw new Exception("类 $class 没有属性 $column");
+		}
+	}
+	
+	/**
+	 * 尝试设置属性值
+	 *
+	 * @param  string $column 属性名
+	 * @param  mixed  $value  属性值
+	 * @return ORM
+	 */
+	public function try_set($column, $value)
+	{
+		// 判断是否是字段
+		if (isset($this->columns(), $column))
+		{
+			// 判断属性值是否真正有改变
+			if ($value !== $this->_object[$column])
+			{
+				$this->_object[$column] = $value;
+				$this->_changed[$column] = TRUE; // 记录变化的字段
+			}
+			
+			return TRUE;
+		}
+		
+		return FALSE;
+	}
+	
+	/**
+	 * 获得字段列表
+	 * 
+	 * @return array
+	 */
+	public abstract static function columns();
 }
