@@ -26,9 +26,9 @@ class Sk_Singleton_Configurable
     	// 获得当前类
     	$class = get_called_class();
     	
-    	// 默认使用类名小写作为配置组名
+    	// 默认使用类名小写作为配置组名，如 Database_Mysql 类对应的配置组名为 database.mysql
     	if($config_group === NULL)
-    		$config_group = strtolower($class);
+    		$config_group = str_replace('_', '.', strtolower($class)); 
     		
     	if(!is_string($config_group))
     		throw new Exception('单例方法 '.$class.'::instance($config_group) 中的参数 $config_group 必须是字符串');
