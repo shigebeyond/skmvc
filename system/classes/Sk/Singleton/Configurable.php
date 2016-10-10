@@ -26,10 +26,16 @@ class Sk_Singleton_Configurable
     	// 获得当前类
     	$class = get_called_class();
     	
-    	// 使用类名小写作为配置组名，使用 $name 做为路径
+    	// 使用类名小写作为配置组名
     	$group = strtolower($class);
+    	
     	if($name !== NULL)
+    	{
+    		// 使用 $name 作为配置路径
     		$group .= '.'.$name;
+    		// 使用 $name 作为子类后缀
+    		$class .= ucfirst($name);
+    	}
     	
     	// 缓存 or 加载
         if (!isset(self::$_instances[$group])) {
