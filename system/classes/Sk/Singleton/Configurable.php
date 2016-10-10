@@ -21,30 +21,43 @@ class Sk_Singleton_Configurable
      * @throws Exception
      * @return multitype
      */
-    public static function instance($name = NULL)
+    public static function instance($name = 'default')
     {
     	// 获得当前类
     	$class = get_called_class();
     	
     	// 使用类名小写作为配置组名
     	$group = strtolower($class);
-    	
-    	if($name !== NULL)
-    	{
-    		// 使用 $name 作为配置路径
+    	// 使用 $name 作为配置路径
+    	if($name)
     		$group .= '.'.$name;
-    		// 使用 $name 作为子类后缀
-    		$class .= ucfirst($name);
-    	}
     	
     	// 缓存 or 加载
         if (!isset(self::$_instances[$group])) {
         	// 加载配置项
         	$config = Config::load($group);
+        	
+        	// 获得子类后缀
+        	$subclass_suffix = static::subclass_suffix($config);
+        	// 获得子类 = 父类_子类后缀
+			if($subclass_suffix)
+				$class .= '_'.$subclass_suffix;
+			
         	// 根据配置项来创建实例
-            self::$_instances = new static($config);
+            self::$_instances = new $class($config, $name);
         }
 
         return self::$_instances;
+    }
+    
+    /**
+     * 根据配置来获得子类后缀
+     * 
+     * @param array $config
+     * @return string
+     */
+    public static function subclass_suffix($config)
+    {
+    	return NULL;
     }
 }
