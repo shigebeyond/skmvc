@@ -12,9 +12,9 @@
 class Sk_Arr
 {
 	/**
-	 * 获得数组中的一个值
+	 * 获得数组中的某个元素
 	 *
-	 *     // Get the value "username" from $_POST, if it exists
+	 *	// 从 $_POST 中获得 key 为 "username" 的元素值
 	 *     $username = Arr::get($_POST, 'username');
 	 *
 	 * @param   array   $array      数组
@@ -25,6 +25,22 @@ class Sk_Arr
 	public static function get($array, $key, $default = NULL)
 	{
 		return isset($array[$key]) ? $array[$key] : $default;
+	}
+	
+	/**
+	 * 判断数组中的某个元素是否等于指定的值
+	 *
+	 *	// 判断 $_POST 中获得 key 为 "username" 的元素值是否等于 'shi'
+	 *     $username = Arr::equal($_POST, 'username', 'shi');
+	 *
+	 * @param   array   $array      数组
+	 * @param   string  $key        key名
+	 * @param   mixed   $other				要等于的值
+	 * @return  mixed
+	 */
+	public static function equal($array, $key, $other)
+	{
+		return isset($array[$key]) && $array[$key] == $other;
 	}
 	
 	/**
