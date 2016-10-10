@@ -12,6 +12,12 @@
  */
 class Sk_Response{
 	
+	/**
+	 * 过期的期限
+	 * @var string
+	 */
+	const EXPIRES_OVERDUE = 'Mon, 26 Jul 1997 05:00:00 GMT';
+	
 	// http状态码及其消息
 	public static $messages = array(
 		// 信息性状态码 1xx
@@ -195,25 +201,35 @@ class Sk_Response{
 	 * 设置响应缓存
 	 *
 	 * @param int|string $expires 过期时间
-	 * @return Response
+	 * @return string|Response
 	 */
-	public function cache($expires = FALSE) {
-		if ($expires === FALSE) {
-			$this->headers['Expires'] = 'Mon, 26 Jul 1997 05:00:00 GMT';
-			$this->headers['Cache-Control'] = array(
+	public function cache($expires = NULL) {
+		// getter
+		if ($expires === NULL) 
+		{
+			// 无缓存
+			if(!isset($this->_headers['Expires']) OR $this->_headers['Expires'] == static::EXPIRES_OVERDUE)
+				return FALSE;
+			
+			// 有缓存
+			return $this->_headers['Expires'];
+		}
+		
+		// setter
+		if ($expires) { // 有过期时间, 则缓存
+			$expires = is_int($expires) ? $expires : strtotime($expires);
+			$this->_headers['Expires'] = gmdate('D, d M Y H:i:s', $expires) . ' GMT';
+			$this->_headers['Cache-Control'] = 'max-age='.($expires - time());
+			if (isset($this->_headers['Pragma']) && $this->_headers['Pragma'] == 'no-cache')
+				unset($this->_headers['Pragma']);
+		}else{ // 否则, 不缓存
+			$this->_headers['Expires'] = static::EXPIRES_OVERDUE;
+			$this->_headers['Cache-Control'] = array(
 					'no-store, no-cache, must-revalidate',
 					'post-check=0, pre-check=0',
 					'max-age=0'
 			);
-			$this->headers['Pragma'] = 'no-cache';
-		}
-		else 
-		{
-			$expires = is_int($expires) ? $expires : strtotime($expires);
-			$this->headers['Expires'] = gmdate('D, d M Y H:i:s', $expires) . ' GMT';
-			$this->headers['Cache-Control'] = 'max-age='.($expires - time());
-			if (isset($this->headers['Pragma']) && $this->headers['Pragma'] == 'no-cache')
-				unset($this->headers['Pragma']);
+			$this->_headers['Pragma'] = 'no-cache';
 		}
 		return $this;
 	}
