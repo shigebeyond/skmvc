@@ -64,7 +64,7 @@ class Sk_Arr
 	public static function path($array, $path, $default = NULL, $delimiter = '.')
 	{
 		// 非数组
-		if (!is_array($array))
+		if (!static::is($array))
 			return $default;
 		
 		// 从多级路径中分离出多个key
@@ -72,7 +72,7 @@ class Sk_Arr
 		
 		// 遍历key来逐层获得值
 		foreach ($keys as $key){
-			if (!is_array($array)) // 非数组
+			if (!static::is($array)) // 非数组
 				return $default;
 			
 			if (isset($array[$key])){ // 存在key
@@ -85,4 +85,13 @@ class Sk_Arr
 		return $array;
 	}
 	
+	/**
+	 * 判断是否数组
+	 * @param array $array
+	 * @return boolean
+	 */
+	public static function is($array)
+	{
+		return is_array($array) || $array instanceof ArrayObject;
+	}
 }
