@@ -11,7 +11,7 @@
  * @date 2016-10-6 上午12:01:17
  *
  */
-class Sk_Router extends Singleton_Configurable{
+class Sk_Router{
 	
 	/**
 	 * 全部路由规则
