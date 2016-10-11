@@ -92,6 +92,6 @@ class Sk_Arr
 	 */
 	public static function is($array)
 	{
-		return is_array($array) || $array instanceof ArrayObject;
+		return is_array($array) || $array instanceof ArrayAccess;
 	}
 }

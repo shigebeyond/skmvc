@@ -66,12 +66,26 @@ class Sk_Singleton_Configurable
 	}
 	
 	/**
+	 * 分类名
+	 * @var string
+	 */
+	protected $_name;
+	
+	/**
+	 * 配置
+	 * @var array
+	 */
+	protected $_config;
+	
+	/**
 	 * 强制子类要处理接收到的两个参数
 	 *
-	 * @param array $config 	对应的配置项
+	 * @param array $config 对应的配置项
 	 * @param string $name	分类名
 	 */
 	public function __construct($config, $name = NULL) 
 	{
+		$this->_config = $config;
+		$this->_name = $name;
 	}
 }
