@@ -12,8 +12,8 @@
 class Sk_Db_Query_Action_Delete extends Db_Query_Action
 {
 	/**
-	 * sql动作: delete
+	 * 动作子句模板: delete
 	 * @var string
 	 */
-	protected $_action = 'DELETE FROM :table';
+	protected $_action_template = 'DELETE FROM :table';
 }

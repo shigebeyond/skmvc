@@ -12,11 +12,11 @@
 class Sk_Db_Query_Action extends Db_Query_Where 
 {
 	/**
-	 * sql动作: 增删改查
+	 * 动作子句模板: 增删改查
 	 * 	如 select :columns from :table / update :table set :column = :value, 
 	 * @var string
 	 */
-	protected $_action;
+	protected $_action_template;
 	
 	/**
 	 * 编译动作子句
@@ -30,13 +30,13 @@ class Sk_Db_Query_Action extends Db_Query_Where
 			// 调用对应的方法: table() / columns() / values()
 			$method = 'compile_'.$mathes[1];
 			return $this->$method();
-		}, $this->_action);
+		}, $this->_action_template);
 		
 		// 编译字段谓句
 		// 针对 update :table set :column = :value
 		preg_replace_callback('/:column(.+):value/', function($mathes){
 			return $this->compile_column_predicate($mathes[1]);
-		}, $this->_action);
+		}, $this->_action_template);
 			
 		return $action;
 	}

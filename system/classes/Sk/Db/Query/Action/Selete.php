@@ -12,10 +12,10 @@
 class Sk_Db_Query_Action_Selete extends Db_Query_Action
 {
 	/**
-	 * sql动作: select
+	 * 动作子句模板: select
 	 * @var string
 	 */
-	protected $_action = 'SELECT :keys FROM :table';
+	protected $_action_template = 'SELECT :keys FROM :table';
 	
 	/**
 	 * 设置查询的字段
