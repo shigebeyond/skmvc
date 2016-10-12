@@ -19,16 +19,30 @@ abstract class Sk_Db_Query_Action extends Db_Query
 	protected $_action;
 	
 	/**
+	 * 要插入/更新的数据: <column => value>
+	 * @var array
+	 */
+	protected $_data = array();
+	
+	/**
 	 * 编译动作子句
 	 * @see Sk_Db_Query::compile_action()
 	 */
 	public function compile_action()
 	{
-		return preg_replace_callback('/:(table|keys|values)/', function($mathes){
+		// 编译模式 select :keys from :table / insert into :table :keys values :values
+		$action = preg_replace_callback('/:(table|keys|values)/', function($mathes){
 			// 调用对应的方法: table() / keys() / values()
 			$method = $mathes[1];
 			return $this->$method();
 		}, $this->_action);
+		
+		// 编译模式 update :table set :key = :value
+		preg_replace_callback('/:key(.+):value/', function($mathes){
+			
+		}, $this->_action);
+			
+		return $action;
 	}
 	
 	/**
@@ -37,7 +51,7 @@ abstract class Sk_Db_Query_Action extends Db_Query
 	 */
 	public function keys()
 	{
-		return NULL;
+		return $this->_db->quote_column(array_keys($this->_data));
 	}
 	
 	/**
@@ -46,6 +60,20 @@ abstract class Sk_Db_Query_Action extends Db_Query
 	 */
 	public function values()
 	{
-		return NULL;
+		return $this->_db->quote(array_values($this->_data));
+	}
+	
+	/**
+	 * 编译set子句
+	 * @return string
+	 */
+	public function compile_set()
+	{
+		$set = '';
+		foreach ($this->_values as $key => $value)
+		{
+			$set = "$key = $value, ";
+		}
+		return rtrim($set, ', ');
 	}
 }
