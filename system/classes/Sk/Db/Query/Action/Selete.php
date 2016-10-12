@@ -9,7 +9,7 @@
  * @date 2016-10-12
  *
  */
-class Sk_Db_Query_Action_Selete extends Db_Query_Action
+class Sk_Db_Query_Action_Select extends Db_Query_Action
 {
 	/**
 	 * 动作子句模板: select

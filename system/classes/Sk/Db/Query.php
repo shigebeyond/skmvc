@@ -31,6 +31,12 @@ abstract class Sk_Db_Query
 	 */
 	protected $_data;
 	
+	public function __construct($db, $table = NULL)
+	{
+		$this->_db = $db;
+		$this->_table = $table;
+	}
+	
 	/**
 	 * 设置表名
 	 * @param string $table
@@ -40,6 +46,16 @@ abstract class Sk_Db_Query
 	{
 		$this->_table = $table;
 		return $this;
+	}
+	
+	/**
+	 * 设置表名
+	 * @param string $table
+	 * @return Sk_Db_Query
+	 */
+	public function from($table)
+	{
+		return $this->table($table);
 	}
 	
 	/**
@@ -65,13 +81,8 @@ abstract class Sk_Db_Query
 	 */
 	public function compile()
 	{
-		// 动作
-		$sql = $this->compile_action();
-		// where
-		if($where = $this->compile_where())
-			$sql = "$sql WHERE $where";
-		
-		return $sql;
+		// 动作子句 + 修饰子句
+		return $this->compile_action() . $this->compile_decoration();
 	}
 	
 	/**
@@ -85,4 +96,24 @@ abstract class Sk_Db_Query
 	 * @return string
 	 */
 	public abstract function compile_decoration();
+	
+	public static function select($db, $table = NULL)
+	{
+		return new Db_Query_Action_Select($db, $table);
+	}
+	
+	public static function insert($db, $table = NULL)
+	{
+		return new Db_Query_Action_Insert($db, $table);
+	}
+	
+	public static function update($db, $table = NULL)
+	{
+		return new Db_Query_Action_Update($db, $table);
+	}
+	
+	public static function delete($db, $table = NULL)
+	{
+		return new Db_Query_Action_Delete($db, $table);
+	}
 }

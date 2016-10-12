@@ -9,4 +9,4 @@
  * @date 2016-10-12
  *
  */
-class Db_Query_Action_Selete extends Sk_Db_Query_Action_Selete {}
+class Db_Query_Action_Select extends Sk_Db_Query_Action_Select {}
