@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * sql构建器 -- 动作子句: select/insert/update/delete
+ * sql构建器 -- 动作子句: 由动态select/insert/update/delete来构建的子句
  * 
  * @Package package_name 
  * @category 

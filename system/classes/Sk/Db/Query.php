@@ -14,7 +14,7 @@ abstract class Sk_Db_Query
 {
 	/**
 	 * 数据库连接
-	 * @var Sk_Db
+	 * @var Db
 	 */
 	protected $_db;
 	
