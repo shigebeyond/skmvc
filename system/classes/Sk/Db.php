@@ -279,18 +279,6 @@ class Sk_Db extends Singleton_Configurable
 	}
 	
 	/**
-	 * 转义值
-	 * 
-	 * @param unknown $str
-	 * @param string $param_type
-	 * @return string
-	 */
-	public function quote ($str, $param_type = NULL)
-	{
-		return $this->_pdo->quote($str, $param_type);
-	}
-	
-	/**
 	 * 转义表名
 	 * 
 	 * @param string $table
@@ -307,8 +295,18 @@ class Sk_Db extends Singleton_Configurable
 	 * @param string $column
 	 * @return string
 	 */
-	public function quote_column($column)
+	public function quote_column($column, $delimiter = ', ', $head = '(', $tail = ')')
 	{
+		if (is_array ( $column ))
+		{
+			// 转义
+			$column = array_map(function($col){
+				return "`$column`";
+			}, $column);
+			// 头部 + 分隔符拼接多值 + 尾部
+			return $head . implode($delimiter, $column) . $tail;
+		}
+		
 		return "`$column`";
 	}
 	
@@ -318,7 +316,7 @@ class Sk_Db extends Singleton_Configurable
 	 * @param string|array $value
 	 * @return string
 	 */
-	 public function quote_value($value, $delimiter = ', ', $head = '(', $tail = ')')
+	 public function quote($value, $param_type = NULL, $delimiter = ', ', $head = '(', $tail = ')')
 	 {
 		if (is_array ( $value )) 
 		{
