@@ -32,17 +32,17 @@ class Sk_Db_Query_Action extends Db_Query_Where
 			return $this->$method();
 		}, $this->_action);
 		
-		// 编译谓语形式的字段
+		// 编译字段谓句
 		// 针对 update :table set :column = :value
 		preg_replace_callback('/:column(.+):value/', function($mathes){
-			return $this->compile_key($mathes[1]);
+			return $this->compile_column_predicate($mathes[1]);
 		}, $this->_action);
 			
 		return $action;
 	}
 	
 	/**
-	 * 编译表名
+	 * 编译表名: 转义
 	 * @return string
 	 */
 	public function compile_table($table = NULL)
@@ -51,32 +51,48 @@ class Sk_Db_Query_Action extends Db_Query_Where
 	}
 	
 	/**
-	 * 编译多个字段名
+	 * 编译多个字段名: 转义
 	 * @return string
 	 */
 	public function compile_columns()
 	{
+		if(empty($this->_data))
+			return '*';
+		
 		return $this->_db->quote_column(array_keys($this->_data));
 	}
 	
 	/**
-	 * 编译多个字段值
+	 * 编译多个字段值: 转义
 	 * @return string
 	 */
 	public function compile_values()
 	{
+		if(empty($this->_data))
+			return NULL;
+		
 		return $this->_db->quote(array_values($this->_data));
 	}
 	
 	/**
-	 * 编译谓语形式的字段
+	 * 编译字段谓句: 转义 + 拼接谓句
+	 * 
+	 * @param stirng $operator 谓语
+	 * @param string $delimiter 拼接谓句的分隔符
 	 * @return string
 	 */
-	public function compile_predicate($operator, $delimiter = ', ')
+	public function compile_column_predicate($operator, $delimiter = ', ')
 	{
+		if(empty($this->_data))
+			return NULL;
+		
 		$sql = '';
-		foreach ($this->_values as $column => $value)
+		foreach ($this->_data as $column => $value)
+		{
+			$column = $this->_db->quote_column($column);
+			$value = $this->_db->quote($value);
 			$sql = "$column $operator $value$delimiter";
+		}
 		
 		return rtrim($sql, $delimiter);
 	}
