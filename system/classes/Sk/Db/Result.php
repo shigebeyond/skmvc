@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * 封装查询结果的访问器
+ * 封装查询结果的访问器 TODO: 支持缓存查询结果, config/db.php中的cache控制
  * 
  * @Package package_name 
  * @category 

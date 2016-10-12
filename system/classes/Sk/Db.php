@@ -286,7 +286,8 @@ class Sk_Db extends Singleton_Configurable
 	 */
 	public function quote_table($table)
 	{
-		return "`$table`";
+		$prefix = $this->_config['table_prefix'];
+		return "`$prefix$table`";
 	}
 	
 	/**
