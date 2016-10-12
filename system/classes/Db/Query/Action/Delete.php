@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * sql构建器 -- action
+ * sql构建器 -- delete
  * 
  * @Package package_name 
  * @category 
@@ -9,4 +9,4 @@
  * @date 2016-10-12
  *
  */
-abstract class Db_Query_Action extends Sk_Db_Query_Action {}
+class Db_Query_Action_Delete extends Sk_Db_Query_Action_Delete{}
