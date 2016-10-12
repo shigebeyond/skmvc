@@ -278,8 +278,57 @@ class Sk_Db extends Singleton_Configurable
 		return (int)$this->_pdo->lastInsertId();
 	}
 	
+	/**
+	 * 转义值
+	 * 
+	 * @param unknown $str
+	 * @param string $param_type
+	 * @return string
+	 */
 	public function quote ($str, $param_type = NULL)
 	{
 		return $this->_pdo->quote($str, $param_type);
+	}
+	
+	/**
+	 * 转义表名
+	 * 
+	 * @param string $table
+	 * @return string
+	 */
+	public function quote_table($table)
+	{
+		return "`$table`";
+	}
+	
+	/**
+	 * 转义字段名
+	 * 
+	 * @param string $column
+	 * @return string
+	 */
+	public function quote_column($column)
+	{
+		return "`$column`";
+	}
+	
+	/**
+	* 转义值
+	 *
+	 * @param string|array $value
+	 * @return string
+	 */
+	 public function quote_value($value, $delimiter = ', ', $head = '(', $tail = ')')
+	 {
+		if (is_array ( $value )) 
+		{
+			// 转义
+			$value = array_map(array($this->_pdo, 'quote'), $value );
+			// 头部 + 分隔符拼接多值 + 尾部
+			return $head . implode($delimiter, $value) . $tail;
+		}
+		
+		// 转义
+		return $this->_pdo->quote ( $value );
 	}
 }
