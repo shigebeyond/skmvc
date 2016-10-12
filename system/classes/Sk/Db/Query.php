@@ -81,8 +81,8 @@ abstract class Sk_Db_Query
 	public abstract function compile_action();
 	
 	/**
-	 * 编译where子句
+	 * 编译修饰子句
 	 * @return string
 	 */
-	public abstract function compile_where();
+	public abstract function compile_decoration();
 }

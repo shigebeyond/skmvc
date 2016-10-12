@@ -9,7 +9,7 @@
  * @date 2016-10-12
  *
  */
-class Sk_Db_Query_Action extends Db_Query_Where 
+class Sk_Db_Query_Action extends Db_Query_Decoration
 {
 	/**
 	 * 动作子句模板: select/insert/update/delete

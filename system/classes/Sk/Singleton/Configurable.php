@@ -22,25 +22,19 @@ class Sk_Singleton_Configurable
 	 * 根据不同的配置来获得不同的实例
 	 *
 	 * @param string $name	分类名, 可作为配置中的子路径
+	 * @param array $config 配置信息，默认为NULL，表示从配置文件中加载，但也可以手动指定
 	 * @throws Exception
 	 * @return multitype
 	 */
-	public static function instance($name = 'default') 
+	public static function instance($name = 'default', array $config = NULL) 
 	{
-		// 获得当前类
-		$class = get_called_class ();
-		
-		// 使用类名小写作为配置组名
-		$group = strtolower ( $class );
-		// 使用 $name 作为配置路径
-		if ($name)
-			$group .= '.' . $name;
-			
-			// 缓存 or 加载
-		if (! isset ( self::$_instances [$group] )) {
-			// 加载配置项
-			$config = Config::load ( $group );
-			
+		// 缓存 or 加载
+		if (! isset ( self::$_instances [$name] )) 
+		{
+			// 从配置文件中加载配置信息
+			if($config === NULL)
+				$config = self::load_config ( $name );
+
 			// 获得子类后缀
 			$subclass_suffix = static::subclass_suffix ( $config );
 			// 获得子类 = 父类_子类后缀
@@ -53,6 +47,28 @@ class Sk_Singleton_Configurable
 		
 		return self::$_instances;
 	}
+	
+	/**
+	 * 根据分类名 自动加载配置信息
+	 * 
+	 * @param name
+	 * @return array
+	 */
+	 public static function load_config($name) 
+	 {
+		// 获得当前类
+		$class = get_called_class ();
+		
+		// 使用类名小写作为配置组名
+		$group = strtolower ( $class );
+		// 使用 $name 作为配置路径
+		if ($name)
+			$group .= '.' . $name;
+		
+		// 加载配置项
+		return Config::load ( $group );
+	}
+
 	
 	/**
 	 * 根据配置来获得子类后缀

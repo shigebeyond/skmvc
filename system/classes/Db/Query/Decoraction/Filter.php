@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * sql构建器 -- action
+ * sql装饰部分的过滤器
  * 
  * @Package package_name 
  * @category 
@@ -9,4 +9,4 @@
  * @date 2016-10-12
  *
  */
-abstract class Db_Query_Where extends Sk_Db_Query_Where {}
+abstract class Db_Query_Decoration_Filter extends Sk_Db_Query_Decoration_Filter {}
