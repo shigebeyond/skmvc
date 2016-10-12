@@ -57,7 +57,7 @@ class Sk_Db_Query_Action extends Db_Query_Where
 	public function compile_columns()
 	{
 		if(empty($this->_data))
-			return '*';
+			return NULL;
 		
 		return $this->_db->quote_column(array_keys($this->_data));
 	}

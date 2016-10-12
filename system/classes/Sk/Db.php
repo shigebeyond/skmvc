@@ -294,6 +294,9 @@ class Sk_Db extends Singleton_Configurable
 	 * 转义字段名
 	 * 
 	 * @param string $column
+	 * @param string $delimiter 拼接的分隔符
+	 * @param string $head 开头字符
+	 * @param string $tail 结尾字符
 	 * @return string
 	 */
 	public function quote_column($column, $delimiter = ', ', $head = '(', $tail = ')')
@@ -315,9 +318,12 @@ class Sk_Db extends Singleton_Configurable
 	* 转义值
 	 *
 	 * @param string|array $value
+	 * @param string $delimiter 拼接的分隔符
+	 * @param string $head 开头字符
+	 * @param string $tail 结尾字符
 	 * @return string
 	 */
-	 public function quote($value, $param_type = NULL, $delimiter = ', ', $head = '(', $tail = ')')
+	 public function quote($value, $delimiter = ', ', $head = '(', $tail = ')')
 	 {
 		if (is_array ( $value )) 
 		{

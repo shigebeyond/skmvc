@@ -25,7 +25,8 @@ abstract class Sk_Db_Query
 	protected $_table;
 	
 	/**
-	 * 插入/更新的字段值: <column => value>
+	 * 要插入/更新字段: <column => value>
+	 * 要查询的字段名: [column]
 	 * @var string
 	 */
 	protected $_data;

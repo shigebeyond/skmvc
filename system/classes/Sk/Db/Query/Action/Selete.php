@@ -25,10 +25,18 @@ class Sk_Db_Query_Action_Selete extends Db_Query_Action
 	 */
 	public function select($columns)
 	{
-		$columns = func_get_args();
-		// 创建一个关联数组<column => NULL>, 字段值为NULL
-		$data = array_combine(array_keys($this->_table_columns), array_fill(0, count($this->_table_columns), NULL));
-		return $this->data($data);
+		return $this->data(func_get_args());
 	}
 	
+	/**
+	 * 编译多个字段名: 转义
+	 * @return string
+	 */
+	public function compile_columns()
+	{
+		if(empty($this->_data))
+			return '*';
+	
+		return $this->_db->quote_column($this->_data, ', ', NULL, NULL);
+	}
 }
