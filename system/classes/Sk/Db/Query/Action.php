@@ -9,20 +9,14 @@
  * @date 2016-10-12
  *
  */
-abstract class Sk_Db_Query_Action extends Db_Query 
+class Sk_Db_Query_Action extends Db_Query_Where 
 {
 	/**
 	 * sql动作: 增删改查
-	 * 	如 select :keys from :table / update :table set :key = :value, 
+	 * 	如 select :columns from :table / update :table set :column = :value, 
 	 * @var string
 	 */
 	protected $_action;
-	
-	/**
-	 * 要插入/更新的数据: <column => value>
-	 * @var array
-	 */
-	protected $_data = array();
 	
 	/**
 	 * 编译动作子句
@@ -30,50 +24,60 @@ abstract class Sk_Db_Query_Action extends Db_Query
 	 */
 	public function compile_action()
 	{
-		// 编译模式 select :keys from :table / insert into :table :keys values :values
-		$action = preg_replace_callback('/:(table|keys|values)/', function($mathes){
-			// 调用对应的方法: table() / keys() / values()
-			$method = $mathes[1];
+		// 1 编译表名/多个字段名/多个字段值
+		// 针对 select :columns from :table / insert into :table :columns values :values
+		$action = preg_replace_callback('/:(table|columns|values)/', function($mathes){
+			// 调用对应的方法: table() / columns() / values()
+			$method = 'compile_'.$mathes[1];
 			return $this->$method();
 		}, $this->_action);
 		
-		// 编译模式 update :table set :key = :value
-		preg_replace_callback('/:key(.+):value/', function($mathes){
-			
+		// 编译谓语形式的字段
+		// 针对 update :table set :column = :value
+		preg_replace_callback('/:column(.+):value/', function($mathes){
+			return $this->compile_key($mathes[1]);
 		}, $this->_action);
 			
 		return $action;
 	}
 	
 	/**
-	 * 获得多个字段名
+	 * 编译表名
 	 * @return string
 	 */
-	public function keys()
+	public function compile_table($table = NULL)
+	{
+		return $this->_db->quote_table($this->_table);
+	}
+	
+	/**
+	 * 编译多个字段名
+	 * @return string
+	 */
+	public function compile_columns()
 	{
 		return $this->_db->quote_column(array_keys($this->_data));
 	}
 	
 	/**
-	 * 获得字段值
+	 * 编译多个字段值
 	 * @return string
 	 */
-	public function values()
+	public function compile_values()
 	{
 		return $this->_db->quote(array_values($this->_data));
 	}
 	
 	/**
-	 * 编译set子句
+	 * 编译谓语形式的字段
 	 * @return string
 	 */
-	public function compile_set()
+	public function compile_predicate($operator, $delimiter = ', ')
 	{
-		$set = '';
-		foreach ($this->_values as $key => $value)
-		{
-			$set = "$key = $value, ";
-		}
-		return rtrim($set, ', ');
+		$sql = '';
+		foreach ($this->_values as $column => $value)
+			$sql = "$column $operator $value$delimiter";
+		
+		return rtrim($sql, $delimiter);
 	}
 }

@@ -9,4 +9,4 @@
  * @date 2016-10-12
  *
  */
-class Db_Query_Action extends Sk_Db_Query_Action {}
+abstract class Db_Query_Where extends Sk_Db_Query_Where {}

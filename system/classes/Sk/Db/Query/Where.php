@@ -9,4 +9,16 @@
  * @date 2016-10-12
  *
  */
-class Db_Query_Action extends Sk_Db_Query_Action {}
+abstract class Sk_Db_Query_Where extends Db_Query 
+{
+	/**
+	 * 编译where子句
+	 * @see Sk_Db_Query::compile_where()
+	 */
+	public function compile_where() 
+	{
+		return NULL;
+	}
+
+	
+}

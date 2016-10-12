@@ -62,7 +62,7 @@ abstract class Sk_Db_Query
 	 * 编译sql
 	 * @return string
 	 */
-	public abstract function compile()
+	public function compile()
 	{
 		// 动作
 		$sql = $this->compile_action();
