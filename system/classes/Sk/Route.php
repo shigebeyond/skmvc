@@ -12,12 +12,6 @@
 class Sk_Route{
 	
 	/**
-	 * 参数名的正则
-	 * @var string
-	 */
-	const REGEX_NAME = '/\<(\w+)\>/';
-	
-	/**
 	 * 参数的默认正则
 	 * @var string
 	 */
@@ -85,8 +79,8 @@ class Sk_Route{
 	public static function compile($regex, array $params = NULL)
 	{
 		// 将<参数>替换为对应的带参数的子正则，如将<controller>替换为(?P<controller>[^\/]+)
-		// $regex = preg_replace(static::REGEX_NAME, '(?P<$1>.+?)', $regex); // wrong: 不能采用 $params 中自定义的子正则
-		$regex = preg_replace_callback(static::REGEX_NAME, function($matches) use($params){
+		// $regex = preg_replace('/\<(\w+)\>/', '(?P<$1>.+?)', $regex); // wrong: 不能采用 $params 中自定义的子正则
+		$regex = preg_replace_callback('/\<(\w+)\>/', function($matches) use($params){
 			return static::compile_param($matches[1], $params);
 		}, $regex);
 		
