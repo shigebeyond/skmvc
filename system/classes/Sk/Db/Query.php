@@ -25,18 +25,36 @@ abstract class Sk_Db_Query
 	protected $_table;
 	
 	/**
-	 * 获得/设置表名
-	 * @param string $table
-	 * @return string|Sk_Db_Query
+	 * 插入/更新的字段值: <column => value>
+	 * @var string
 	 */
-	public function table($table = NULL)
+	protected $_data;
+	
+	/**
+	 * 设置表名
+	 * @param string $table
+	 * @return Sk_Db_Query
+	 */
+	public function table($table)
 	{
-		// getter
-		if($table === NULL)
-			return $this->_db->quote_table($this->_table);
-		
-		// setter
 		$this->_table = $table;
+		return $this;
+	}
+	
+	/**
+	 * 设置插入/更新的值
+	 *
+	 * @param string $column
+	 * @param string $value
+	 * @return Db_Query
+	 */
+	public function data($column, $value)
+	{
+		if(is_array($column))
+			$this->_data = $column;
+		else
+			$this->_data[$column] = $value;
+	
 		return $this;
 	}
 	
