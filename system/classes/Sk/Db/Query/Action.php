@@ -34,11 +34,9 @@ class Sk_Db_Query_Action extends Db_Query_Where
 		
 		// 编译字段谓句
 		// 针对 update :table set :column = :value
-		preg_replace_callback('/:column(.+):value/', function($mathes){
+		return preg_replace_callback('/:column(.+):value/', function($mathes){
 			return $this->compile_column_predicate($mathes[1]);
-		}, $this->_action_template);
-			
-		return $action;
+		}, $action);
 	}
 	
 	/**
@@ -91,7 +89,7 @@ class Sk_Db_Query_Action extends Db_Query_Where
 		{
 			$column = $this->_db->quote_column($column);
 			$value = $this->_db->quote($value);
-			$sql = "$column $operator $value$delimiter";
+			$sql .= $column.' '.$operator.' '.$value.$delimiter;
 		}
 		
 		return rtrim($sql, $delimiter);
