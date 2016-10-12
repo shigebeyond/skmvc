@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * sql构建器 -- action
+ * sql构建器 -- 动作子句: select/insert/update/delete
  * 
  * @Package package_name 
  * @category 
@@ -12,7 +12,7 @@
 class Sk_Db_Query_Action extends Db_Query_Where 
 {
 	/**
-	 * 动作子句模板: 增删改查
+	 * 动作子句模板: select/insert/update/delete
 	 * 	如 select :columns from :table / update :table set :column = :value, 
 	 * @var string
 	 */
