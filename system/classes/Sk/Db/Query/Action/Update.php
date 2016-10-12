@@ -15,7 +15,7 @@ class Sk_Db_Query_Action_Update extends Db_Query_Action
 	 * 动作子句模板: update
 	 * @var string
 	 */
-	protected $_action_template = 'UPDATE :table SET :key = :value';
+	protected static $_action_template = 'UPDATE :table SET :key = :value';
 	
 	/**
 	 * 设置更新的值

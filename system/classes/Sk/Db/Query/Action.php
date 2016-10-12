@@ -16,7 +16,7 @@ class Sk_Db_Query_Action extends Db_Query_Where
 	 * 	如 select :columns from :table / update :table set :column = :value, 
 	 * @var string
 	 */
-	protected $_action_template;
+	protected static $_action_template;
 	
 	/**
 	 * 编译动作子句
@@ -24,18 +24,20 @@ class Sk_Db_Query_Action extends Db_Query_Where
 	 */
 	public function compile_action()
 	{
-		// 1 编译表名/多个字段名/多个字段值
+		// 实际上是填充子句，如将行参表名替换为真实表名
+		
+		// 1 填充表名/多个字段名/多个字段值
 		// 针对 select :columns from :table / insert into :table :columns values :values
 		$action = preg_replace_callback('/:(table|columns|values)/', function($mathes){
-			// 调用对应的方法: table() / columns() / values()
-			$method = 'compile_'.$mathes[1];
+			// 调用对应的方法: _fill_table() / _fill_columns() / _fill_values()
+			$method = '_fill_'.$mathes[1];
 			return $this->$method();
-		}, $this->_action_template);
+		}, static::$_action_template);
 		
-		// 编译字段谓句
+		// 2 填充字段谓句
 		// 针对 update :table set :column = :value
 		return preg_replace_callback('/:column(.+):value/', function($mathes){
-			return $this->compile_column_predicate($mathes[1]);
+			return $this->_fill_column_predicate($mathes[1]);
 		}, $action);
 	}
 	
@@ -43,7 +45,7 @@ class Sk_Db_Query_Action extends Db_Query_Where
 	 * 编译表名: 转义
 	 * @return string
 	 */
-	public function compile_table($table = NULL)
+	protected function _fill_table()
 	{
 		return $this->_db->quote_table($this->_table);
 	}
@@ -52,24 +54,24 @@ class Sk_Db_Query_Action extends Db_Query_Where
 	 * 编译多个字段名: 转义
 	 * @return string
 	 */
-	public function compile_columns()
+	protected function _fill_columns()
 	{
 		if(empty($this->_data))
 			return NULL;
 		
-		return $this->_db->quote_column(array_keys($this->_data));
+		return $this->_db->quote_columns(array_keys($this->_data));
 	}
 	
 	/**
 	 * 编译多个字段值: 转义
 	 * @return string
 	 */
-	public function compile_values()
+	protected function _fill_values()
 	{
 		if(empty($this->_data))
 			return NULL;
 		
-		return $this->_db->quote(array_values($this->_data));
+		return $this->_db->quote_values($this->_data);
 	}
 	
 	/**
@@ -79,7 +81,7 @@ class Sk_Db_Query_Action extends Db_Query_Where
 	 * @param string $delimiter 拼接谓句的分隔符
 	 * @return string
 	 */
-	public function compile_column_predicate($operator, $delimiter = ', ')
+	protected function _fill_column_predicate($operator, $delimiter = ', ')
 	{
 		if(empty($this->_data))
 			return NULL;

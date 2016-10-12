@@ -15,7 +15,7 @@ class Sk_Db_Query_Action_Insert extends Db_Query_Action
 	 * 动作子句模板: insert
 	 * @var string
 	 */
-	protected $_action_template = 'INSERT INTO :table (:keys) VALUES (:values)';
+	protected static $_action_template = 'INSERT INTO :table (:keys) VALUES (:values)';
 	
 	/**
 	 * 设置插入的值
