@@ -3,6 +3,10 @@
 /**
  * sql构建器 -- 动作子句: 由动态select/insert/update/delete来构建的子句
  * 
+ * 实现方式：字符串模板
+ * 1 生成真正sql时只需要替换字符串参数就行
+ * 2 字符串模板直接包含sql语法，不用你在构建时去关心
+ * 
  * @Package package_name 
  * @category 
  * @author shijianhang
@@ -24,7 +28,7 @@ abstract class Sk_Db_Query_Action extends Db_Query_Decoration
 	 */
 	public function compile_action()
 	{
-		// 实际上是填充子句，如将行参表名替换为真实表名
+		// 实际上是填充子句的参数，如将行参表名替换为真实表名
 		
 		// 1 填充表名/多个字段名/多个字段值
 		// 针对 select :columns from :table / insert into :table :columns values :values

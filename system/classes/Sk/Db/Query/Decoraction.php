@@ -3,6 +3,9 @@
 /**
  * sql构建器 -- 修饰子句: 由修饰符where/group by/order by/limit来构建的子句
  * 
+ * 实现方式：
+ * 1 98.50
+ * 
  * @Package package_name 
  * @category 
  * @author shijianhang
@@ -23,7 +26,7 @@ abstract class Sk_Db_Query_Decoration extends Db_Query
 		),
 		// 字段数组
 		'group_by' => array(
-			'filters' => array('column'),
+			'filters' => 'column',
 		),
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
 		'having' => array(
@@ -36,7 +39,7 @@ abstract class Sk_Db_Query_Decoration extends Db_Query
 		),
 		// 行限数组 limit, offset
 		'limit' => array(
-			'filters' => array('int'),
+			'filters' => 'int',
 		),
 		// 联表数组，每个联表 = 表名 + 联表方式
 		'join' => array(
