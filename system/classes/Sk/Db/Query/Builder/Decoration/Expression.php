@@ -1,7 +1,10 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * 
+ * sql修饰子句的表达式模拟构建
+ *     每个修饰符是一个表达式(如where/group by), 其包含多个子表达式(如where可以有多个条件, 如name='shi', age=1)
+ *     该类将这些子表达式看成row(如where的一个条件, 如name='shi'), 每个row有多个元素column组成(如name/=/'shi')
+ *     每个元素有对应的处理函数
  * 
  * @Package package_name 
  * @category 
@@ -9,7 +12,7 @@
  * @date 2016-10-13
  *
  */
-class Sk_Db_Query_Decoratoin_Expression
+class Sk_Db_Query_Builder_Decoratoin_Expression
 {
 	/**
 	 * 多行
@@ -38,7 +41,7 @@ class Sk_Db_Query_Decoratoin_Expression
 	/**
 	 * 添加一行数据
 	 * @param unknown $row
-	 * @return Sk_Db_Query_Expression
+	 * @return Sk_Db_Query_Builder_Expression
 	 */
 	public function add_row($row)
 	{

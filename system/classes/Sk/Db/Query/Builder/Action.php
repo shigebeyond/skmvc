@@ -10,7 +10,7 @@
  * @date 2016-10-12
  *
  */
-abstract class Sk_Db_Query_Action extends Db_Query_Decoration
+abstract class Sk_Db_Query_Builder_Action extends Db_Query_Builder_Decoration
 {
 	// 动作子句模板: select
 	const ACTION_TEMPLATE_SELECT = 'SELECT :keys FROM :table';
@@ -31,11 +31,62 @@ abstract class Sk_Db_Query_Action extends Db_Query_Decoration
 	protected $_action_template;
 	
 	/**
+	 * 表名
+	 * @var string
+	 */
+	protected $_table;
+	
+	/**
+	 * 要插入/更新字段: <column => value>
+	 * 要查询的字段名: [column]
+	 * @var string
+	 */
+	protected $_data;
+	
+	/**
+	 * 设置表名
+	 * @param string $table
+	 * @return Sk_Db_Query
+	 */
+	public function table($table)
+	{
+		$this->_table = $table;
+		return $this;
+	}
+	
+	/**
+	 * 设置表名
+	 * @param string $table
+	 * @return Sk_Db_Query
+	 */
+	public function from($table)
+	{
+		return $this->table($table);
+	}
+	
+	/**
+	 * 设置插入/更新的值
+	 *
+	 * @param string $column
+	 * @param string $value
+	 * @return Db_Query
+	 */
+	public function data($column, $value)
+	{
+		if(is_array($column))
+			$this->_data = $column;
+		else
+			$this->_data[$column] = $value;
+	
+		return $this;
+	}
+	
+	/**
 	 * 设置更新的值, update时用
 	 *
 	 * @param string $column
 	 * @param string $value
-	 * @return Db_Query_Action
+	 * @return Db_Query_Builder_Action
 	 */
 	public function set($column, $value)
 	{
@@ -46,7 +97,7 @@ abstract class Sk_Db_Query_Action extends Db_Query_Decoration
 	 * 设置查询的字段, select时用
 	 *
 	 * @param string... $columns
-	 * @return Db_Query_Action
+	 * @return Db_Query_Builder_Action
 	 */
 	public function select($columns)
 	{
@@ -59,12 +110,14 @@ abstract class Sk_Db_Query_Action extends Db_Query_Decoration
 				$columns[$column[0]] = $column[1];
 			}
 		}
-		return $this->data($columns);
+		
+		$this->_data = $columns;
+		return $this;
 	}
 	
 	/**
 	 * 编译动作子句
-	 * @see Sk_Db_Query::compile_action()
+	 * @return string
 	 */
 	public function compile_action()
 	{
