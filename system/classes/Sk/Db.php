@@ -279,7 +279,8 @@ class Sk_Db extends Singleton_Configurable
 	 */
 	protected function _quote_columns($columns, $with_brackets = TRUE)
 	{
-		// 遍历多个字段
+		//$str = array_map(array($this, 'quote_column'), $columns);
+		// 遍历多个字段转义
 		$str = '';
 		foreach ($columns as $alias => $column)
 		{
@@ -304,13 +305,7 @@ class Sk_Db extends Singleton_Configurable
 	{
 		// 数组: 逐个处理
 		if(is_array($column))
-		{
-			//$column = array_map(array($this, 'quote_column'), $column);
-			// 头部 + 分隔符拼接多值 + 尾部
-			//return '('.implode(', ', $column).')';
-			
-			
-		}
+			return $this->_quote_columns($column, $with_brackets);
 		
 		// *
 		if($column == '*')

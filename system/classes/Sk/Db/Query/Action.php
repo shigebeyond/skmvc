@@ -12,12 +12,55 @@
  */
 abstract class Sk_Db_Query_Action extends Db_Query_Decoration
 {
+	// 动作子句模板: select
+	const ACTION_TEMPLATE_SELECT = 'SELECT :keys FROM :table';
+	
+	// 动作子句模板: insert
+	const ACTION_TEMPLATE_INSERT = 'INSERT INTO :table (:keys) VALUES (:values)';
+	
+	// 动作子句模板: update
+	const ACTION_TEMPLATE_UPDATE = 'UPDATE :table SET :key = :value';
+	
+	// 动作子句模板: delete
+	const ACTION_TEMPLATE_DELETE = 'DELETE FROM :table';
+	
 	/**
 	 * 动作子句模板: select/insert/update/delete
-	 * 	如 select :columns from :table / update :table set :column = :value, 
 	 * @var string
 	 */
-	protected static $_action_template;
+	protected $_action_template;
+	
+	/**
+	 * 设置更新的值, update时用
+	 *
+	 * @param string $column
+	 * @param string $value
+	 * @return Db_Query_Action
+	 */
+	public function set($column, $value)
+	{
+		return $this->data($column, $value);
+	}
+	
+	/**
+	 * 设置查询的字段, select时用
+	 *
+	 * @param string... $columns
+	 * @return Db_Query_Action
+	 */
+	public function select($columns)
+	{
+		$columns = func_get_args();
+		foreach ($columns as $key => $column)
+		{
+			// 对有别名的字段,如 array('column', 'alias'), 将alias转换关联数组的键, column为值 
+			if(is_array($column)){
+				unset($columns[$key]);
+				$columns[$column[0]] = $column[1];
+			}
+		}
+		return $this->data($columns);
+	}
 	
 	/**
 	 * 编译动作子句
@@ -33,7 +76,7 @@ abstract class Sk_Db_Query_Action extends Db_Query_Decoration
 			// 调用对应的方法: _fill_table() / _fill_columns() / _fill_values()
 			$method = '_fill_'.$mathes[1];
 			return $this->$method();
-		}, static::$_action_template);
+		}, $this->_action_template);
 		
 		// 2 填充字段谓句
 		// 针对 update :table set :column = :value
@@ -57,10 +100,20 @@ abstract class Sk_Db_Query_Action extends Db_Query_Decoration
 	 */
 	protected function _fill_columns()
 	{
+		// select
+		if($this->_action_template == static::ACTION_TEMPLATE_SELECT)
+		{
+			if(empty($this->_data))
+				return '*';
+			
+			return $this->_db->quote_column($this->_data, ', ', NULL, NULL);
+		}
+		
+		// update/insert
 		if(empty($this->_data))
 			return NULL;
 		
-		return $this->_db->quote_columns(array_keys($this->_data));
+		return $this->_db->quote_column(array_keys($this->_data));
 	}
 	
 	/**
