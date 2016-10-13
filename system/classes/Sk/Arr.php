@@ -64,7 +64,7 @@ class Sk_Arr
 	public static function path($array, $path, $default = NULL, $delimiter = '.')
 	{
 		// 非数组
-		if (!static::is($array))
+		if (!static::is_array($array))
 			return $default;
 		
 		// 从多级路径中分离出多个key
@@ -72,7 +72,7 @@ class Sk_Arr
 		
 		// 遍历key来逐层获得值
 		foreach ($keys as $key){
-			if (!static::is($array)) // 非数组
+			if (!static::is_array($array)) // 非数组
 				return $default;
 			
 			if (isset($array[$key])){ // 存在key
@@ -87,11 +87,27 @@ class Sk_Arr
 	
 	/**
 	 * 判断是否数组
+	 * 
 	 * @param array $array
 	 * @return boolean
 	 */
-	public static function is($array)
+	public static function is_array($array)
 	{
-		return is_array($array) || $array instanceof ArrayAccess;
+		return is_array($array) || $array instanceof ArrayAccess || $array instanceof Traversable;
+	}
+	
+	/**
+	 * 判断是否关联数组
+	 *
+	 * @param   array   $array
+	 * @return  boolean
+	 */
+	public static function is_assoc(array $array)
+	{
+		$keys = array_keys($array);
+	
+		// If the array keys of the keys match the keys, then the array must
+		// not be associative (e.g. the keys array looked like {0:0, 1:1...}).
+		return array_keys($keys) !== $keys;
 	}
 }
