@@ -13,7 +13,7 @@
 abstract class Sk_Db_Query_Builder_Action extends Db_Query_Builder_Decoration
 {
 	// 动作子句模板: select
-	const ACTION_TEMPLATE_SELECT = 'SELECT :keys FROM :table';
+	const ACTION_TEMPLATE_SELECT = 'SELECT :distinct :keys FROM :table';
 	
 	// 动作子句模板: insert
 	const ACTION_TEMPLATE_INSERT = 'INSERT INTO :table (:keys) VALUES (:values)';
@@ -44,25 +44,42 @@ abstract class Sk_Db_Query_Builder_Action extends Db_Query_Builder_Decoration
 	protected $_data;
 	
 	/**
-	 * 设置表名
-	 * @param string $table
+	 * select语句中, 控制查询结果是否去重唯一
+	 * @var bool
+	 */
+	protected $_distinct = FALSE;
+	
+	/**
+	 * 设置表名: 一般是单个表名
+	 * @param string $tables
 	 * @return Sk_Db_Query
 	 */
 	public function table($table)
 	{
-		$this->_table = $table;
-		return $this;
+		return $this->_tables(func_get_args());
 	}
 	
 	/**
-	 * 设置表名
+	 * 设置表名: 可能有多个表名
 	 * @param string $table
 	 * @return Sk_Db_Query
 	 */
-	public function from($table)
+	public function from($tables)
 	{
-		return $this->table($table);
+		return $this->_tables(func_get_args());
 	}
+	
+	/**
+	 * 处理多个表名的设置
+	 * @param tables
+	 */
+	protected function _tables($tables) 
+	 {
+		$this->_prepare_alias($tables); // 准备好别名
+		$this->_table = $tables;
+		return $this;
+	}
+
 	
 	/**
 	 * 设置插入/更新的值
@@ -102,16 +119,31 @@ abstract class Sk_Db_Query_Builder_Action extends Db_Query_Builder_Decoration
 	public function select($columns)
 	{
 		$columns = func_get_args();
+		$this->_prepare_alias($columns); // 准备好别名
+		$this->_data = $columns;
+		return $this;
+	}
+	
+	/**
+	 * 为字段/表准备别名
+	 * @param array $columns 字段名, 如 array('name', 'age', array('birthday', 'birt')), 其中某个元素是带有字段别名, 如array('birthday', 'birt') 其中 'birthday'是字段名, 'birt'是别名
+	 * 要转换为 <alias, column>, 即 array('name', 'age', 'birt' => 'birthday')
+	 */
+	protected function _prepare_alias(array &$columns)
+	{
 		foreach ($columns as $key => $column)
 		{
-			// 对有别名的字段,如 array('column', 'alias'), 将alias转换关联数组的键, column为值 
+			// 对有别名的字段,如 array('column', 'alias'), 将alias转换关联数组的键, column为值
 			if(is_array($column)){
 				unset($columns[$key]);
 				$columns[$column[0]] = $column[1];
 			}
 		}
-		
-		$this->_data = $columns;
+	}
+	
+	public function distinct($value)
+	{
+		$this->_distinct = (bool) $value;
 		return $this;
 	}
 	
@@ -133,9 +165,12 @@ abstract class Sk_Db_Query_Builder_Action extends Db_Query_Builder_Decoration
 		
 		// 2 填充字段谓句
 		// 针对 update :table set :column = :value
-		return preg_replace_callback('/:column(.+):value/', function($mathes){
+		$action = preg_replace_callback('/:column(.+):value/', function($mathes){
 			return $this->_fill_column_predicate($mathes[1]);
 		}, $action);
+		
+		// 3 填充distinct
+		return str_replace(':distinct', $this->_distinct ? 'distinct' : '', $action);
 	}
 	
 	/**
