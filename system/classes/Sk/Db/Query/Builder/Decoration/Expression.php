@@ -2,8 +2,7 @@
 
 /**
  * sql修饰子句的表达式模拟构建
- *     每个修饰符是一个表达式(如where/group by), 其包含多个子表达式(如where可以有多个条件, 如name='shi', age=1)
- *     该类将这些子表达式看成row(如where的一个条件, 如name='shi'), 每个row有多个元素column组成(如name/=/'shi')
+ *     每个修饰符是一个表达式(如where/group by), 其包含多个子表达式(如where可以有多个条件, 如name='shi', age=1), 每个子表达式有多个元素组成(如name/=/'shi')
  *     每个元素有对应的处理函数
  * 
  * @Package package_name 
@@ -15,79 +14,79 @@
 class Sk_Db_Query_Builder_Decoratoin_Expression
 {
 	/**
-	 * 多行
+	 * 多个子表达式, 可视为行
 	 * @var array
 	 */
-	protected $_rows = array();
+	protected $_subexps = array();
 	
 	/**
-	 * 每列的处理器
+	 * 每个元素的处理器, 可视为列的处理
 	 * @var array
 	 */
-	protected $_column_handlers;
+	protected $_element_handlers;
 	
 	/**
-	 * 合并多行时的分隔符
+	 * 合并多个子表达式时的分隔符
 	 * @var string
 	 */
 	protected $_delimiter;
 	
-	public function __construct(array $column_handler, $delimiter = ', ')
+	public function __construct(array $element_handler, $delimiter = ', ')
 	{
-		$this->_column_handlers = $column_handler;
+		$this->_element_handlers = $element_handler;
 		$this->_delimiter = $delimiter; 
 	}
 	
 	/**
-	 * 添加一行数据
+	 * 添加一个子表达式数据
 	 * @param unknown $row
 	 * @return Sk_Db_Query_Builder_Expression
 	 */
 	public function add_row($row)
 	{
-		$this->_rows[] = $row;
+		$this->_subexps[] = $row;
 		return $this;
 	}
 	
 	/**
-	 * 编译多行
+	 * 编译多个子表达式
 	 * @return string
 	 */
 	public function compile()
 	{
-		if (empty($this->_rows))
+		if (empty($this->_subexps))
 			return NULL;
 		
-		// 逐行编译+合并
-		return implode($this->_delimiter, array_map(array($this, 'compile_row'), $this->_rows));
+		// 逐个子表达式编译+合并
+		return implode($this->_delimiter, array_map(array($this, 'compile_row'), $this->_subexps));
 	}
 	
 	/**
-	 * 编译单行
-	 * @param unknown $row
+	 * 编译一个子表达式
+	 * @param unknown $subexp
 	 * @return string
 	 */
-	public function compile_row($row)
+	public function compile_subexp($subexp)
 	{
-		// 1 处理一列
-		if (!is_array($row)) {
+		// 1 处理一个元素
+		if (!is_array($subexp)) {
 			// 获得处理函数
-			$handler = Arr::get($this->_column_handlers, 0);
+			$handler = Arr::get($this->_element_handlers, 0);
 			if($handler)
-				return $this->{"_$handler"}($row);  // 处理该值
-			return $row;
+				return $this->{"_$handler"}($subexp);  // 处理该值
+			return $subexp;
 		}
 		
-		// 2 处理多列
-		// 遍历处理每一列
-		foreach ($this->_column_handlers as $column => $handler)
+		// 2 处理多个元素
+		// 遍历处理每一个元素
+		foreach ($this->_element_handlers as $i => $handler)
 		{
-			// 处理某行某列的值
-			$value = Arr::get($row, $column); // 值
-			$row[$column] = $this->{"_$handler"}($value); // 处理该值
+			// 处理某个元素的值
+			$value = Arr::get($subexp, $i); // 值
+			$subexp[$i] = $this->{"_$handler"}($value); // 处理该值
 		}
 		
-		return implode(' ', $row); // 用空格拼接多列
+		return implode(' ', $subexp); // 用空格拼接多个元素
 	}
 	
 	public function __toString()
