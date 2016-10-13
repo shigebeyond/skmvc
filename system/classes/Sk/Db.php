@@ -279,9 +279,15 @@ class Sk_Db extends Singleton_Configurable
 	 */
 	protected function _quote_columns($columns, $with_brackets = TRUE)
 	{
+		// 遍历多个字段
 		$str = '';
 		foreach ($columns as $alias => $column)
+		{
+			if (is_int($alias)) // 无别名
+				$alias = NULL;
+			// 单个字段转义
 			$str .= $this->quote_column($column, $alias).', ';
+		}
 		$str = ltrim($str, ', ');
 		return $with_brackets ? '('.$str.')' : $str;
 	}
