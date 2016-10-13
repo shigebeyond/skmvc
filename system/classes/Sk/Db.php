@@ -259,21 +259,52 @@ class Sk_Db extends Singleton_Configurable
 	}
 	
 	/**
+	 * 转义多个表名
+	 *
+	 * @param string|array $column 表名, 可以是表数组: <alias, column>
+	 * @return string
+	 */
+	protected function _quote_tables($tables)
+	{
+		// 遍历多个表转义
+		$str = '';
+		foreach ($tables as $alias => $column)
+		{
+			if (is_int($alias)) // 无别名
+				$alias = NULL;
+			// 单个表转义
+			$str .= $this->quote_table($column, $alias).', ';
+		}
+		$str = ltrim($str, ', ');
+		return $with_brackets ? "($str)" : $str;
+	}
+	
+	/**
 	 * 转义表名
 	 * 
 	 * @param string $table
 	 * @return string
 	 */
-	public function quote_table($table)
+	public function quote_table($table, $alias = NULL)
 	{
-		$prefix = $this->_config['table_prefix'];
-		return "`$prefix$table`";
+		// 数组: 逐个处理
+		if(is_array($table))
+			return $this->_quote_tables($table);
+		
+		// 加表前缀
+		$table = $this->_config['table_prefix'].$table;
+		
+		// 加表别名
+		if($alias)
+			return "`$table` AS `$alias`"; // 转义
+		
+		return "`$table`";// 转义
 	}
 	
 	/**
 	 * 转义多个字段名
 	 *
-	 * @param string|array $column 字段名, 可以是字段数组
+	 * @param string|array $column 字段名, 可以是字段数组: <alias, column>
 	 * @param bool $with_brackets 当拼接数组时, 是否用()包裹
 	 * @return string
 	 */
@@ -316,8 +347,11 @@ class Sk_Db extends Singleton_Configurable
 		if(isset($parts[1]))
 			return "`$parts[0]`.`$parts[1]`";
 		
-		// 转义
-		return "`$column`";
+		// 加字段别名
+		if($alias)
+			return "`$column` AS `$alias`"; // 转义
+		
+		return "`$column`"; // 转义
 	}
 	
 	/**
