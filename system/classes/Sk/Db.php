@@ -196,30 +196,10 @@ class Sk_Db extends Singleton_Configurable
 						return $matches[0];
 					
 					// 否则，转换
-					return static::preview($params[$key]);
+					return $this->quote($params[$key]);
 				},
 				$sql
 		);
-	}
-	
-	/**
-	 * 预览sql时，转换参数值
-	 * 
-	 * @param unknown $value
-	 * @return unknown
-	 */
-	public static function preview_value($value)
-	{
-		if(is_string($value))
-			return $this->quote($value);
-		
-		if(is_bool($value))
-			return (int)$value;
-		
-		if($value === NULL)
-			return 'NULL';
-		
-		return $value;
 	}
 
 	/**
@@ -291,60 +271,87 @@ class Sk_Db extends Singleton_Configurable
 	}
 	
 	/**
-	 * 转义字段名（单个）
-	 * 
-	 * @param string $column
+	 * 转义多个字段名
+	 *
+	 * @param string|array $column 字段名, 可以是字段数组
+	 * @param bool $with_brackets 当拼接数组时, 是否用()包裹
 	 * @return string
 	 */
-	public function quote_column($column)
+	protected function _quote_columns($columns, $with_brackets = TRUE)
 	{
+		$str = '';
+		foreach ($columns as $alias => $column)
+			$str .= $this->quote_column($column, $alias).', ';
+		$str = ltrim($str, ', ');
+		return $with_brackets ? '('.$str.')' : $str;
+	}
+	
+	/**
+	 * 转义字段名
+	 * 
+	 * @param string|array $column 字段名, 可以是字段数组
+	 * @param string $alias 字段别名
+	 * @param bool $with_brackets 当拼接数组时, 是否用()包裹
+	 * @return string
+	 */
+	public function quote_column($column, $alias = NULL, $with_brackets = TRUE)
+	{
+		// 数组: 逐个处理
+		if(is_array($column))
+		{
+			//$column = array_map(array($this, 'quote_column'), $column);
+			// 头部 + 分隔符拼接多值 + 尾部
+			//return '('.implode(', ', $column).')';
+			
+			
+		}
+		
+		// *
+		if($column == '*')
+			return $column;
+		
+		// 表名.字段名
+		$parts = explode($column, '.', 2);
+		if(isset($parts[1]))
+			return "`$parts[0]`.`$parts[1]`";
+		
 		// 转义
 		return "`$column`";
 	}
 	
 	/**
-	 * 转义字段名（多个）
-	 * 
-	 * @param array $columns
-	 * @param string $delimiter 拼接的分隔符
-	 * @param string $head 开头字符
-	 * @param string $tail 结尾字符
-	 * @return string
-	 */
-	public function quote_columns(array $columns, $delimiter = ', ', $head = '(', $tail = ')')
-	{
-		// 转义
-		$columns = array_map(array($this, 'quote_column'), $columns);
-		// 头部 + 分隔符拼接多值 + 尾部
-		return $head . implode($delimiter, $columns) . $tail;
-	}
-	
-	/**
-	* 转义值（单个值）
+	* 转义值
 	 *
-	 * @param string|array $value
+	 * @param string|array $value 字段值, 可以是值数组
 	 * @return string
 	 */
-	 public function quote_value($value)
+	 public function quote($value)
 	 {
+	 	// 数组: 逐个处理
+		if(is_array($value))
+		{
+			$value = array_map(array($this, 'quote'), $value );
+			// 头部 + 分隔符拼接多值 + 尾部
+			return '('.implode(', ', $value).')';
+		}
+		
+		// NULL => 'NULL'
+		if($value === NULL)
+			return 'NULL';
+		 
+		// bool => int
+		if(is_bool($value))
+			return (int)$value;
+		 
+		// int/float
+		if(is_int($value) || is_float($value))
+			return $value;
+		 
+		// 非string => string
+		if(!is_string($value))
+			$value = "$value";
+		 
 		// 转义
 		return $this->_pdo->quote ( $value );
-	}
-	
-	/**
-	* 转义值（多个值）
-	 *
-	 * @param array $values
-	 * @param string $delimiter 拼接的分隔符
-	 * @param string $head 开头字符
-	 * @param string $tail 结尾字符
-	 * @return string
-	 */
-	 public function quote_values(array $values, $delimiter = ', ', $head = '(', $tail = ')')
-	 {
-		// 转义
-		$values = array_map(array($this, 'quote_value'), $values );
-		// 头部 + 分隔符拼接多值 + 尾部
-		return $head . implode($delimiter, $values) . $tail;
 	}
 }
