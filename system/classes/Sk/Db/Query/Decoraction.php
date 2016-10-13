@@ -11,60 +11,67 @@
  */
 abstract class Sk_Db_Query_Decoration extends Db_Query 
 {
+	
 	/**
-	 * 关于每类修饰符的配置：过滤规则（转换单个值） + 拼接分割符（转换多个值）
+	 * 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
 	 * @var array
 	 */
-	protected static $_decoration_config = array(
-		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		'where' => array(
-			'filters' => array('column', 'str', 'value'), // 过滤规则
-			'delimiter' => 'AND' // 分隔符
-		),
-		// 字段数组
-		'group_by' => array(
-			'filters' => 'column',
-		),
-		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		'having' => array(
-			'filters' => array('column', 'str', 'value'),
-			'delimiter' => 'AND'
-		),
-		// 排序数组, 每个排序 = 字段+方向
-		'order_by' => array(
-			'filters' => array('column', 'order_direction')
-		),
-		// 行限数组 limit, offset
-		'limit' => array(
-			'filters' => 'int',
-		),
-		// 联表数组，每个联表 = 表名 + 联表方式
-		'join' => array(
-			'filters' => array('table', 'join_type'),
-		),
-		// 联表条件数组，每个联表条件 = 字段 + 运算符 + 字段
-		'on' => array(
-			'filters' => array('column', 'str', 'column'),
-			'delimiter' => 'ON'
-		)
-	);
+	protected $_where;
 	
-	public function __construct($db)
+	/**
+	 * 字段数组
+	 * @var array
+	 */
+	protected $_group_by;
+	
+	/**
+	 * 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
+	 * @var array
+	 */
+	protected $_having;
+	
+	/**
+	 * 排序数组, 每个排序 = 字段+方向
+	 * @var array
+	 */
+	protected $_order_by;
+	
+	/**
+	 * 行限数组 limit, offset
+	 * @var array
+	 */
+	protected $_limit;
+	
+	/**
+	 * 联表数组，每个联表 = 表名 + 联表方式
+	 * @var array
+	 */
+	protected $_join;
+	
+	/**
+	 * 联表条件数组，每个联表条件 = 字段 + 运算符 + 字段
+	 * @var array
+	 */
+	protected $_on;
+
+	public function __construct($db, $table = NULL)
 	{
+		parent::__construct($db, $table);
+		
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		$this->_where = new Db_Query_Decoratoin_Expression(array('column', 'str', 'value'), 'AND');
+		$this->_where = new Db_Query_Decoratoin_Expression($this->_db, array('column', 'str', 'value'), 'AND');
 		// 字段数组
-		$this->_group_by = new Db_Query_Decoratoin_Expression(array('column'));
+		$this->_group_by = new Db_Query_Decoratoin_Expression($this->_db, array('column'));
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		$this->_having = new Db_Query_Decoratoin_Expression(array('column', 'str', 'value'),	'AND');
+		$this->_having = new Db_Query_Decoratoin_Expression($this->_db, array('column', 'str', 'value'),	'AND');
 		// 排序数组, 每个排序 = 字段+方向
-		$this->_order_by = new Db_Query_Decoratoin_Expression(array('column', 'order_direction'));
+		$this->_order_by = new Db_Query_Decoratoin_Expression($this->_db, array('column', 'order_direction'));
 		// 行限数组 limit, offset
-		$this->_limit = new Db_Query_Decoratoin_Expression(array('int'));
+		$this->_limit = new Db_Query_Decoratoin_Expression($this->_db, array('int'));
 		// 联表数组，每个联表 = 表名 + 联表方式
-		$this->_join = new Db_Query_Decoratoin_Expression(array('table', 'join_type'));
+		$this->_join = new Db_Query_Decoratoin_Expression($this->_db, array('table', 'join_type'));
 		// 联表条件数组，每个联表条件 = 字段 + 运算符 + 字段
-		$this->_on = new Db_Query_Decoratoin_Expression(array('column', 'str', 'column'),	'ON');
+		$this->_on = new Db_Query_Decoratoin_Expression($this->_db, array('column', 'str', 'column'),	'ON');
 	}
 	
 	/**
