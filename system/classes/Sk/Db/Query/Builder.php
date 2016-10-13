@@ -12,14 +12,15 @@
 class Sk_Db_Query_Builder extends DB_Query_Builder_Decoration
 {
 	/**
-	 * 编译sql
-	 *  延迟拼接sql, 因为调用方法时元素无序, 但生成sql时元素有序
-	 * @return string
+	 * 编译sql: 延迟拼接sql, 因为调用方法时元素无序, 但生成sql时元素有序
+	 * @return array(sql, 参数)
 	 */
 	public function compile()
 	{
 		// 动作子句 + 修饰子句
-		return $this->compile_action() . $this->compile_decoration();
+		$action = $this->compile_action();
+		list($decoration, $params) = $this->compile_decoration();
+		return array($action.$decoration, $params);
 	}
 	
 	public function get($table = NULL)
