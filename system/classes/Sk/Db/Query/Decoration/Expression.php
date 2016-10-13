@@ -48,6 +48,7 @@ class Sk_Db_Query_Decoratoin_Expression
 	
 	/**
 	 * 编译多行
+	 * @return string
 	 */
 	public function compile()
 	{
@@ -61,18 +62,34 @@ class Sk_Db_Query_Decoratoin_Expression
 	/**
 	 * 编译单行
 	 * @param unknown $row
+	 * @return string
 	 */
 	public function compile_row($row)
 	{
-		$row2 = array();
+		// 1 处理一列
+		if (!is_array($row)) {
+			// 获得处理函数
+			$handler = Arr::get($this->_column_handlers, 0);
+			if($handler)
+				return $this->{"_$handler"}($row);  // 处理该值
+			return $row;
+		}
+		
+		// 2 处理多列
 		// 遍历处理每一列
 		foreach ($this->_column_handlers as $column => $handler)
 		{
 			// 处理某行某列的值
 			$value = Arr::get($row, $column); // 值
-			$row2[$column] = $this->{"_$handler"}($value); // 处理该值
+			$row[$column] = $this->{"_$handler"}($value); // 处理该值
 		}
-		return $row2;
+		
+		return implode(' ', $row); // 用空格拼接多列
+	}
+	
+	public function __toString()
+	{
+		return $this->compile();
 	}
 	
 	public function _int($value)
@@ -120,8 +137,4 @@ class Sk_Db_Query_Decoratoin_Expression
 		return NULL;
 	}
 	
-	public function __toString()
-	{
-		return $this->compile();
-	}
 }
