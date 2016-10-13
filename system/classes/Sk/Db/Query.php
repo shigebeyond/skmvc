@@ -76,6 +76,15 @@ abstract class Sk_Db_Query
 	}
 	
 	/**
+	 * 执行
+	 */
+	public function execute()
+	{
+		$sql = $this->compile();
+		
+	}
+	
+	/**
 	 * 编译sql
 	 * @return string
 	 */

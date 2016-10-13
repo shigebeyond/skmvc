@@ -3,9 +3,6 @@
 /**
  * sql构建器 -- 修饰子句: 由修饰符where/group by/order by/limit来构建的子句
  * 
- * 实现方式：
- * 1 98.50
- * 
  * @Package package_name 
  * @category 
  * @author shijianhang
@@ -52,42 +49,22 @@ abstract class Sk_Db_Query_Decoration extends Db_Query
 		)
 	);
 	
-	/**
-	 * 过滤器
-	 * @var Db_Query_Decoration_Filter
-	 */
-	protected $_filter;
-	
-	/**
-	 * 获得过滤器
-	 * @return Db_Query_Decoration_Filter
-	 */
-	public function filter()
+	public function __construct($db)
 	{
-		if($this->_filter === NULL)
-			$this->_filter = new Db_Query_Decoration_Filter($this->_db);
-		
-		return $this->_filter;
-	}
-	
-	/**
-	 * 对某个数据 执行过滤规则
-	 * 
-	 * @param array $rules
-	 * @param array $arr
-	 * @return array
-	 */
-	public function run_filter(array $rules, array $arr)
-	{
-		// 逐个规则过滤，一个规则过滤其中一个值
-		$n = count($rules);
-		for ($i = 0; $i < $n; $i++)
-		{
-			$rule = $rules[$i]; // 规则
-			$value = Arr::get($arr, $i); // 值
-			$arr[$i] = $this->filter()->$rule($value); // 过滤
-		}
-		return $arr;
+		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
+		$this->_where = new Db_Query_Decoratoin_Expression(array('column', 'str', 'value'), 'AND');
+		// 字段数组
+		$this->_group_by = new Db_Query_Decoratoin_Expression(array('column'));
+		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
+		$this->_having = new Db_Query_Decoratoin_Expression(array('column', 'str', 'value'),	'AND');
+		// 排序数组, 每个排序 = 字段+方向
+		$this->_order_by = new Db_Query_Decoratoin_Expression(array('column', 'order_direction'));
+		// 行限数组 limit, offset
+		$this->_limit = new Db_Query_Decoratoin_Expression(array('int'));
+		// 联表数组，每个联表 = 表名 + 联表方式
+		$this->_join = new Db_Query_Decoratoin_Expression(array('table', 'join_type'));
+		// 联表条件数组，每个联表条件 = 字段 + 运算符 + 字段
+		$this->_on = new Db_Query_Decoratoin_Expression(array('column', 'str', 'column'),	'ON');
 	}
 	
 	/**

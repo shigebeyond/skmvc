@@ -2,10 +2,7 @@
 
 /**
  * sql构建器 -- 动作子句: 由动态select/insert/update/delete来构建的子句
- * 
- * 实现方式：字符串模板
- * 1 生成真正sql时只需要替换字符串参数就行
- * 2 字符串模板直接包含sql语法，不用你在构建时去关心
+ *   通过字符串模板来实现
  * 
  * @Package package_name 
  * @category 
@@ -75,7 +72,7 @@ abstract class Sk_Db_Query_Action extends Db_Query_Decoration
 		if(empty($this->_data))
 			return NULL;
 		
-		return $this->_db->quote_values($this->_data);
+		return $this->_db->quote($this->_data);
 	}
 	
 	/**

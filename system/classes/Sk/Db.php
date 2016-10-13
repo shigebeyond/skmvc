@@ -289,7 +289,7 @@ class Sk_Db extends Singleton_Configurable
 			$str .= $this->quote_column($column, $alias).', ';
 		}
 		$str = ltrim($str, ', ');
-		return $with_brackets ? '('.$str.')' : $str;
+		return $with_brackets ? "($str)" : $str;
 	}
 	
 	/**
