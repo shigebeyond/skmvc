@@ -33,7 +33,7 @@ class Sk_Text
 	 * @param string $ignore_case 忽略大小写
 	 * @return boolean
 	 */
-	PROTECTED STATIC FUNCTION POS($STR, $SUBSTR, $IGNORE_CASE = FALSE)
+	PROTECTED STATIC FUNCTION POS($str, $substr, $ignore_case = FALSE)
 	{
 		return $ignore_case ? stripos($str, $substr) : strpos($str, $substr);
 	}
