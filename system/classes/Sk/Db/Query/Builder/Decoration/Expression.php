@@ -11,13 +11,19 @@
  * @date 2016-10-13
  *
  */
-class Sk_Db_Query_Builder_Decoratoin_Expression
+class Sk_Db_Query_Builder_Decoratoin_Expression extends ArrayObject
 {
 	/**
-	 * 多个子表达式, 可视为行
+	 * 子表达式, 可视为行
 	 * @var array
 	 */
 	protected $_subexps = array();
+	
+	/**
+	 * 子表达式拼接的分隔符
+	 * @var array
+	 */
+	protected $_delimiter = array();
 	
 	/**
 	 * 每个元素的处理器, 可视为列的处理
@@ -26,25 +32,30 @@ class Sk_Db_Query_Builder_Decoratoin_Expression
 	protected $_element_handlers;
 	
 	/**
-	 * 合并多个子表达式时的分隔符
+	 * 子表达式拼接的默认分隔符
 	 * @var string
 	 */
-	protected $_delimiter;
+	protected $_default_delimiter;
 	
-	public function __construct(array $element_handler, $delimiter = ', ')
+	public function __construct(array $element_handler, $default_delimiter = ', ')
 	{
 		$this->_element_handlers = $element_handler;
-		$this->_delimiter = $delimiter; 
+		$this->_default_delimiter = $default_delimiter; 
 	}
 	
 	/**
-	 * 添加一个子表达式数据
-	 * @param string|array $row
+	 * 添加一个子表达式+分隔符
+	 * 
+	 * @param string|array $subexp 子表达式
+	 * @param string $delimiter 当前子表达式的分隔符
 	 * @return Sk_Db_Query_Builder_Expression
 	 */
-	public function add_subexp($row)
+	public function add_subexp($subexp, $delimiter = NULL)
 	{
-		$this->_subexps[] = $row;
+		$i = count($this->_subexps);
+		$this->_subexps[$i] = $subexp;
+		if($delimiter)
+			$this->_delimiter[$i] = $subexp;
 		return $this;
 	}
 	
@@ -58,7 +69,17 @@ class Sk_Db_Query_Builder_Decoratoin_Expression
 			return NULL;
 		
 		// 逐个子表达式编译+合并
-		return implode($this->_delimiter, array_map(array($this, 'compile_row'), $this->_subexps));
+		// 1 子表达式的分隔符是一样的
+		//return implode($this->_default_delimiter, array_map(array($this, 'compile_row'), $this->_subexps));
+		
+		// 2 每个子表达式拼接的分隔符不一样
+		$str = '';
+		foreach ($this->_subexps as $i => $subexp)
+		{
+			// 编译的子表达式+分隔符
+			$str .= $this->compile_subexp($subexp).Arr::get($this->_delimiter, $i, $this->_default_delimiter);
+		}
+		return $str;
 	}
 	
 	/**
@@ -68,6 +89,10 @@ class Sk_Db_Query_Builder_Decoratoin_Expression
 	 */
 	public function compile_subexp($subexp)
 	{
+		// 对嵌套的子表达式, 直接递归
+		if($subexp instanceof Db_Query_Builder_Decoratoin_Expression)
+			return '('.$subexp->compile().')';
+		
 		// 1 处理一个元素
 		if (!is_array($subexp)) {
 			// 获得处理函数
