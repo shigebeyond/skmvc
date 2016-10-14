@@ -13,6 +13,10 @@ class Controller_Home extends Controller
 {
 	public function action_index()
 	{
-		$this->res->body("hello world");
+		$sql = "SELECT * FROM user";
+		$db = Db::instance();
+		$result = $db->query($sql);
+		
+		$this->res->body("result is $result");
 	}
 }

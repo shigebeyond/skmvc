@@ -405,22 +405,49 @@ class Sk_Db extends Container_Component_Config
 		return $this->_pdo->quote ( $value );
 	}
 	
-	public function select($db, $table = NULL, $data = NULL) 
+	/**
+	 * select
+	 * @param string $db
+	 * @param string $table
+	 * @param string $data
+	 * @return Sk_Db_Query_Builder
+	 */
+	public static function select($db = 'default', $table = NULL, $data = NULL) 
 	{
 		return new Sk_Db_Query_Builder ( 'select', $db, $table, $data );
 	}
 	
-	public function insert($db, $table = NULL, $data = NULL) 
+	/**
+	 * insert
+	 * @param string $db
+	 * @param string $table
+	 * @param string $data
+	 * @return Sk_Db_Query_Builder
+	 */
+	public static function insert($db = 'default', $table = NULL, $data = NULL) 
 	{
 		return new Sk_Db_Query_Builder ( 'insert', $db, $table, $data );
 	}
 	
-	public function update($db, $table = NULL, $data = NULL) 
+	/**
+	 * update
+	 * @param string $db
+	 * @param string $table
+	 * @param string $data
+	 * @return Sk_Db_Query_Builder
+	 */
+	public static function update($db = 'default', $table = NULL, $data = NULL) 
 	{
 		return new Sk_Db_Query_Builder ( 'update', $db, $table, $data );
 	}
 	
-	public function delete($db, $table = NULL) 
+	/**
+	 * delete
+	 * @param string $db
+	 * @param string $table
+	 * @return Sk_Db_Query_Builder
+	 */
+	public static function delete($db = 'default', $table = NULL) 
 	{
 		return new Sk_Db_Query_Builder ( 'delete', $db, $table );
 	}
