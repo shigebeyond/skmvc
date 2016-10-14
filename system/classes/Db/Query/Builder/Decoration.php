@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * sql构建器 -- 修饰子句: 由修饰符where/group by/order by/limit来构建的子句
+ * sql构建器 -- 修饰子句: 由修饰词where/group by/order by/limit来构建的子句
  * 
  * @Package package_name 
  * @category 

@@ -3,7 +3,7 @@
 class Test_Db extends PHPUnit_Framework_TestCase
 {
 	public function test_query(){
-	  $db = Container::component_config('Db', 'default');
+		$db = Container::component_config('Db', 'default');
 		$this->assertNotNull($db);
 	}
 	

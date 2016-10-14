@@ -3,7 +3,7 @@
 class Test_Db extends PHPUnit_Framework_TestCase
 {
 	public function test_connenct(){
-	  $db = Db::instance();
+	  	$db = Db::instance();
 		$this->assertNotNull($db);
 	}
 	
@@ -47,10 +47,16 @@ class Test_Db extends PHPUnit_Framework_TestCase
 		echo "delete result: $result"; // 1
 	} */
 
-	public function test_select(){
+	/* public function test_select(){
 		$sql = "SELECT * FROM user";
 		$db = Db::instance();
 		$result = $db->query($sql);
 		echo "select result: $result"; // 1
+	} */
+	
+	public function test_select(){
+		echo Db::instance()->preview('select * from user where id = ?', array(3));
+		echo "\n";
+		echo Db::instance()->preview('select * from user where id = :id', array(':id' => 3));
 	}
 }
