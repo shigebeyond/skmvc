@@ -71,7 +71,7 @@ class Sk_Db_Query_Builder_Decoration_Expression_Group extends Db_Query_Builder_D
     {
         // 子表达式是: string / Sk_Db_Query_Builder_Decoration_Expression_Simple
         // Sk_Db_Query_Builder_Decoration_Expression_Simple 转字符串自动compile
-        return implode('', $this->_subexps);
+        return "$subexp";
     }
 
 }

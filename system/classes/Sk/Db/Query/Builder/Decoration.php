@@ -107,7 +107,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 			if($exp)
 				$sql .= " $title $exp";
 		}
-		return $sql;
+		return array($sql, array());
 	}
 
     /**

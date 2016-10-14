@@ -20,7 +20,7 @@ abstract class Sk_Db_Query_Builder_Action
 		'select' => 'SELECT :distinct :columns FROM :table', 
 		'insert' => 'INSERT INTO :table (:columns) VALUES :values', // quote_column 默认不加(), quote_value 默认加() 
 		'update' => 'UPDATE :table SET :column = :value',
-		'delect' => 'DELETE FROM :table'
+		'delete' => 'DELETE FROM :table'
 	);
 	
 	/**
