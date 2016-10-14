@@ -34,7 +34,7 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration
 		list ($sql, $params) = $this->compile();
 		
 		// 2 执行
-		return $this->execute($sql, $params);
+		return $this->_db->execute($sql, $params);
 	}
 	
 }
