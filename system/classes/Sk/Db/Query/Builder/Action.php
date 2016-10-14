@@ -18,7 +18,7 @@ abstract class Sk_Db_Query_Builder_Action
 	 */	
 	public static $sql_templates = array(
 		'select' => 'SELECT :distinct :columns FROM :table', 
-		'insert' => 'INSERT INTO :table (:columns) VALUES (:values)',
+		'insert' => 'INSERT INTO :table (:columns) VALUES :values', // quote_column 默认不加(), quote_value 默认加() 
 		'update' => 'UPDATE :table SET :column = :value',
 		'delect' => 'DELETE FROM :table'
 	);
@@ -215,7 +215,7 @@ abstract class Sk_Db_Query_Builder_Action
 			if(empty($this->_data))
 				return '*';
 			
-			return $this->_db->quote_column($this->_data, ', ', NULL, NULL);
+			return $this->_db->quote_column($this->_data);
 		}
 		
 		// update/insert
