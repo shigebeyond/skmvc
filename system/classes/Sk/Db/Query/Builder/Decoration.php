@@ -12,6 +12,19 @@
 abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 {
 	/**
+	 * 修饰符
+	 * @var unknown
+	 */
+	protected static $_decorations = array(
+		'where' => 'WHERE',
+		'group_by' => 'GROUP BY',
+		'having' => 'HAVING',
+		'order_by' => 'ORDER BY',
+		'limit' => 'LIMIT',
+		'join' => 'JOIN'
+	);
+	
+	/**
 	 * 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
 	 * @var array
 	 */
@@ -81,14 +94,17 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 	public function compile_decoration()
 	{
 		$sql = '';
-		$exps = array('where', 'group_by', 'having', 'order_by', 'limit', 'join');
-		foreach ($exps as $exp)
+		// 逐个处理修饰符及其表达式
+		foreach (static::$_decorations as $name => $title)
 		{
-		    $exp = $this->{"_$exp"};
+			// 处理表达式
+		    $exp = $this->{"_$name"};
 			if (is_array($exp)) 
-				$sql .= implode('', $exp); // 表达式转字符串, 自动compile
+				$part = implode('', $exp); // 表达式转字符串, 自动compile
 			else
-				$sql .= $exp;
+				$part = $exp;
+			// 添加修饰符
+			$sql .= " $title $exp";
 		}
 		return $sql;
 	}
@@ -369,9 +385,14 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      */
     public function on($c1, $op, $c2)
     {
-        if(!end($this->_join) instanceof Db_Query_Builder_Decoratoin_Expression_Group)
-            $this->_join[] = new Db_Query_Builder_Decoratoin_Expression_Group($this->_db, array('column', 'str', 'column'));
-        end($this->_join)->add_subexp(array($c1, $op, $c2));
+        $on = end($this->_join);
+		if(!$on instanceof Db_Query_Builder_Decoratoin_Expression_Group)
+		{
+			$this->_join[] = ' ON ';
+			$this->_join[] = $on = new Db_Query_Builder_Decoratoin_Expression_Group($this->_db, array('column', 'str', 'column'));
+		}
+		
+        $on->add_subexp(array($c1, $op, $c2));
         return $this;
     }
 }
