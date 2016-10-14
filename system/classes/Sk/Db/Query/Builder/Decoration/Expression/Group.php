@@ -43,9 +43,10 @@ class Sk_Db_Query_Builder_Decoratoin_Expression_Group extends Db_Query_Builder_D
      */
     public function end_subexp()
     {
-        if(!end($this->_subexps) instanceof Sk_Db_Query_Builder_Decoratoin_Expression_Simple)
-            $this->_subexps[] = new Sk_Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, $this->_element_handlers);
-        return end($this->_subexps);
+        $last = end($this->_subexps);
+		if(!$last instanceof Sk_Db_Query_Builder_Decoratoin_Expression_Simple)
+            $this->_subexps[] = $last = new Sk_Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, $this->_element_handlers);
+        return $last;
     }
 
     /**
