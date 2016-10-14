@@ -290,7 +290,7 @@ class Sk_Db extends Container_Component_Config
 			// 单个表转义
 			$str .= $this->quote_table($column, $alias).', ';
 		}
-		$str = ltrim($str, ', ');
+		$str = rtrim($str, ', ');
 		return $with_brackets ? "($str)" : $str;
 	}
 
@@ -323,7 +323,7 @@ class Sk_Db extends Container_Component_Config
 	 * @param bool $with_brackets 当拼接数组时, 是否用()包裹
 	 * @return string
 	 */
-	protected function _quote_columns($columns, $with_brackets = TRUE)
+	protected function _quote_columns($columns, $with_brackets = FALSE)
 	{
 		//$str = array_map(array($this, 'quote_column'), $columns);
 		// 遍历多个字段转义
@@ -335,7 +335,7 @@ class Sk_Db extends Container_Component_Config
 			// 单个字段转义
 			$str .= $this->quote_column($column, $alias).', ';
 		}
-		$str = ltrim($str, ', ');
+		$str = rtrim($str, ', ');
 		return $with_brackets ? "($str)" : $str;
 	}
 
@@ -347,7 +347,7 @@ class Sk_Db extends Container_Component_Config
 	 * @param bool $with_brackets 当拼接数组时, 是否用()包裹
 	 * @return string
 	 */
-	public function quote_column($column, $alias = NULL, $with_brackets = TRUE)
+	public function quote_column($column, $alias = NULL, $with_brackets = FALSE)
 	{
 		// 数组: 逐个处理
 		if(is_array($column))
