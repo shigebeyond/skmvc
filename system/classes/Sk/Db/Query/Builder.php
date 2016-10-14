@@ -1,7 +1,8 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * 
+ * sql构建器
+ *   依次继承 Db_Query_Builder_Action 处理动作子句 + Db_Query_Builder_Decoration 处理修饰子句
  * 
  * @Package package_name 
  * @category 
@@ -9,7 +10,7 @@
  * @date 2016-10-13
  *
  */
-class Sk_Db_Query_Builder extends DB_Query_Builder_Decoration
+class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration
 {
 	/**
 	 * 编译sql: 延迟拼接sql, 因为调用方法时元素无序, 但生成sql时元素有序
