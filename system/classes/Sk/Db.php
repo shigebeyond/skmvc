@@ -4,14 +4,14 @@
  *
  * 		// 获得 config/database.php 中配置的 master 数据库连接
  * 		Db::instance('master')
- * 
- * @Package package_name 
- * @category 
+ *
+ * @Package package_name
+ * @category
  * @author shijianhang
- * @date 2016-10-11 上午12:06:58 
+ * @date 2016-10-11 上午12:06:58
  *
  */
-class Sk_Db extends Singleton_Configurable 
+class Sk_Db extends Singleton_Configurable
 {
 	/**
 	 * 当前事务的嵌套层级
@@ -32,7 +32,7 @@ class Sk_Db extends Singleton_Configurable
 		// 创建pdo连接
 		$this->connect();
 	}
-	
+
 	/**
 	 * 获得/创建pdo连接
 	 * @return PDO
@@ -46,7 +46,7 @@ class Sk_Db extends Singleton_Configurable
 		$options = Arr::get($this->_config, 'options', array());
 		$options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION; // 错误处理: 出错就跑出异常
 		$options[PDO::ATTR_PERSISTENT] = Arr::get($this->_config, 'persistent', FALSE); // 保持连接
-			
+
 		try
 		{
 			// 创建pdo连接
@@ -56,12 +56,12 @@ class Sk_Db extends Singleton_Configurable
 		{
 			throw new Exception("连接失败: " . $e->getMessage());
 		}
-			
+
 		// 设置字符集
 		if (!empty($this->_config['charset']))
 			$this->_pdo->exec('SET NAMES '.$this->quote($this->_config['charset']));
 	}
-	
+
 	/**
 	 * 关闭pdo连接
 	 */
@@ -70,8 +70,8 @@ class Sk_Db extends Singleton_Configurable
 		$this->_pdo = NULL;
 		unset(static::$_instances[$this->_name]);
 	}
-	
-	
+
+
 	/**
 	 * 获得值的pdo类型
 	 * @param unknown $value
@@ -81,22 +81,22 @@ class Sk_Db extends Singleton_Configurable
 	{
 		if(is_int($value))
 			return PDO::PARAM_INT;
-		
+
 		if(is_bool($value))
 			return PDO::PARAM_BOOL;
-		
+
 		if(is_null($value))
 			return PDO::PARAM_NULL;
-		
+
 		if(is_string($value))
 			return PDO::PARAM_STR;
-		
+
 		return FALSE;
 	}
 
 	/**
 	 * 执行sql
-	 * 
+	 *
 	 * @param sql $sql
 	 * @param array $params
 	 * @param string $query
@@ -106,26 +106,26 @@ class Sk_Db extends Singleton_Configurable
 	{
 		// 1 解析sql
 		$statement = $this->_pdo->prepare($sql);
-		
+
 		// 2 绑定参数
 		// execute(多个参数): 不能指定参数类型
 		// $statement->execute($params);
-		
+
 		// bindValue(参数)： 可以指定参数类型
 		foreach ($params as $key => $value) {
 			// $key 类型： 1 int 参数样式为 ?, 则使用从1开始的数 2 string 参数样式为 :name, 则直接使用
 			$key = is_int($key) ? $key + 1 : $key;
-			
+
 			// 绑定参数
 			$statement->bindValue($key, $value, $this->pdo_type($value));
 		}
-		
+
 		// 3 执行
 		$statement->execute();
-		
+
 		return $statement;
 	}
-	
+
 	/**
 	 * 执行数据变更的sql
 	 *
@@ -146,7 +146,7 @@ class Sk_Db extends Singleton_Configurable
 			throw new Exception("执行sql出错: ", $e->getMessage());
 		}
 	}
-	
+
 	/**
 	 * 执行查询的sql
 	 *
@@ -170,10 +170,10 @@ class Sk_Db extends Singleton_Configurable
 			throw new Exception("执行sql出错: ", $e->getMessage());
 		}
 	}
-	
+
 	/**
 	 * 预览sql
-	 * 
+	 *
 	 * @param string $sql
 	 * @param array $params
 	 * @return string
@@ -190,11 +190,11 @@ class Sk_Db extends Singleton_Configurable
 					$key = $matches[1]; // 参数样式为 :name，则直接使用
 					if($key == '?') // 参数样式为 ?, 则为数字
 						$key = $i;
-					
+
 					// 若不存在该参数，则不转换
 					if (!isset($params[$key]))
 						return $matches[0];
-					
+
 					// 否则，转换
 					return $this->quote($params[$key]);
 				},
@@ -209,30 +209,30 @@ class Sk_Db extends Singleton_Configurable
 	{
 		if($this->_trans_level++ === 0)
 			return $this->_pdo->beginTransaction();
-		
+
 		return TRUE;
 	}
 
 	/**
 	 * 结束事务
-	 * 
+	 *
 	 * @param bool $commited 提交 or 回滚
 	 * @return boolean
 	 */
 	protected function _end($commited)
 	{
 		// 未开启事务
-		if ($this->_trans_level === 0) 
+		if ($this->_trans_level === 0)
 			return FALSE;
-		
+
 		// 无嵌套事务
-		if (--$this->_trans_level === 0) 
+		if (--$this->_trans_level === 0)
 			return $commited ?  $this->_pdo->commit() : $this->_pdo->rollBack(); // 提交 or 回滚事务
 
 		// 有嵌套事务
 		return TRUE;
 	}
-	
+
 	/**
 	 * 回滚事务
 	 */
@@ -257,7 +257,7 @@ class Sk_Db extends Singleton_Configurable
 	{
 		return (int)$this->_pdo->lastInsertId();
 	}
-	
+
 	/**
 	 * 转义多个表名
 	 *
@@ -278,10 +278,10 @@ class Sk_Db extends Singleton_Configurable
 		$str = ltrim($str, ', ');
 		return $with_brackets ? "($str)" : $str;
 	}
-	
+
 	/**
 	 * 转义表名
-	 * 
+	 *
 	 * @param string $table
 	 * @return string
 	 */
@@ -290,17 +290,17 @@ class Sk_Db extends Singleton_Configurable
 		// 数组: 逐个处理
 		if(is_array($table))
 			return $this->_quote_tables($table);
-		
+
 		// 加表前缀
 		$table = $this->_config['table_prefix'].$table;
-		
+
 		// 加表别名
 		if($alias)
 			return "`$table` AS `$alias`"; // 转义
-		
+
 		return "`$table`";// 转义
 	}
-	
+
 	/**
 	 * 转义多个字段名
 	 *
@@ -323,10 +323,10 @@ class Sk_Db extends Singleton_Configurable
 		$str = ltrim($str, ', ');
 		return $with_brackets ? "($str)" : $str;
 	}
-	
+
 	/**
 	 * 转义字段名
-	 * 
+	 *
 	 * @param string|array $column 字段名, 可以是字段数组
 	 * @param string $alias 字段别名
 	 * @param bool $with_brackets 当拼接数组时, 是否用()包裹
@@ -337,23 +337,23 @@ class Sk_Db extends Singleton_Configurable
 		// 数组: 逐个处理
 		if(is_array($column))
 			return $this->_quote_columns($column, $with_brackets);
-		
+
 		// *
 		if($column == '*')
 			return $column;
-		
+
 		// 表名.字段名
 		$parts = explode($column, '.', 2);
 		if(isset($parts[1]))
 			return "`$parts[0]`.`$parts[1]`";
-		
+
 		// 加字段别名
 		if($alias)
 			return "`$column` AS `$alias`"; // 转义
-		
+
 		return "`$column`"; // 转义
 	}
-	
+
 	/**
 	* 转义值
 	 *
@@ -366,26 +366,26 @@ class Sk_Db extends Singleton_Configurable
 		if(is_array($value))
 		{
 			$value = array_map(array($this, 'quote'), $value );
-			// 头部 + 分隔符拼接多值 + 尾部
+			// 头部 + 连接符拼接多值 + 尾部
 			return '('.implode(', ', $value).')';
 		}
-		
+
 		// NULL => 'NULL'
 		if($value === NULL)
 			return 'NULL';
-		 
+
 		// bool => int
 		if(is_bool($value))
 			return (int)$value;
-		 
+
 		// int/float
 		if(is_int($value) || is_float($value))
 			return $value;
-		 
+
 		// 非string => string
 		if(!is_string($value))
 			$value = "$value";
-		 
+
 		// 转义
 		return $this->_pdo->quote ( $value );
 	}

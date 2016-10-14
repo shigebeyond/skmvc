@@ -59,19 +59,19 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 		parent::__construct($db, $table);
 		
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		$this->_where = new Db_Query_Builder_Decoratoin_Expression($this->_db, array('column', 'str', 'value'), 'AND');
+		$this->_where = new Db_Query_Builder_Decoratoin_Expression_Group($this->_db, array('column', 'str', 'value'));
 		// 字段数组
-		$this->_group_by = new Db_Query_Builder_Decoratoin_Expression($this->_db, array('column'));
+		$this->_group_by = new Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, array('column'));
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		$this->_having = new Db_Query_Builder_Decoratoin_Expression($this->_db, array('column', 'str', 'value'),	'AND');
+		$this->_having = new Db_Query_Builder_Decoratoin_Expression_Group($this->_db, array('column', 'str', 'value'));
 		// 排序数组, 每个排序 = 字段+方向
-		$this->_order_by = new Db_Query_Builder_Decoratoin_Expression($this->_db, array('column', 'order_direction'));
+		$this->_order_by = new Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, array('column', 'order_direction'));
 		// 行限数组 limit, offset
-		$this->_limit = new Db_Query_Builder_Decoratoin_Expression($this->_db, array('int'));
+		$this->_limit = new Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, array('int'));
 		// 联表数组，每个联表 = 表名 + 联表方式
-		$this->_join = new Db_Query_Builder_Decoratoin_Expression($this->_db, array('table', 'join_type'));
+		$this->_join = new Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, array('table', 'join_type'));
 		// 联表条件数组，每个联表条件 = 字段 + 运算符 + 字段
-		$this->_on = new Db_Query_Builder_Decoratoin_Expression($this->_db, array('column', 'str', 'column'),	'ON');
+		$this->_on = new Db_Query_Builder_Decoratoin_Expression_Group($this->_db, array('column', 'str', 'column'));
 	}
 	
 	/**
@@ -80,24 +80,122 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 	 */
 	public function compile_decoration()
 	{
-		// 实际上是过滤子句，过滤子句中的参数
 		$sql = '';
-		
-		// 遍历每类修饰的模板
-		foreach ($this->_decoration_config as $decoration => $config)
+		$exps = array('where', 'group_by', 'having', 'order_by', 'limit', 'join', 'on');
+		foreach ($exps as $exp)
 		{
-			extract($config);
-			// 1 执行过滤
-			$rows = array_map(function($row) use($filters){
-				return $this->run_filter($filters, $row);
-			}, $this->{"_$decoration"});
-			
-			// 2 合并
-			$delimiter = isset($delimiter) ? $delimiter : ', ';
-			$sql .= implode($delimiter, $rows); 
+		    $exp = $this->{"_$exp"};
+			if (is_array($exp)) 
+				$sql .= implode('', $exp);
+			else
+				$sql .= $exp;
 		}
-		
 		return $sql;
 	}
+
+    /**
+     * Alias of and_where()
+     *
+     * @param   mixed   $column  column name or array($column, $alias) or object
+     * @param   string  $op      logic operator
+     * @param   mixed   $value   column value
+     * @return  $this
+     */
+    public function where($column, $op, $value)
+    {
+        return $this->and_where($column, $op, $value);
+    }
+
+    /**
+     * Creates a new "AND WHERE" condition for the query.
+     *
+     * @param   mixed   $column  column name or array($column, $alias) or object
+     * @param   string  $op      logic operator
+     * @param   mixed   $value   column value
+     * @return  $this
+     */
+    public function and_where($column, $op, $value)
+    {
+        $this->_where->add_subexp(func_get_args(), ' AND ');
+        return $this;
+    }
+
+    /**
+     * Creates a new "OR WHERE" condition for the query.
+     *
+     * @param   mixed   $column  column name or array($column, $alias) or object
+     * @param   string  $op      logic operator
+     * @param   mixed   $value   column value
+     * @return  $this
+     */
+    public function or_where($column, $op, $value)
+    {
+        $this->_where->add_subexp(func_get_args(), ' OR ');
+        return $this;
+    }
+
+    /**
+     * Alias of and_where_open()
+     *
+     * @return  $this
+     */
+    public function where_open()
+    {
+        return $this->and_where_open();
+    }
+
+    /**
+     * Opens a new "AND WHERE (...)" grouping.
+     *
+     * @return  $this
+     */
+    public function and_where_open()
+    {
+        $this->_where->open(' AND ');
+        return $this;
+    }
+
+    /**
+     * Opens a new "OR WHERE (...)" grouping.
+     *
+     * @return  $this
+     */
+    public function or_where_open()
+    {
+        $this->_where->open(' OR ');
+        return $this;
+    }
+
+    /**
+     * Closes an open "WHERE (...)" grouping.
+     *
+     * @return  $this
+     */
+    public function where_close()
+    {
+        return $this->and_where_close();
+    }
+
+    /**
+     * Closes an open "WHERE (...)" grouping.
+     *
+     * @return  $this
+     */
+    public function and_where_close()
+    {
+        $this->_where->close();
+        return $this;
+    }
+
+    /**
+     * Closes an open "WHERE (...)" grouping.
+     *
+     * @return  $this
+     */
+    public function or_where_close()
+    {
+        $this->_where->close();
+        return $this;
+    }
 	
 }

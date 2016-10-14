@@ -220,7 +220,7 @@ abstract class Sk_Db_Query_Builder_Action extends Db_Query_Builder_Decoration
 	 * 编译字段谓句: 转义 + 拼接谓句
 	 * 
 	 * @param stirng $operator 谓语
-	 * @param string $delimiter 拼接谓句的分隔符
+	 * @param string $delimiter 拼接谓句的连接符
 	 * @return string
 	 */
 	protected function _fill_column_predicate($operator, $delimiter = ', ')

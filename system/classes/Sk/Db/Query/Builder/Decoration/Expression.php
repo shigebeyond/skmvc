@@ -11,8 +11,14 @@
  * @date 2016-10-13
  *
  */
-class Sk_Db_Query_Builder_Decoratoin_Expression extends ArrayObject
+abstract class Sk_Db_Query_Builder_Decoratoin_Expression
 {
+	/**
+	 * 
+	 * @var Db
+	 */
+	protected $_db;
+	
 	/**
 	 * 子表达式, 可视为行
 	 * @var array
@@ -20,45 +26,17 @@ class Sk_Db_Query_Builder_Decoratoin_Expression extends ArrayObject
 	protected $_subexps = array();
 	
 	/**
-	 * 子表达式拼接的分隔符
-	 * @var array
-	 */
-	protected $_delimiter = array();
-	
-	/**
 	 * 每个元素的处理器, 可视为列的处理
 	 * @var array
 	 */
 	protected $_element_handlers;
 	
-	/**
-	 * 子表达式拼接的默认分隔符
-	 * @var string
-	 */
-	protected $_default_delimiter;
-	
-	public function __construct(array $element_handler, $default_delimiter = ', ')
+	public function __construct($db, array $element_handler)
 	{
+		$this->_db = $db;
 		$this->_element_handlers = $element_handler;
-		$this->_default_delimiter = $default_delimiter; 
 	}
-	
-	/**
-	 * 添加一个子表达式+分隔符
-	 * 
-	 * @param string|array $subexp 子表达式
-	 * @param string $delimiter 当前子表达式的分隔符
-	 * @return Sk_Db_Query_Builder_Expression
-	 */
-	public function add_subexp($subexp, $delimiter = NULL)
-	{
-		$i = count($this->_subexps);
-		$this->_subexps[$i] = $subexp;
-		if($delimiter)
-			$this->_delimiter[$i] = $subexp;
-		return $this;
-	}
-	
+
 	/**
 	 * 编译多个子表达式
 	 * @return string
@@ -69,50 +47,31 @@ class Sk_Db_Query_Builder_Decoratoin_Expression extends ArrayObject
 			return NULL;
 		
 		// 逐个子表达式编译+合并
-		// 1 子表达式的分隔符是一样的
+		// 1 子表达式的连接符是一样的
 		//return implode($this->_default_delimiter, array_map(array($this, 'compile_row'), $this->_subexps));
 		
-		// 2 每个子表达式拼接的分隔符不一样
+		// 2 每个子表达式拼接的连接符不一样
 		$str = '';
 		foreach ($this->_subexps as $i => $subexp)
-		{
-			// 编译的子表达式+分隔符
-			$str .= $this->compile_subexp($subexp).Arr::get($this->_delimiter, $i, $this->_default_delimiter);
-		}
+			$str .= $this->compile_subexp($subexp);
 		return $str;
 	}
-	
-	/**
-	 * 编译一个子表达式
-	 * @param unknown $subexp
-	 * @return string
-	 */
-	public function compile_subexp($subexp)
-	{
-		// 对嵌套的子表达式, 直接递归
-		if($subexp instanceof Db_Query_Builder_Decoratoin_Expression)
-			return '('.$subexp->compile().')';
-		
-		// 1 处理一个元素
-		if (!is_array($subexp)) {
-			// 获得处理函数
-			$handler = Arr::get($this->_element_handlers, 0);
-			if($handler)
-				return $this->{"_$handler"}($subexp);  // 处理该值
-			return $subexp;
-		}
-		
-		// 2 处理多个元素
-		// 遍历处理每一个元素
-		foreach ($this->_element_handlers as $i => $handler)
-		{
-			// 处理某个元素的值
-			$value = Arr::get($subexp, $i); // 值
-			$subexp[$i] = $this->{"_$handler"}($value); // 处理该值
-		}
-		
-		return implode(' ', $subexp); // 用空格拼接多个元素
-	}
+
+    /**
+     * 添加一个子表达式+连接符
+     *
+     * @param array $subexp 子表达式
+     * @param string $delimiter 当前子表达式的连接符
+     * @return Sk_Db_Query_Builder_Expression
+     */
+    public abstract function add_subexp(array $subexp, $delimiter = ', ');
+
+    /**
+     * 编译一个子表达式
+     * @param unknown $subexp
+     * @return string
+     */
+    public abstract function compile_subexp($subexp);
 	
 	public function __toString()
 	{
