@@ -20,4 +20,12 @@ class Sk_Container_Component_Config
 		$this->_config = $config;
 		$this->_name = $name;
 	}
+	
+	/**
+	 * 从容器中删除当前组件
+	 */
+	public function remove_from_container()
+	{
+		Container::remove_component($this->_name);
+	}
 }

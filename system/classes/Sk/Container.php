@@ -34,29 +34,39 @@ class Sk_Container extends ArrayObject
 	 * 获得(读取配置文件)的组件
 	 * 
 	 * @param string $class
-	 * @param string $group 配置的相对路径
-	 * 		其中配置的绝对路径为  $class.'.'.$group
+	 * @param string $path 配置的相对路径
+	 * 		其中配置的绝对路径为  $class.'.'.$path
 	 * 		如果第一个字符是'_', 表示要使用子类对象, 子类名为 $class.$config 
 	 * 
 	* @return multitype:
 	 */
-	public static function component_config($class, $group)
+	public static function component_config($class, $path)
 	{
-		if(!isset(static::$_components[$class.$group]))
+		$name = $class.$path;
+		if(!isset(static::$_components[$name]))
 		{
 			// 判断是否用子类
-			if(Text::start_with($group, '_'))
+			if(Text::start_with($path, '_'))
 			{
-				$class = $class.$group; // 使用子类
-				$group = substr($group, 1);
+				$class = $name; // 使用子类
+				$path = substr($path, 1);
 			}
 			
 			// 获得配置
-			$config = Config::load($class.'.'.$group);
+			$config = Config::load(strtolower($class), $path);
 			
 			// 创建组件
-			static::$_components[$class] = new $class($config, $group);
+			static::$_components[$class] = new $class($config, $name);
 		}
 		return static::$_components[$class];
+	}
+	
+	/**
+	 * 删除组件
+	 * @param string $name
+	 */
+	public static function remove_component($name)
+	{
+		unset(static::$_components[$name]);
 	}
 }
