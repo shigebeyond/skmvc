@@ -108,7 +108,7 @@ abstract class Sk_Db_Query_Builder_Action
 	 * @param string $value
 	 * @return Db_Query
 	 */
-	public function data($column, $value)
+	public function data($column, $value = NULL)
 	{
 		if(is_array($column))
 			$this->_data = $column;

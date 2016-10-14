@@ -9,7 +9,7 @@
  * @date 2016-10-13
  *
  */
-class Sk_Db_Query_Builder_Decoratoin_Expression_Simple extends Db_Query_Builder_Decoratoin_Expression
+class Sk_Db_Query_Builder_Decoration_Expression_Simple extends Db_Query_Builder_Decoration_Expression
 {
     /**
      * 添加一个子表达式+连接符

@@ -9,12 +9,12 @@
  * @date 2016-10-13
  *
  */
-class Sk_Db_Query_Builder_Decoratoin_Expression_Group extends Db_Query_Builder_Decoratoin_Expression
+class Sk_Db_Query_Builder_Decoration_Expression_Group extends Db_Query_Builder_Decoration_Expression
 {
     /**
      * 开启一个分组
      * @param $delimiter
-     * @return Sk_Db_Query_Builder_Decoratoin_Expression_Group
+     * @return Sk_Db_Query_Builder_Decoration_Expression_Group
      */
     public function open($delimiter)
     {
@@ -29,7 +29,7 @@ class Sk_Db_Query_Builder_Decoratoin_Expression_Group extends Db_Query_Builder_D
 
     /**
      * 结束一个分组
-     * @return Sk_Db_Query_Builder_Decoratoin_Expression_Group
+     * @return Sk_Db_Query_Builder_Decoration_Expression_Group
      */
     public function close()
     {
@@ -39,13 +39,13 @@ class Sk_Db_Query_Builder_Decoratoin_Expression_Group extends Db_Query_Builder_D
 
     /**
      * 获得最后一个子表达式
-     * @return Db_Query_Builder_Decoratoin_Expression
+     * @return Db_Query_Builder_Decoration_Expression
      */
     public function end_subexp()
     {
         $last = end($this->_subexps);
-		if(!$last instanceof Sk_Db_Query_Builder_Decoratoin_Expression_Simple)
-            $this->_subexps[] = $last = new Sk_Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, $this->_element_handlers);
+		if(!$last instanceof Sk_Db_Query_Builder_Decoration_Expression_Simple)
+            $this->_subexps[] = $last = new Sk_Db_Query_Builder_Decoration_Expression_Simple($this->_db, $this->_element_handlers);
         return $last;
     }
 
@@ -53,7 +53,7 @@ class Sk_Db_Query_Builder_Decoratoin_Expression_Group extends Db_Query_Builder_D
      * 添加子表达式
      * @param array $subexp
      * @param string $delimiter
-     * @return Sk_Db_Query_Builder_Decoratoin_Expression_Group
+     * @return Sk_Db_Query_Builder_Decoration_Expression_Group
      */
     public function add_subexp(array $subexp, $delimiter = ', ')
     {
@@ -69,8 +69,8 @@ class Sk_Db_Query_Builder_Decoratoin_Expression_Group extends Db_Query_Builder_D
      */
     public function compile_subexp($subexp)
     {
-        // 子表达式是: string / Sk_Db_Query_Builder_Decoratoin_Expression_Simple
-        // Sk_Db_Query_Builder_Decoratoin_Expression_Simple 转字符串自动compile
+        // 子表达式是: string / Sk_Db_Query_Builder_Decoration_Expression_Simple
+        // Sk_Db_Query_Builder_Decoration_Expression_Simple 转字符串自动compile
         return implode('', $this->_subexps);
     }
 

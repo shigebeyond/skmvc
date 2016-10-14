@@ -11,7 +11,7 @@
  * @date 2016-10-13
  *
  */
-abstract class Sk_Db_Query_Builder_Decoratoin_Expression
+abstract class Sk_Db_Query_Builder_Decoration_Expression
 {
 	/**
 	 * 

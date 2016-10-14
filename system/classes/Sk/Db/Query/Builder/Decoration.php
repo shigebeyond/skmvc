@@ -71,20 +71,20 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 		parent::__construct($action, $db, $table, $data);
 		
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		$this->_where = new Db_Query_Builder_Decoratoin_Expression_Group($this->_db, array('column', 'str', 'value'));
+		$this->_where = new Db_Query_Builder_Decoration_Expression_Group($this->_db, array('column', 'str', 'value'));
 		// 字段数组
-		$this->_group_by = new Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, array('column'));
+		$this->_group_by = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, array('column'));
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		$this->_having = new Db_Query_Builder_Decoratoin_Expression_Group($this->_db, array('column', 'str', 'value'));
+		$this->_having = new Db_Query_Builder_Decoration_Expression_Group($this->_db, array('column', 'str', 'value'));
 		// 排序数组, 每个排序 = 字段+方向
-		$this->_order_by = new Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, array('column', 'order_direction'));
+		$this->_order_by = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, array('column', 'order_direction'));
 		// 行限数组 limit, offset
-		$this->_limit = new Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, array('int'));
+		$this->_limit = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, array('int'));
         // 联表数组，每个联表 = 表名 + 联表方式
         $this->_join = array();
-        //$this->_join = new Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, array('table', 'join_type'));
+        //$this->_join = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, array('table', 'join_type'));
 		// 联表条件数组，每个联表条件 = 字段 + 运算符 + 字段
-		//$this->_on = new Db_Query_Builder_Decoratoin_Expression_Group($this->_db, array('column', 'str', 'column'));
+		//$this->_on = new Db_Query_Builder_Decoration_Expression_Group($this->_db, array('column', 'str', 'column'));
 	}
 	
 	/**
@@ -370,7 +370,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      */
     public function join($table, $type = NULL)
     {
-        $this->_join[] = $join = new Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, array('table', 'join_type'));
+        $this->_join[] = $join = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, array('table', 'join_type'));
         $join->add_subexp(array($table, $type));
         return $this;
     }
@@ -386,10 +386,10 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
     public function on($c1, $op, $c2)
     {
         $on = end($this->_join);
-		if(!$on instanceof Db_Query_Builder_Decoratoin_Expression_Group)
+		if(!$on instanceof Db_Query_Builder_Decoration_Expression_Group)
 		{
 			$this->_join[] = ' ON ';
-			$this->_join[] = $on = new Db_Query_Builder_Decoratoin_Expression_Group($this->_db, array('column', 'str', 'column'));
+			$this->_join[] = $on = new Db_Query_Builder_Decoration_Expression_Group($this->_db, array('column', 'str', 'column'));
 		}
 		
         $on->add_subexp(array($c1, $op, $c2));

@@ -9,4 +9,4 @@
  * @date 2016-10-13
  *
  */
-abstract class Db_Query_Builder_Decoratoin_Expression extends Sk_Db_Query_Builder_Decoratoin_Expression {}
+abstract class Db_Query_Builder_Decoration_Expression extends Sk_Db_Query_Builder_Decoration_Expression {}
