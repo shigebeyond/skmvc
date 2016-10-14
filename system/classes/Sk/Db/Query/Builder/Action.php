@@ -17,9 +17,9 @@ abstract class Sk_Db_Query_Builder_Action
 	 * @var array
 	 */	
 	public static $sql_templates = array(
-		'select' => 'SELECT :distinct :keys FROM :table', 
-		'insert' => 'INSERT INTO :table (:keys) VALUES (:values)',
-		'update' => 'UPDATE :table SET :key = :value',
+		'select' => 'SELECT :distinct :columns FROM :table', 
+		'insert' => 'INSERT INTO :table (:columns) VALUES (:values)',
+		'update' => 'UPDATE :table SET :column = :value',
 		'delect' => 'DELETE FROM :table'
 	);
 	
