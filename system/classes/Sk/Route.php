@@ -95,7 +95,7 @@ class Sk_Route{
 	 * @param array $params 参数的正则
 	 * @return string 带参数的子正则
 	 */
-	public function compile_param($name, array $params = NULL){
+	public static function compile_param($name, array $params = NULL){
 		$regex = Arr::get($params, $name, static::REGEX_PARAM); //　参数的正则
 		return "(?P<$name>$regex)"; // 带参数的子正则
 	}
