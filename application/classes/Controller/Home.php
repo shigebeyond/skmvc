@@ -13,9 +13,13 @@ class Controller_Home extends Controller
 {
 	public function action_index()
 	{
-		$sql = "SELECT * FROM user";
-		$db = Db::instance();
-		$result = $db->query($sql);
+// 		$result = Db::instance()->preview('select * from user where id = ?', array(3));
+// 		$result = Db::instance()->preview('select * from user where id = :id', array(':id' => 3));
+
+		//$result = Db::instance()->insert('user', array('name' => 'kkk', 'age' => 12))->execute();
+		
+		$query = Db::instance()->delete('user')->where('id', '=', '1');
+		$result = $query->execute();
 		
 		$this->res->body("result is $result");
 	}
