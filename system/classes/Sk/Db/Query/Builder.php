@@ -23,32 +23,17 @@ class Sk_Db_Query_Builder extends DB_Query_Builder_Decoration
 		return array($action.$decoration, $params);
 	}
 	
-	public function get($table = NULL)
+	/**
+	 * 编译 + 执行
+	 * @return Db_Result
+	 */
+	public function execute() 
 	{
-		// 1 设置模板
-		if($table !== NULL)// 表名
-			$this->_table = $table; 
-		$this->_action_template = static::ACTION_TEMPLATE_SELECT; // 模板
+		// 1 编译
+		list ($sql, $params) = $this->compile();
 		
-		// 2 编译
-		list($sql, $params) = $this->compile();
-		
-		// 3 执行
+		// 2 执行
 		return $this->execute($sql, $params);
-	}
-	
-	public function insert($table = NULL)
-	{
-		// 1 设置模板
-		if($table !== NULL)// 表名
-			$this->_table = $table; 
-		$this->_action_template = static::ACTION_TEMPLATE_insert; // 模板
-		
-		// 2 编译
-		list($sql, $params) = $this->compile();
-		
-		// 3 执行
-		return $this->_db->execute($sql, $params);
 	}
 	
 }

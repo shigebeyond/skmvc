@@ -10,7 +10,7 @@
  * @date 2016-10-12
  *
  */
-abstract class Sk_Db_Query_Builder_Action extends Db_Query_Builder_Decoration
+abstract class Sk_Db_Query_Builder_Action
 {
 	// 动作子句模板: select
 	const ACTION_TEMPLATE_SELECT = 'SELECT :distinct :keys FROM :table';
@@ -29,7 +29,13 @@ abstract class Sk_Db_Query_Builder_Action extends Db_Query_Builder_Decoration
 	 * @var string
 	 */
 	protected $_action_template;
-	
+
+    /**
+     * 数据库连接
+     * @var Db
+     */
+    protected $_db;
+
 	/**
 	 * 表名
 	 * @var string
@@ -48,6 +54,23 @@ abstract class Sk_Db_Query_Builder_Action extends Db_Query_Builder_Decoration
 	 * @var bool
 	 */
 	protected $_distinct = FALSE;
+
+    public function __construct($action, $db, $table = NULL, $data = NULL)
+    {
+        $template_name = 'ACTION_TEMPLATE_'.strtoupper($action);
+        $this->_action_template = static::$template_name;
+
+        // 获得db
+        if(!$db instanceof Db)
+            $db = Db::instance($db);
+        $this->_db = $db;
+
+        if($table)
+            $this->table($table);
+
+        if($data)
+            $this->data($data);
+    }
 	
 	/**
 	 * 设置表名: 一般是单个表名
@@ -80,7 +103,6 @@ abstract class Sk_Db_Query_Builder_Action extends Db_Query_Builder_Decoration
 		return $this;
 	}
 
-	
 	/**
 	 * 设置插入/更新的值
 	 *

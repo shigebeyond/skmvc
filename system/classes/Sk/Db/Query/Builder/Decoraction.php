@@ -9,9 +9,8 @@
  * @date 2016-10-12
  *
  */
-abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action 
+abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 {
-	
 	/**
 	 * 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
 	 * @var array
@@ -54,9 +53,9 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 	 */
 	protected $_on;
 
-	public function __construct($db, $table = NULL)
+	public function __construct($action, $db, $table = NULL, $data = NULL)
 	{
-		parent::__construct($db, $table);
+		parent::__construct($action, $db, $table, $data);
 		
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
 		$this->_where = new Db_Query_Builder_Decoratoin_Expression_Group($this->_db, array('column', 'str', 'value'));
@@ -68,10 +67,11 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 		$this->_order_by = new Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, array('column', 'order_direction'));
 		// 行限数组 limit, offset
 		$this->_limit = new Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, array('int'));
-		// 联表数组，每个联表 = 表名 + 联表方式
-		$this->_join = new Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, array('table', 'join_type'));
+        // 联表数组，每个联表 = 表名 + 联表方式
+        $this->_join = array();
+        //$this->_join = new Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, array('table', 'join_type'));
 		// 联表条件数组，每个联表条件 = 字段 + 运算符 + 字段
-		$this->_on = new Db_Query_Builder_Decoratoin_Expression_Group($this->_db, array('column', 'str', 'column'));
+		//$this->_on = new Db_Query_Builder_Decoratoin_Expression_Group($this->_db, array('column', 'str', 'column'));
 	}
 	
 	/**
@@ -81,12 +81,12 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 	public function compile_decoration()
 	{
 		$sql = '';
-		$exps = array('where', 'group_by', 'having', 'order_by', 'limit', 'join', 'on');
+		$exps = array('where', 'group_by', 'having', 'order_by', 'limit', 'join');
 		foreach ($exps as $exp)
 		{
 		    $exp = $this->{"_$exp"};
 			if (is_array($exp)) 
-				$sql .= implode('', $exp);
+				$sql .= implode('', $exp); // 表达式转字符串, 自动compile
 			else
 				$sql .= $exp;
 		}
@@ -197,5 +197,181 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
         $this->_where->close();
         return $this;
     }
-	
+
+    /**
+     * Creates a "GROUP BY ..." filter.
+     *
+     * @param   mixed   $columns  column name or array($column, $alias) or object
+     * @return  $this
+     */
+    public function group_by($columns)
+    {
+        $columns = func_get_args();
+        $this->_group_by = array_merge($this->_group_by, $columns);
+        return $this;
+    }
+
+    /**
+     * Alias of and_having()
+     *
+     * @param   mixed   $column  column name or array($column, $alias) or object
+     * @param   string  $op      logic operator
+     * @param   mixed   $value   column value
+     * @return  $this
+     */
+    public function having($column, $op, $value = NULL)
+    {
+        return $this->and_having($column, $op, $value);
+    }
+
+    /**
+     * Creates a new "AND HAVING" condition for the query.
+     *
+     * @param   mixed   $column  column name or array($column, $alias) or object
+     * @param   string  $op      logic operator
+     * @param   mixed   $value   column value
+     * @return  $this
+     */
+    public function and_having($column, $op, $value)
+    {
+        $this->_having->add_subexp(func_get_args(), ' AND ');
+        return $this;
+    }
+
+    /**
+     * Creates a new "OR HAVING" condition for the query.
+     *
+     * @param   mixed   $column  column name or array($column, $alias) or object
+     * @param   string  $op      logic operator
+     * @param   mixed   $value   column value
+     * @return  $this
+     */
+    public function or_having($column, $op, $value)
+    {
+        $this->_having->add_subexp(func_get_args(), ' OR ');
+        return $this;
+    }
+
+    /**
+     * Alias of and_having_open()
+     *
+     * @return  $this
+     */
+    public function having_open()
+    {
+        return $this->and_having_open();
+    }
+
+    /**
+     * Opens a new "AND HAVING (...)" grouping.
+     *
+     * @return  $this
+     */
+    public function and_having_open()
+    {
+        $this->_where->open(' AND ');
+        return $this;
+    }
+
+    /**
+     * Opens a new "OR HAVING (...)" grouping.
+     *
+     * @return  $this
+     */
+    public function or_having_open()
+    {
+        $this->_where->open(' OR ');
+        return $this;
+    }
+
+    /**
+     * Closes an open "AND HAVING (...)" grouping.
+     *
+     * @return  $this
+     */
+    public function having_close()
+    {
+        return $this->and_having_close();
+    }
+
+    /**
+     * Closes an open "AND HAVING (...)" grouping.
+     *
+     * @return  $this
+     */
+    public function and_having_close()
+    {
+        $this->_where->close();
+        return $this;
+    }
+
+    /**
+     * Closes an open "OR HAVING (...)" grouping.
+     *
+     * @return  $this
+     */
+    public function or_having_close()
+    {
+        $this->_where->close();
+        return $this;
+    }
+
+    /**
+     * Applies sorting with "ORDER BY ..."
+     *
+     * @param   mixed   $column     column name or array($column, $alias) or object
+     * @param   string  $direction  direction of sorting
+     * @return  $this
+     */
+    public function order_by($column, $direction = NULL)
+    {
+        $this->_order_by->add_subexp(array($column, $direction));
+        return $this;
+    }
+
+    /**
+     * Return up to "LIMIT ..." results
+     *
+     * @param   integer  $limit
+     * @param   integer  $offset
+     * @return  $this
+     */
+    public function limit($limit, $offset = 0)
+    {
+        if($offset === 0)
+            $this->_limit->add_subexp(array($limit));
+        else
+            $this->_limit->add_subexp(array($offset, $limit));
+        return $this;
+    }
+
+    /**
+     * Adds addition tables to "JOIN ...".
+     *
+     * @param   mixed   $table  column name or array($column, $alias) or object
+     * @param   string  $type   join type (LEFT, RIGHT, INNER, etc)
+     * @return  $this
+     */
+    public function join($table, $type = NULL)
+    {
+        $this->_join[] = $join = new Db_Query_Builder_Decoratoin_Expression_Simple($this->_db, array('table', 'join_type'));
+        $join->add_subexp(array($table, $type));
+        return $this;
+    }
+
+    /**
+     * Adds "ON ..." conditions for the last created JOIN statement.
+     *
+     * @param   mixed   $c1  column name or array($column, $alias) or object
+     * @param   string  $op  logic operator
+     * @param   mixed   $c2  column name or array($column, $alias) or object
+     * @return  $this
+     */
+    public function on($c1, $op, $c2)
+    {
+        if(!end($this->_join) instanceof Db_Query_Builder_Decoratoin_Expression_Group)
+            $this->_join[] = new Db_Query_Builder_Decoratoin_Expression_Group($this->_db, array('column', 'str', 'column'));
+        end($this->_join)->add_subexp(array($c1, $op, $c2));
+        return $this;
+    }
 }
