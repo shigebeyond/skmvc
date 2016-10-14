@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * sql构建器 -- 修饰子句: 由修饰符where/group by/order by/limit来构建的子句
+ * sql构建器 -- 修饰子句: 由修饰词where/group by/order by/limit来构建的子句
  * 
  * @Package package_name 
  * @category 
@@ -12,7 +12,7 @@
 abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 {
 	/**
-	 * 修饰符
+	 * 修饰词
 	 * @var array
 	 */
 	public static $decorations = array(
@@ -94,17 +94,18 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 	public function compile_decoration()
 	{
 		$sql = '';
-		// 逐个处理修饰符及其表达式
+		// 逐个处理修饰词及其表达式
 		foreach (static::$decorations as $name => $title)
 		{
 			// 处理表达式
 		    $exp = $this->{"_$name"};
 			if (is_array($exp)) 
-				$part = implode('', $exp); // 表达式转字符串, 自动compile
-			else
-				$part = $exp;
-			// 添加修饰符
-			$sql .= " $title $exp";
+				$exp = implode('', $exp); // 表达式转字符串, 自动compile
+			else 
+				$exp = "$exp";
+			// 添加修饰词
+			if($exp)
+				$sql .= " $title $exp";
 		}
 		return $sql;
 	}

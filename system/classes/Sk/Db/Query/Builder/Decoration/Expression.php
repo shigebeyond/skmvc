@@ -2,7 +2,7 @@
 
 /**
  * sql修饰子句的表达式模拟构建
- *     每个修饰符是一个表达式(如where/group by), 其包含多个子表达式(如where可以有多个条件, 如name='shi', age=1), 每个子表达式有多个元素组成(如name/=/'shi')
+ *     每个修饰词是一个表达式(如where/group by), 其包含多个子表达式(如where可以有多个条件, 如name='shi', age=1), 每个子表达式有多个元素组成(如name/=/'shi')
  *     每个元素有对应的处理函数
  * 
  * @Package package_name 
