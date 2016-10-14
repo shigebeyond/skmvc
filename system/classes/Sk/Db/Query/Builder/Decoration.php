@@ -13,9 +13,9 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 {
 	/**
 	 * 修饰符
-	 * @var unknown
+	 * @var array
 	 */
-	protected static $_decorations = array(
+	public static $decorations = array(
 		'where' => 'WHERE',
 		'group_by' => 'GROUP BY',
 		'having' => 'HAVING',
@@ -95,7 +95,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 	{
 		$sql = '';
 		// 逐个处理修饰符及其表达式
-		foreach (static::$_decorations as $name => $title)
+		foreach (static::$decorations as $name => $title)
 		{
 			// 处理表达式
 		    $exp = $this->{"_$name"};

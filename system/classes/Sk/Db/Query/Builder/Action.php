@@ -12,23 +12,22 @@
  */
 abstract class Sk_Db_Query_Builder_Action
 {
-	// 动作子句模板: select
-	const ACTION_TEMPLATE_SELECT = 'SELECT :distinct :keys FROM :table';
-	
-	// 动作子句模板: insert
-	const ACTION_TEMPLATE_INSERT = 'INSERT INTO :table (:keys) VALUES (:values)';
-	
-	// 动作子句模板: update
-	const ACTION_TEMPLATE_UPDATE = 'UPDATE :table SET :key = :value';
-	
-	// 动作子句模板: delete
-	const ACTION_TEMPLATE_DELETE = 'DELETE FROM :table';
+	/**
+	 * 动作子句的sql模板
+	 * @var array
+	 */	
+	public static $sql_templates = array(
+		'select' => 'SELECT :distinct :keys FROM :table', 
+		'insert' => 'INSERT INTO :table (:keys) VALUES (:values)',
+		'update' => 'UPDATE :table SET :key = :value',
+		'delect' => 'DELETE FROM :table'
+	);
 	
 	/**
-	 * 动作子句模板: select/insert/update/delete
+	 * 动作
 	 * @var string
 	 */
-	protected $_action_template;
+	protected $_action;
 
     /**
      * 数据库连接
@@ -57,8 +56,7 @@ abstract class Sk_Db_Query_Builder_Action
 
     public function __construct($action, $db, $table = NULL, $data = NULL)
     {
-        $template_name = 'ACTION_TEMPLATE_'.strtoupper($action);
-        $this->_action_template = static::$template_name;
+        $this->_action = $action;
 
         // 获得db
         if(!$db instanceof Db)
@@ -176,23 +174,24 @@ abstract class Sk_Db_Query_Builder_Action
 	public function compile_action()
 	{
 		// 实际上是填充子句的参数，如将行参表名替换为真实表名
+		$sql = Arr::get(static::$sql_templates, $this->_action);
 		
 		// 1 填充表名/多个字段名/多个字段值
 		// 针对 select :columns from :table / insert into :table :columns values :values
-		$action = preg_replace_callback('/:(table|columns|values)/', function($mathes){
+		$sql = preg_replace_callback('/:(table|columns|values)/', function($mathes){
 			// 调用对应的方法: _fill_table() / _fill_columns() / _fill_values()
 			$method = '_fill_'.$mathes[1];
 			return $this->$method();
-		}, $this->_action_template);
+		}, $sql);
 		
 		// 2 填充字段谓句
 		// 针对 update :table set :column = :value
-		$action = preg_replace_callback('/:column(.+):value/', function($mathes){
+		$sql = preg_replace_callback('/:column(.+):value/', function($mathes){
 			return $this->_fill_column_predicate($mathes[1]);
-		}, $action);
+		}, $sql);
 		
 		// 3 填充distinct
-		return str_replace(':distinct', $this->_distinct ? 'distinct' : '', $action);
+		return str_replace(':distinct', $this->_distinct ? 'distinct' : '', $sql);
 	}
 	
 	/**
@@ -211,7 +210,7 @@ abstract class Sk_Db_Query_Builder_Action
 	protected function _fill_columns()
 	{
 		// select
-		if($this->_action_template == static::ACTION_TEMPLATE_SELECT)
+		if($this->_action == 'select')
 		{
 			if(empty($this->_data))
 				return '*';
