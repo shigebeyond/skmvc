@@ -165,16 +165,22 @@ class Sk_Db extends Container_Component_Config
 	 *
 	 * @param string $sql
 	 * @param array  $params
-	 * @param int    $fetchMode
-	 * @return Db_Result
+	 * @param bool|string $as_object 是否返回对象, 如果是false, 则返回关联数组, 否则返回对应类的对象
+	 * @return array
 	 */
-	public function query($sql, $params = [], $fetchMode = PDO::FETCH_ASSOC)
+	public function query($sql, $params = [], $as_object = FALSE)
 	{
 		try {
 			// 执行sql
 			$statement = $this->_exec($sql, $params);
 			// 封装结果
-			return new Db_Result($statement);
+			if (is_string($as_object))
+				$statement->setFetchMode(PDO::FETCH_CLASS, $as_object, $params);
+			else 
+				$statement->setFetchMode(PDO::FETCH_ASSOC);
+			
+			// Convert the result into an array, as PDOStatement::rowCount is not reliable
+			return $statement->fetchAll();
 		} catch (PDOException $e) {
 			throw new Exception("执行sql出错: ", $e->getMessage());
 		}
