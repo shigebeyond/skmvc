@@ -44,7 +44,7 @@ abstract class Sk_Db_Query_Builder_Decoration_Expression
 	public function compile()
 	{
 		if (empty($this->_subexps))
-			return NULL;
+			return ''; // __toString() 必须返回字符串，不能返回NULL
 		
 		// 逐个子表达式编译+合并
 		// 1 子表达式的连接符是一样的
