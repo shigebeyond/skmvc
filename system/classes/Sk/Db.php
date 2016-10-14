@@ -11,8 +11,18 @@
  * @date 2016-10-11 上午12:06:58
  *
  */
-class Sk_Db extends Singleton_Configurable
+class Sk_Db extends Container_Component_Config
 {
+	/**
+	 *  获得db单例
+	 * @param string $group
+	 * @return Db
+	 */
+	public static function instance($group = 'default')
+	{
+		return Container::component_config('Db', $group);
+	}
+	
 	/**
 	 * 当前事务的嵌套层级
 	 * @var int
@@ -25,10 +35,9 @@ class Sk_Db extends Singleton_Configurable
 	 */
 	protected $_pdo;
 
-	public function __construct($config, $name = NULL)
+	public function __construct($config, $name)
 	{
 		parent::__construct($config, $name);
-
 		// 创建pdo连接
 		$this->connect();
 	}
@@ -68,7 +77,7 @@ class Sk_Db extends Singleton_Configurable
 	public function __destruct()
 	{
 		$this->_pdo = NULL;
-		unset(static::$_instances[$this->_name]);
+		$this->remove_from_container();
 	}
 
 
@@ -264,7 +273,7 @@ class Sk_Db extends Singleton_Configurable
 	 * @param string|array $column 表名, 可以是表数组: <alias, column>
 	 * @return string
 	 */
-	protected function _quote_tables($tables)
+	protected function _quote_tables($tables, $with_brackets = FALSE)
 	{
 		// 遍历多个表转义
 		$str = '';
@@ -388,5 +397,25 @@ class Sk_Db extends Singleton_Configurable
 
 		// 转义
 		return $this->_pdo->quote ( $value );
+	}
+	
+	public function select($db, $table = NULL, $data = NULL) 
+	{
+		return new Sk_Db_Query_Builder ( 'select', $db, $table, $data );
+	}
+	
+	public function insert($db, $table = NULL, $data = NULL) 
+	{
+		return new Sk_Db_Query_Builder ( 'insert', $db, $table, $data );
+	}
+	
+	public function update($db, $table = NULL, $data = NULL) 
+	{
+		return new Sk_Db_Query_Builder ( 'update', $db, $table, $data );
+	}
+	
+	public function delete($db, $table = NULL) 
+	{
+		return new Sk_Db_Query_Builder ( 'delete', $db, $table );
 	}
 }

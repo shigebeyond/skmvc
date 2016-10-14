@@ -4,7 +4,7 @@
  *
  * 		// 获得 config/database.php 中配置的 master 数据库连接
  * 		Db::instance('master')
- * 
+ *
  * @Package package_name 
  * @category 
  * @author shijianhang
