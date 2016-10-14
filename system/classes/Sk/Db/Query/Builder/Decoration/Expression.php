@@ -39,10 +39,10 @@ class Sk_Db_Query_Builder_Decoratoin_Expression
 	
 	/**
 	 * 添加一个子表达式数据
-	 * @param unknown $row
+	 * @param string|array $row
 	 * @return Sk_Db_Query_Builder_Expression
 	 */
-	public function add_row($row)
+	public function add_subexp($row)
 	{
 		$this->_subexps[] = $row;
 		return $this;
