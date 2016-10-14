@@ -407,48 +407,44 @@ class Sk_Db extends Container_Component_Config
 	
 	/**
 	 * select
-	 * @param string $db
 	 * @param string $table
 	 * @param string $data
 	 * @return Sk_Db_Query_Builder
 	 */
-	public static function select($db = 'default', $table = NULL, $data = NULL) 
+	public function select($table = NULL, $data = NULL)
 	{
-		return new Sk_Db_Query_Builder ( 'select', $db, $table, $data );
+		return new Sk_Db_Query_Builder ( 'select', $this, $table, $data );
 	}
 	
 	/**
 	 * insert
-	 * @param string $db
 	 * @param string $table
 	 * @param string $data
 	 * @return Sk_Db_Query_Builder
 	 */
-	public static function insert($db = 'default', $table = NULL, $data = NULL) 
+	public function insert($table = NULL, $data = NULL)
 	{
-		return new Sk_Db_Query_Builder ( 'insert', $db, $table, $data );
+		return new Sk_Db_Query_Builder ( 'insert', $this, $table, $data );
 	}
 	
 	/**
 	 * update
-	 * @param string $db
 	 * @param string $table
 	 * @param string $data
 	 * @return Sk_Db_Query_Builder
 	 */
-	public static function update($db = 'default', $table = NULL, $data = NULL) 
+	public function update($table = NULL, $data = NULL)
 	{
-		return new Sk_Db_Query_Builder ( 'update', $db, $table, $data );
+		return new Sk_Db_Query_Builder ( 'update', $this, $table, $data );
 	}
 	
 	/**
 	 * delete
-	 * @param string $db
 	 * @param string $table
 	 * @return Sk_Db_Query_Builder
 	 */
-	public static function delete($db = 'default', $table = NULL) 
+	public function delete($table = NULL)
 	{
-		return new Sk_Db_Query_Builder ( 'delete', $db, $table );
+		return new Sk_Db_Query_Builder ( 'delete', $this, $table );
 	}
 }
