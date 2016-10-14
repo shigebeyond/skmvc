@@ -200,11 +200,10 @@ class Sk_Db extends Container_Component_Config
 		return preg_replace_callback(
 				array('/(\?)/', '/:(\w+)/'),
 				function($matches) use(&$i, $params){
-					$i++;
 					// 获得参数标识
 					$key = $matches[1]; // 参数样式为 :name，则直接使用
 					if($key == '?') // 参数样式为 ?, 则为数字
-						$key = $i;
+						$key = $i++;
 
 					// 若不存在该参数，则不转换
 					if (!isset($params[$key]))
