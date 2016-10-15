@@ -116,7 +116,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      * @param   mixed   $column  column name or array($column, $alias) or object
      * @param   string  $op      logic operator
      * @param   mixed   $value   column value
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function where($column, $op, $value)
     {
@@ -129,7 +129,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      * @param   mixed   $column  column name or array($column, $alias) or object
      * @param   string  $op      logic operator
      * @param   mixed   $value   column value
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function and_where($column, $op, $value)
     {
@@ -143,7 +143,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      * @param   mixed   $column  column name or array($column, $alias) or object
      * @param   string  $op      logic operator
      * @param   mixed   $value   column value
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function or_where($column, $op, $value)
     {
@@ -154,7 +154,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
     /**
      * Alias of and_where_open()
      *
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function where_open()
     {
@@ -164,7 +164,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
     /**
      * Opens a new "AND WHERE (...)" grouping.
      *
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function and_where_open()
     {
@@ -175,7 +175,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
     /**
      * Opens a new "OR WHERE (...)" grouping.
      *
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function or_where_open()
     {
@@ -186,7 +186,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
     /**
      * Closes an open "WHERE (...)" grouping.
      *
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function where_close()
     {
@@ -196,7 +196,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
     /**
      * Closes an open "WHERE (...)" grouping.
      *
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function and_where_close()
     {
@@ -207,7 +207,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
     /**
      * Closes an open "WHERE (...)" grouping.
      *
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function or_where_close()
     {
@@ -219,7 +219,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      * Creates a "GROUP BY ..." filter.
      *
      * @param   mixed   $columns  column name or array($column, $alias) or object
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function group_by($columns)
     {
@@ -234,7 +234,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      * @param   mixed   $column  column name or array($column, $alias) or object
      * @param   string  $op      logic operator
      * @param   mixed   $value   column value
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function having($column, $op, $value = NULL)
     {
@@ -247,7 +247,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      * @param   mixed   $column  column name or array($column, $alias) or object
      * @param   string  $op      logic operator
      * @param   mixed   $value   column value
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function and_having($column, $op, $value)
     {
@@ -261,7 +261,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      * @param   mixed   $column  column name or array($column, $alias) or object
      * @param   string  $op      logic operator
      * @param   mixed   $value   column value
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function or_having($column, $op, $value)
     {
@@ -272,7 +272,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
     /**
      * Alias of and_having_open()
      *
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function having_open()
     {
@@ -282,7 +282,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
     /**
      * Opens a new "AND HAVING (...)" grouping.
      *
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function and_having_open()
     {
@@ -293,7 +293,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
     /**
      * Opens a new "OR HAVING (...)" grouping.
      *
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function or_having_open()
     {
@@ -304,7 +304,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
     /**
      * Closes an open "AND HAVING (...)" grouping.
      *
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function having_close()
     {
@@ -314,7 +314,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
     /**
      * Closes an open "AND HAVING (...)" grouping.
      *
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function and_having_close()
     {
@@ -325,7 +325,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
     /**
      * Closes an open "OR HAVING (...)" grouping.
      *
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function or_having_close()
     {
@@ -338,7 +338,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      *
      * @param   mixed   $column     column name or array($column, $alias) or object
      * @param   string  $direction  direction of sorting
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function order_by($column, $direction = NULL)
     {
@@ -351,7 +351,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      *
      * @param   integer  $limit
      * @param   integer  $offset
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function limit($limit, $offset = 0)
     {
@@ -367,7 +367,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      *
      * @param   mixed   $table  column name or array($column, $alias) or object
      * @param   string  $type   join type (LEFT, RIGHT, INNER, etc)
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function join($table, $type = NULL)
     {
@@ -382,7 +382,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      * @param   mixed   $c1  column name or array($column, $alias) or object
      * @param   string  $op  logic operator
      * @param   mixed   $c2  column name or array($column, $alias) or object
-     * @return  $this
+     * @return Db_Query_Builder
      */
     public function on($c1, $op, $c2)
     {
