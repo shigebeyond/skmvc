@@ -357,7 +357,7 @@ class Sk_Db extends Container_Component_Config
 			return $column;
 
 		// 表名.字段名
-		$parts = explode($column, '.', 2);
+		$parts = explode('.', $column, 2);
 		if(isset($parts[1]))
 			return "`$parts[0]`.`$parts[1]`";
 
