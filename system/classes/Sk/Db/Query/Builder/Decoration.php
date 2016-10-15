@@ -12,19 +12,6 @@
 abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 {
 	/**
-	 * 修饰词
-	 * @var array
-	 */
-	public static $decorations = array(
-		'where' => 'WHERE',
-		'group_by' => 'GROUP BY',
-		'having' => 'HAVING',
-		'order_by' => 'ORDER BY',
-		'limit' => 'LIMIT',
-		'join' => 'JOIN'
-	);
-	
-	/**
 	 * 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
 	 * @var array
 	 */
@@ -55,36 +42,30 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 	protected $_limit;
 	
 	/**
-	 * 联表数组，每个联表 = 表名 + 联表方式
+	 * 联表数组
+	 * join： 每个联表 = 表名 + 联表方式
+	 * on: 每个联表条件 = 字段 + 运算符 + 字段
 	 * @var array
 	 */
 	protected $_join;
 	
-	/**
-	 * 联表条件数组，每个联表条件 = 字段 + 运算符 + 字段
-	 * @var array
-	 */
-	protected $_on;
-
 	public function __construct($action, $db, $table = NULL, $data = NULL)
 	{
 		parent::__construct($action, $db, $table, $data);
 		
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		$this->_where = new Db_Query_Builder_Decoration_Expression_Group($this->_db, array('column', 'str', 'value'));
+		$this->_where = new Db_Query_Builder_Decoration_Expression_Group($this->_db, 'WHERE',array('column', 'str', 'value'));
 		// 字段数组
-		$this->_group_by = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, array('column'));
+		$this->_group_by = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, 'GROUP BY', array('column'));
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		$this->_having = new Db_Query_Builder_Decoration_Expression_Group($this->_db, array('column', 'str', 'value'));
+		$this->_having = new Db_Query_Builder_Decoration_Expression_Group($this->_db, 'HAVING', array('column', 'str', 'value'));
 		// 排序数组, 每个排序 = 字段+方向
-		$this->_order_by = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, array('column', 'order_direction'));
+		$this->_order_by = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, 'ORDER BY', array('column', 'order_direction'));
 		// 行限数组 limit, offset
-		$this->_limit = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, array('int'));
-        // 联表数组，每个联表 = 表名 + 联表方式
-        $this->_join = array();
-        //$this->_join = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, array('table', 'join_type'));
-		// 联表条件数组，每个联表条件 = 字段 + 运算符 + 字段
-		//$this->_on = new Db_Query_Builder_Decoration_Expression_Group($this->_db, array('column', 'str', 'column'));
+		$this->_limit = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, 'LIMIT', array('int'));
+        // 联表数组，每个联表join = 表名 + 联表方式 | 每个联表条件on = 字段 + 运算符 + 字段, 都写死在Db_Query_Builder_Decoration_Expression_Join类
+//         $this->_join = new Db_Query_Builder_Decoration_Expression_Join($this->_db, $table, $type);
+		$this->_join = array();
 	}
 	
 	/**
@@ -95,17 +76,14 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 	{
 		$sql = '';
 		// 逐个处理修饰词及其表达式
-		foreach (static::$decorations as $name => $title)
+		foreach (array('join', 'where', 'group_by', 'having', 'order_by', 'limit') as $name)
 		{
 			// 处理表达式
 		    $exp = $this->{"_$name"};
+		    // 表达式转字符串, 自动compile
 			if (is_array($exp)) 
-				$exp = implode('', $exp); // 表达式转字符串, 自动compile
-			else 
-				$exp = "$exp";
-			// 添加修饰词
-			if($exp)
-				$sql .= " $title $exp";
+				$exp = implode(' ', $exp); 
+			$sql .= ' '.$exp;
 		}
 		return array($sql, array());
 	}
@@ -133,7 +111,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      */
     public function and_where($column, $op, $value)
     {
-        $this->_where->add_subexp(func_get_args(), ' AND ');
+        $this->_where->add_subexp(func_get_args(), 'AND');
         return $this;
     }
 
@@ -147,7 +125,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      */
     public function or_where($column, $op, $value)
     {
-        $this->_where->add_subexp(func_get_args(), ' OR ');
+        $this->_where->add_subexp(func_get_args(), 'OR');
         return $this;
     }
 
@@ -168,7 +146,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      */
     public function and_where_open()
     {
-        $this->_where->open(' AND ');
+        $this->_where->open('AND');
         return $this;
     }
 
@@ -179,7 +157,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      */
     public function or_where_open()
     {
-        $this->_where->open(' OR ');
+        $this->_where->open('OR');
         return $this;
     }
 
@@ -251,7 +229,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      */
     public function and_having($column, $op, $value)
     {
-        $this->_having->add_subexp(func_get_args(), ' AND ');
+        $this->_having->add_subexp(func_get_args(), 'AND');
         return $this;
     }
 
@@ -265,7 +243,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      */
     public function or_having($column, $op, $value)
     {
-        $this->_having->add_subexp(func_get_args(), ' OR ');
+        $this->_having->add_subexp(func_get_args(), 'OR');
         return $this;
     }
 
@@ -286,7 +264,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      */
     public function and_having_open()
     {
-        $this->_where->open(' AND ');
+        $this->_where->open('AND');
         return $this;
     }
 
@@ -297,7 +275,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      */
     public function or_having_open()
     {
-        $this->_where->open(' OR ');
+        $this->_where->open('OR');
         return $this;
     }
 
@@ -371,8 +349,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      */
     public function join($table, $type = NULL)
     {
-        $this->_join[] = $join = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, array('table', 'join_type'));
-        $join->add_subexp(array($table, $type));
+        $this->_join[] = new Db_Query_Builder_Decoration_Expression_Join($this->_db, $table, $type);
         return $this;
     }
 
@@ -386,14 +363,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      */
     public function on($c1, $op, $c2)
     {
-        $on = end($this->_join);
-		if(!$on instanceof Db_Query_Builder_Decoration_Expression_Group)
-		{
-			$this->_join[] = ' ON ';
-			$this->_join[] = $on = new Db_Query_Builder_Decoration_Expression_Group($this->_db, array('column', 'str', 'column'));
-		}
-		
-        $on->add_subexp(array($c1, $op, $c2));
+        end($this->_join)->add_subexp(func_get_args(), 'AND');
         return $this;
     }
 }

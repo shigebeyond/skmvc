@@ -20,6 +20,12 @@ abstract class Sk_Db_Query_Builder_Decoration_Expression
 	protected $_db;
 	
 	/**
+	 * 修饰符， 如where/group by
+	 * @var string
+	 */
+	protected $_operator;
+	
+	/**
 	 * 子表达式, 可视为行
 	 * @var array
 	 */
@@ -31,9 +37,10 @@ abstract class Sk_Db_Query_Builder_Decoration_Expression
 	 */
 	protected $_element_handlers;
 	
-	public function __construct($db, array $element_handler)
+	public function __construct($db, $operator, array $element_handler)
 	{
 		$this->_db = $db;
+		$this->_operator = $operator;
 		$this->_element_handlers = $element_handler;
 	}
 
@@ -47,14 +54,13 @@ abstract class Sk_Db_Query_Builder_Decoration_Expression
 			return ''; // __toString() 必须返回字符串，不能返回NULL
 		
 		// 逐个子表达式编译+合并
-		// 1 子表达式的连接符是一样的
-		//return implode($this->_default_delimiter, array_map(array($this, 'compile_row'), $this->_subexps));
+		$subexps = array_map(array($this, 'compile_subexp'), $this->_subexps);
+		$sql = implode(' ', $subexps);
 		
-		// 2 每个子表达式拼接的连接符不一样
-		$str = '';
-		foreach ($this->_subexps as $i => $subexp)
-			$str .= $this->compile_subexp($subexp);
-		return $str;
+		if($sql && $this->_operator)
+			return $this->_operator.' '.$sql;
+		
+		return $sql;
 	}
 
     /**

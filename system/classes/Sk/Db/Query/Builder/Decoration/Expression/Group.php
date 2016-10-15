@@ -45,7 +45,7 @@ class Sk_Db_Query_Builder_Decoration_Expression_Group extends Db_Query_Builder_D
     {
         $last = end($this->_subexps);
 		if(!$last instanceof Sk_Db_Query_Builder_Decoration_Expression_Simple)
-            $this->_subexps[] = $last = new Sk_Db_Query_Builder_Decoration_Expression_Simple($this->_db, $this->_element_handlers);
+            $this->_subexps[] = $last = new Sk_Db_Query_Builder_Decoration_Expression_Simple($this->_db, NULL, $this->_element_handlers);
         return $last;
     }
 
