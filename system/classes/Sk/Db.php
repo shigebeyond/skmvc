@@ -14,6 +14,14 @@
 class Sk_Db extends Container_Component_Config
 {
 	/**
+	 * 查询表字段的sql/字段名
+	 * @var array
+	 */
+	public static $columns_sql = array(
+		'mysql' => array('DESC :table', 'Field')
+	);
+	
+	/**
 	 *  获得db单例
 	 * @param string $group
 	 * @return Db
@@ -40,6 +48,22 @@ class Sk_Db extends Container_Component_Config
 		parent::__construct($config, $name);
 		// 创建pdo连接
 		$this->connect();
+	}
+	
+	/**
+	 * 获得驱动类型
+	 * 	从数据库配置项dsn中获取
+	 * 	如dsn为mysql:host=localhost;dbname=test， 则driver为mysql
+	 * @return 
+	 */
+	public function driver()
+	{
+		$dsn = $this->_config['dsn'];
+		$i = strpos($dsn, ':');
+		if($i !== FALSE)
+			return substr($dsn, 0, $i);
+		
+		return NULL;
 	}
 
 	/**
@@ -402,6 +426,19 @@ class Sk_Db extends Container_Component_Config
 
 		// 转义
 		return $this->_pdo->quote ( $value );
+	}
+	
+	/**
+	 * 查询表的字段
+	 * @param string $table
+	 * @return array
+	 */
+	public function list_columns($table)
+	{
+		list($sql, $field) = static::$columns_sql[$this->driver()];
+		$sql = strtr($sql, ':table', $table);
+		$columns = $this->query($sql);
+		return array_column($columns, $field);
 	}
 	
 	/**
