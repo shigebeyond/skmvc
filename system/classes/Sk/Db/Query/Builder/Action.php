@@ -136,7 +136,7 @@ abstract class Sk_Db_Query_Builder_Action
 	 * @param string... $columns
 	 * @return Db_Query_Builder_Action
 	 */
-	public function select($columns)
+	public function columns($columns)
 	{
 		$columns = func_get_args();
 		$this->_prepare_alias($columns); // 准备好别名
