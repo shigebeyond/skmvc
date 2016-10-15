@@ -27,7 +27,8 @@ class Test_Db_Query_Builder extends PHPUnit_Framework_TestCase
 	{
 		$query = Db::instance()->select('user')->where('id', '=', 2);
 		echo "select sql: ".$query->compile()[0];
-		echo "select result: ".$query->execute();
+		$result = $query->execute();
+		echo "select result: ".print_r($result);
 	}
 	
 }
