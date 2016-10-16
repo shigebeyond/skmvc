@@ -18,8 +18,25 @@ class Controller_Home extends Controller
 
 		//$result = Db::instance()->insert('user', array('name' => 'kkk', 'age' => 12))->execute();
 		
-		$query = Db::instance()->delete('user')->where('id', '=', '1');
+// 		$query = Db::instance()->delete('user')->where('id', '=', '1');
+// 		$result = $query->execute();
+		
+		/* $query = Db::instance()->select('user')->where('user.id', '=', 2);
+// 		$query = Db::instance()->select('user')->where('id', '=', 2)->where_open()->where('name', '=', 'li')->where_close();
+		$msg = "sql: ".$query->compile()[0];
 		$result = $query->execute();
+		$msg .= "select result: ".print_r($result); */
+		
+		/* $columns = Db::instance()->list_columns('user');
+		print_r($columns); */
+		
+		/* $user = new Model_User(7);
+		$user->name = 'shi';
+		$user->age = 24;
+		$result = $user->update();
+		print_r($user->as_array()); */
+		
+		$user = Model_User::query_builder()->find_all();
 		
 		$this->res->body("result is $result");
 	}
