@@ -438,7 +438,7 @@ class Sk_Db extends Container_Component_Config
 	public function list_columns($table)
 	{
 		list($sql, $field) = static::$columns_sql[$this->driver()];
-		$sql = strtr($sql, ':table', $table);
+		$sql = str_replace(':table', $table, $sql);
 		$columns = $this->query($sql);
 		return array_column($columns, $field); // 只取字段名
 	}
