@@ -54,7 +54,15 @@ abstract class Sk_Db_Query_Builder_Action
 	 */
 	protected $_distinct = FALSE;
 
-    public function __construct($action, $db, $table = NULL, $data = NULL)
+	/**
+	 * 构造函数
+	 * 
+	 * @param string $action sql动作：select/insert/update/delete
+	 * @param string|Db $db 数据库配置的分组名/数据库连接
+	 * @param string $table 表名
+	 * @param string $data 数据
+	 */
+    public function __construct($action, $db = 'default', $table = NULL, $data = NULL)
     {
         $this->_action = $action;
 
@@ -73,7 +81,7 @@ abstract class Sk_Db_Query_Builder_Action
 	/**
 	 * 设置表名: 一般是单个表名
 	 * @param string $tables
-	 * @return Sk_Db_Query
+	 * @return Db_Query_Builder
 	 */
 	public function table($table)
 	{
@@ -83,7 +91,7 @@ abstract class Sk_Db_Query_Builder_Action
 	/**
 	 * 设置表名: 可能有多个表名
 	 * @param string $table
-	 * @return Sk_Db_Query
+	 * @return Db_Query_Builder
 	 */
 	public function from($tables)
 	{
@@ -106,7 +114,7 @@ abstract class Sk_Db_Query_Builder_Action
 	 *
 	 * @param string $column
 	 * @param string $value
-	 * @return Db_Query
+	 * @return Db_Query_Builder
 	 */
 	public function data($column, $value = NULL)
 	{
@@ -123,7 +131,7 @@ abstract class Sk_Db_Query_Builder_Action
 	 *
 	 * @param string $column
 	 * @param string $value
-	 * @return Db_Query_Builder_Action
+	 * @return Db_Query_Builder
 	 */
 	public function set($column, $value)
 	{
@@ -134,7 +142,7 @@ abstract class Sk_Db_Query_Builder_Action
 	 * 设置查询的字段, select时用
 	 *
 	 * @param string... $columns
-	 * @return Db_Query_Builder_Action
+	 * @return Db_Query_Builder
 	 */
 	public function columns($columns)
 	{

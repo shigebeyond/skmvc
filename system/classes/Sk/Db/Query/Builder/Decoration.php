@@ -49,7 +49,15 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 	 */
 	protected $_join;
 	
-	public function __construct($action, $db, $table = NULL, $data = NULL)
+	/**
+	 * 构造函数
+	 *
+	 * @param string $action sql动作：select/insert/update/delete
+	 * @param string|Db $db 数据库配置的分组名/数据库连接
+	 * @param string $table 表名
+	 * @param string $data 数据
+	 */
+	public function __construct($action, $db = 'default', $table = NULL, $data = NULL)
 	{
 		parent::__construct($action, $db, $table, $data);
 		

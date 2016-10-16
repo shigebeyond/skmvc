@@ -21,7 +21,7 @@ abstract class Sk_Orm_Entity
 	 * 记录变化的字段
 	 * @var array
 	*/
-	protected $_changed = array();
+	protected $_dirty = array();
 	
 	/**
 	 * 原始的数据
@@ -50,7 +50,8 @@ abstract class Sk_Orm_Entity
 	 * 尝试获得对象属性
 	 *
 	 * @param   string $column 属性名
-	 * @return  mixed
+	 * @param   unknow $value 属性值，引用传递，用于获得值
+	 * @return  bool
 	 */
 	public function try_get($column, &$value)
 	{
@@ -59,6 +60,8 @@ abstract class Sk_Orm_Entity
 			$value = $this->_object[$column];
 			return TRUE;
 		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -93,19 +96,16 @@ abstract class Sk_Orm_Entity
 			if ($value !== $this->_object[$column])
 			{
 				$this->_object[$column] = $value;
-				$this->_changed[$column] = TRUE; // 记录变化的字段
+				$this->_dirty[$column] = TRUE; // 记录变化的字段
 			}
-			
-			return TRUE;
 		}
 		
-		return FALSE;
+		return TRUE;
 	}
 	
 	/**
-	 * 获得字段列表
-	 * 
+	 * 获得字段
 	 * @return array
 	 */
-	public abstract static function columns();
+	abstract public static function columns();
 }
