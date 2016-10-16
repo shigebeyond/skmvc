@@ -39,7 +39,7 @@ class Sk_Orm_MetaData extends Orm_Entity
 	 * 主键
 	 * @var string
 	 */
-	protected $_primary_key = 'id';
+	protected static $_primary_key = 'id';
 	
 	/**
 	 * 获得数据库
@@ -102,5 +102,15 @@ class Sk_Orm_MetaData extends Orm_Entity
 	public static function query_builder($action = 'select')
 	{
 		return new Orm_Query_Builder($action, get_called_class());
+	}
+	
+	/**
+	 * 获得主键值
+	 * @return int|string
+	 */
+	public function pk()
+	{
+		$this->try_get(static::$_primary_key, $value);
+		return $value;
 	}
 }

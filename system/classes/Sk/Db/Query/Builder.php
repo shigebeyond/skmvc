@@ -28,7 +28,7 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration
 	 * 编译 + 执行
 	 * 
 	 * @param string $fetch_class 查询语句返回的对象类型, 如果是false, 则返回关联数组, 否则返回对应类的对象
-	 * @return Db_Result
+	 * @return int 影响行数
 	 */
 	public function execute($fetch_class = FALSE) 
 	{

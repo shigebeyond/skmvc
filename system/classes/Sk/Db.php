@@ -170,7 +170,7 @@ class Sk_Db extends Container_Component_Config
 	 *
 	 * @param string $sql
 	 * @param array  $params
-	 * @return int
+	 * @return int 影响行数
 	 */
 	public function execute($sql, $params = [])
 	{

@@ -12,93 +12,85 @@
 abstract class Sk_Orm_Entity
 {
 	/**
-	 * 当前数据
-	 * @var array
-	 */
-	protected $_object = array();
-	
-	/**
-	 * 记录变化的字段
-	 * @var array
-	*/
-	protected $_dirty = array();
-	
-	/**
-	 * 原始的数据
+	 * 原始的数据：<字段名 => 字段值>
 	 * @var array
 	*/
 	protected $_original = array();
 	
 	/**
-	 * 获得对象属性
+	 * 变化的数据：<字段名 => 字段值>
+	 * @var array
+	*/
+	protected $_dirty = array();
+	
+	/**
+	 * 获得对象字段
 	 *
-	 * @param   string $column 属性名
+	 * @param   string $column 字段名
 	 * @return  mixed
 	 */
 	public function __get($column)
 	{
-		// 尝试获得对象属性
+		// 尝试获得对象字段
 		if($this->try_get($column, $value))
 			return $value;
 		
 		// 如果获得失败,则抛出异常
 		$class = get_class($this);
-		throw new Exception("类 $class 没有属性 $column");
+		throw new Exception("类 $class 没有字段 $column");
 	}
 	
 	/**
-	 * 尝试获得对象属性
+	 * 尝试获得对象字段
 	 *
-	 * @param   string $column 属性名
-	 * @param   unknow $value 属性值，引用传递，用于获得值
+	 * @param   string $column 字段名
+	 * @param   unknow $value 字段值，引用传递，用于获得值
 	 * @return  bool
 	 */
 	public function try_get($column, &$value)
 	{
-		if(isset($this->_object, $column))
-		{
-			$value = $this->_object[$column];
-			return TRUE;
-		}
+		if(!isset($this->_original, $column))
+			return FALSE;
 		
-		return FALSE;
+		// 先找dirty，后找original
+		$value = isset($this->_dirty[$column]) ? $this->_dirty[$column] : $this->_original[$column];
+		return TRUE;
 	}
 	
 	/**
-	 * 设置对象属性值
+	 * 设置对象字段值
 	 *
-	 * @param  string $column 属性名
-	 * @param  mixed  $value  属性值
+	 * @param  string $column 字段名
+	 * @param  mixed  $value  字段值
 	 */
 	public function __set($column, $value)
 	{
-		// 尝试设置对象属性, 如果失败, 则跑出异常
+		// 尝试设置对象字段, 如果失败, 则跑出异常
 		if(!$this->try_set($column, $value))
 		{
 			$class = get_class($this);
-			throw new Exception("类 $class 没有属性 $column");
+			throw new Exception("类 $class 没有字段 $column");
 		}
 	}
 	
 	/**
-	 * 尝试设置属性值
+	 * 尝试设置字段值
 	 *
-	 * @param  string $column 属性名
-	 * @param  mixed  $value  属性值
+	 * @param  string $column 字段名
+	 * @param  mixed  $value  字段值
 	 * @return ORM
 	 */
 	public function try_set($column, $value)
 	{
 		// 判断是否是字段
-		if (isset($this->columns(), $column))
-		{
-			// 判断属性值是否真正有改变
-			if ($value !== $this->_object[$column])
-			{
-				$this->_object[$column] = $value;
-				$this->_dirty[$column] = TRUE; // 记录变化的字段
-			}
-		}
+		if (!isset($this->columns(), $column))
+			return FALSE;
+		
+		// 判断字段值是否真正有改变
+		if ($value === $this->_original[$column])
+			unset($this->_dirty[$column]);
+		else 
+			$this->_dirty[$column] = $value; // 记录变化字段
 		
 		return TRUE;
 	}
