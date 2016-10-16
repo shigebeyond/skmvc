@@ -18,12 +18,14 @@ class Sk_Db extends Container_Component_Config
 	 * @var array
 	 */
 	public static $columns_sql = array(
-		'mysql' => array('DESC :table', 'Field')
+		'mysql' => array('DESC :table', 'Field'), // mysql
+		'sqlsrv' => array("SELECT * FROM INFORMATION_SCHEMA.columns WHERE TABLE_NAME=':table'", 'COLUMN_NAME'), // sql server
+		'oci' => array("SELECT * FROM user_tab_columns WHERE Table_Name=':table'", 'column_name'), // oracle
 	);
 	
 	/**
 	 *  获得db单例
-	 * @param string $group
+	 * @param string $group 数据库配置的分组名
 	 * @return Db
 	 */
 	public static function instance($group = 'default')
@@ -189,17 +191,17 @@ class Sk_Db extends Container_Component_Config
 	 *
 	 * @param string $sql
 	 * @param array  $params
-	 * @param bool|string $as_object 是否返回对象, 如果是false, 则返回关联数组, 否则返回对应类的对象
+	 * @param bool|string $fetch_class 指定返回对象的类型, 如果是false, 则返回关联数组, 否则返回对应类的对象
 	 * @return array
 	 */
-	public function query($sql, $params = [], $as_object = FALSE)
+	public function query($sql, $params = [], $fetch_class = FALSE)
 	{
 		try {
 			// 执行sql
 			$statement = $this->_exec($sql, $params);
 			// 封装结果
-			if (is_string($as_object))
-				$statement->setFetchMode(PDO::FETCH_CLASS, $as_object, $params);
+			if ($fetch_class)
+				$statement->setFetchMode(PDO::FETCH_CLASS, $fetch_class);
 			else 
 				$statement->setFetchMode(PDO::FETCH_ASSOC);
 			
@@ -430,6 +432,7 @@ class Sk_Db extends Container_Component_Config
 	
 	/**
 	 * 查询表的字段
+	 * 
 	 * @param string $table
 	 * @return array
 	 */
@@ -438,49 +441,66 @@ class Sk_Db extends Container_Component_Config
 		list($sql, $field) = static::$columns_sql[$this->driver()];
 		$sql = strtr($sql, ':table', $table);
 		$columns = $this->query($sql);
-		return array_column($columns, $field);
+		return array_column($columns, $field); // 只取字段名
+	}
+	
+	/**
+	 * 获得sql查询器
+	 * 
+	 * @param string $action sql动作: select/insert/update/delete
+	 * @param string $table 表名
+	 * @param string $data 数据
+	 * @return Sk_Db_Query_Builder
+	 */
+	public function query_builder($action = 'select', $table = NULL, $data = NULL)
+	{
+		return new Sk_Db_Query_Builder($action, $this, $table, $data);
 	}
 	
 	/**
 	 * select
-	 * @param string $table
-	 * @param string $data
+	 * 
+	 * @param string $table 表名
+	 * @param string $data 数据
 	 * @return Sk_Db_Query_Builder
 	 */
 	public function select($table = NULL, $data = NULL)
 	{
-		return new Sk_Db_Query_Builder ( 'select', $this, $table, $data );
+		return static::query_builder('select', $table, $data);
 	}
 	
 	/**
 	 * insert
-	 * @param string $table
-	 * @param string $data
+	 * 
+	 * @param string $table 表名
+	 * @param string $data 数据
 	 * @return Sk_Db_Query_Builder
 	 */
 	public function insert($table = NULL, $data = NULL)
 	{
-		return new Sk_Db_Query_Builder ( 'insert', $this, $table, $data );
+		return static::query_builder('insert', $table, $data);
 	}
 	
 	/**
 	 * update
-	 * @param string $table
-	 * @param string $data
+	 * 
+	 * @param string $table 表名
+	 * @param string $data 数据
 	 * @return Sk_Db_Query_Builder
 	 */
 	public function update($table = NULL, $data = NULL)
 	{
-		return new Sk_Db_Query_Builder ( 'update', $this, $table, $data );
+		return static::query_builder('update', $table, $data);
 	}
 	
 	/**
 	 * delete
-	 * @param string $table
+	 * 
+	 * @param string $table 表名
 	 * @return Sk_Db_Query_Builder
 	 */
 	public function delete($table = NULL)
 	{
-		return new Sk_Db_Query_Builder ( 'delete', $this, $table );
+		return static::query_builder('delete', $table);
 	}
 }
