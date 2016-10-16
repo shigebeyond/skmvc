@@ -54,9 +54,15 @@ class Test_Db extends PHPUnit_Framework_TestCase
 		echo "select result: $result"; // 1
 	} */
 	
-	public function test_select(){
+	/* public function test_select(){
 		echo Db::instance()->preview('select * from user where id = ?', array(3));
 		echo "\n";
 		echo Db::instance()->preview('select * from user where id = :id', array(':id' => 3));
+	} */
+	
+	public function test_columns(){
+		$columns = Db::instance()->list_columns('user');
+		print_r($columns);
+		$this->assertEquals(array('id', 'name', 'age'), $columns);
 	}
 }
