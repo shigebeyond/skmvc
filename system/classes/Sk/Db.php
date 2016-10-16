@@ -432,7 +432,6 @@ class Sk_Db extends Container_Component_Config
 	
 	/**
 	 * 查询表的字段
-	 * 
 	 * @param string $table
 	 * @return array
 	 */
@@ -445,20 +444,7 @@ class Sk_Db extends Container_Component_Config
 	}
 	
 	/**
-	 * 获得sql查询器
-	 * 
-	 * @param string $action sql动作: select/insert/update/delete
-	 * @param string $table 表名
-	 * @param string $data 数据
-	 * @return Sk_Db_Query_Builder
-	 */
-	public function query_builder($action = 'select', $table = NULL, $data = NULL)
-	{
-		return new Sk_Db_Query_Builder($action, $this, $table, $data);
-	}
-	
-	/**
-	 * select
+	 * select的sql构建器
 	 * 
 	 * @param string $table 表名
 	 * @param string $data 数据
@@ -466,11 +452,11 @@ class Sk_Db extends Container_Component_Config
 	 */
 	public function select($table = NULL, $data = NULL)
 	{
-		return static::query_builder('select', $table, $data);
+		return new Sk_Db_Query_Builder ( 'select', $this, $table, $data );
 	}
 	
 	/**
-	 * insert
+	 * insert的sql构建器
 	 * 
 	 * @param string $table 表名
 	 * @param string $data 数据
@@ -478,11 +464,11 @@ class Sk_Db extends Container_Component_Config
 	 */
 	public function insert($table = NULL, $data = NULL)
 	{
-		return static::query_builder('insert', $table, $data);
+		return new Sk_Db_Query_Builder ( 'insert', $this, $table, $data );
 	}
 	
 	/**
-	 * update
+	 * update的sql构建器
 	 * 
 	 * @param string $table 表名
 	 * @param string $data 数据
@@ -490,17 +476,17 @@ class Sk_Db extends Container_Component_Config
 	 */
 	public function update($table = NULL, $data = NULL)
 	{
-		return static::query_builder('update', $table, $data);
+		return new Sk_Db_Query_Builder ( 'update', $this, $table, $data );
 	}
 	
 	/**
-	 * delete
+	 * delete的sql构建器
 	 * 
 	 * @param string $table 表名
 	 * @return Sk_Db_Query_Builder
 	 */
 	public function delete($table = NULL)
 	{
-		return static::query_builder('delete', $table);
+		return new Sk_Db_Query_Builder ( 'delete', $this, $table );
 	}
 }
