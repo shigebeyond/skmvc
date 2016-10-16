@@ -19,13 +19,16 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 	
 	/**
 	 * 构造函数
+	 *
+	 * string $class model类名，其基类为Orm
 	 * @param string $action sql动作：select/insert/update/delete
-	 * @param string $class model类名，其基类为Orm
-	 * @param array $data 数据
+	 * @param string|Db $db 数据库配置的分组名/数据库连接
+	 * @param string $table 表名
+	 * @param string $data 数据
 	 */
-	public function __construct($action, $class, $data = NULL)
+	public function __construct($class, $action = 'select', $db = 'default', $table = NULL, $data = NULL)
 	{
-		parent::__construct($action, $class::db($action), $class::table(), $data);
+		parent::__construct($action, $db, $table, $data);
 		$this->_class = $class;
 	}
 	
@@ -33,16 +36,17 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 	 * 查询单个
 	 * @return 
 	 */
-    public static function find()
+    public function find()
     {
-    	return $this->limit(1)->execute($this->_class);
+    	$rows = $this->limit(1)->execute($this->_class);
+		return Arr::get($rows, 0);
     }
 	
     /**
      * 查询多个
      * @return array
      */
-    final public static function findAll()
+    public function find_all()
     {
     	return $this->execute($this->_class);
     }

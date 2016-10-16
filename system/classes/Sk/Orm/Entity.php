@@ -83,16 +83,43 @@ abstract class Sk_Orm_Entity
 	public function try_set($column, $value)
 	{
 		// 判断是否是字段
-		if (!isset($this->columns(), $column))
+		if (!in_array($column, $this->columns()))
 			return FALSE;
 		
 		// 判断字段值是否真正有改变
-		if ($value === $this->_original[$column])
+		if ($value === Arr::get($this->_original, $column))
 			unset($this->_dirty[$column]);
 		else 
 			$this->_dirty[$column] = $value; // 记录变化字段
 		
 		return TRUE;
+	}
+	
+	/**
+	 * 设置多个字段值
+	 *
+	 * @param  array $values   字段值的数组：<字段名 => 字段值>
+	 * @param  array $expected 要设置的字段名的数组
+	 * @return ORM
+	 */
+	public function values(array $values, array $expected = NULL)
+	{
+		if ($expected === NULL)
+			$expected = array_keys($values);
+		
+		foreach ($expected as $column)
+			$this->$column = $values[$column];
+
+		return $this;
+	}
+	
+	/**
+	 * 获得数据
+	 * @return array
+	 */
+	public function as_array()
+	{
+		return $this->_dirty + $this->_original;
 	}
 	
 	/**

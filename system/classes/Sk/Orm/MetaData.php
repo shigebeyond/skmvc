@@ -15,7 +15,7 @@ class Sk_Orm_MetaData extends Orm_Entity
 	 * 数据库
 	 * @var Db
 	 */
-	protected static $_db;
+	protected static $_db = 'default';
 	
 	/**
 	 * 对象名
@@ -46,7 +46,7 @@ class Sk_Orm_MetaData extends Orm_Entity
 	 * @param string $action sql动作：select/insert/update/delete，可以用于区分读写的数据库连接
 	 * @return Db
 	 */
-	public static function db($action)
+	public static function db($action = 'select')
 	{
 		if(!static::$_db instanceof Db)
 			static::$_db = Db::instance(static::$_db);
@@ -91,17 +91,6 @@ class Sk_Orm_MetaData extends Orm_Entity
 			static::$_columns = static::db()->list_columns(static::table()); 
 		
 		return static::$_columns;
-	}
-	
-	/**
-	 * 获得sql构建器
-	 * 
-	 * @param string $action
-	 * @return Orm_Query_Builder
-	 */
-	public static function query_builder($action = 'select')
-	{
-		return new Orm_Query_Builder($action, get_called_class());
 	}
 	
 	/**

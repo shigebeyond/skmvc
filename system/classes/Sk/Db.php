@@ -109,10 +109,11 @@ class Sk_Db extends Container_Component_Config
 
 	/**
 	 * 获得值的pdo类型
+	 * 
 	 * @param unknown $value
 	 * @return number
 	 */
-	public function pdo_type($value)
+	public static function pdo_type($value)
 	{
 		if(is_int($value))
 			return PDO::PARAM_INT;
@@ -152,7 +153,7 @@ class Sk_Db extends Container_Component_Config
 			$key = is_int($key) ? $key + 1 : $key;
 
 			// 绑定参数
-			$statement->bindValue($key, $value, $this->pdo_type($value));
+			$statement->bindValue($key, $value, static::pdo_type($value));
 		}
 
 		// 3 执行
@@ -191,25 +192,44 @@ class Sk_Db extends Container_Component_Config
 	 *
 	 * @param string $sql
 	 * @param array  $params
-	 * @param bool|string $fetch_class 指定返回对象的类型, 如果是false, 则返回关联数组, 否则返回对应类的对象
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_NUM，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
 	 * @return array
 	 */
-	public function query($sql, $params = [], $fetch_class = FALSE)
+	public function query($sql, $params = [], $fetch_value = FALSE)
 	{
 		try {
 			// 执行sql
 			$statement = $this->_exec($sql, $params);
 			// 封装结果
-			if ($fetch_class)
-				$statement->setFetchMode(PDO::FETCH_CLASS, $fetch_class);
+			if($fetch_value === FALSE)
+				$statement->setFetchMode(PDO::FETCH_ASSOC); // fix bug: General error: fetch mode doesn't allow any extra arguments
 			else 
-				$statement->setFetchMode(PDO::FETCH_ASSOC);
-			
+				$statement->setFetchMode(static::fetch_mode($fetch_value), $fetch_value);
 			// Convert the result into an array, as PDOStatement::rowCount is not reliable
 			return $statement->fetchAll();
 		} catch (PDOException $e) {
 			throw new Exception("执行sql出错: ", $e->getMessage());
 		}
+	}
+	
+	/**
+	 * 根据$pdo->setFetchMode()的第二个参数来确定fetchMode
+	 * 
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_NUM，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
+	 * @return number
+	 */
+	public static function fetch_mode($fetch_value)
+	{
+		if(is_int($fetch_value))
+			return PDO::FETCH_NUM;
+
+		if(is_string($fetch_value))
+			return PDO::FETCH_CLASS;
+		
+		if(is_object($fetch_value))
+			return PDO::FETCH_INTO;
+		
+		return PDO::FETCH_ASSOC;
 	}
 
 	/**
