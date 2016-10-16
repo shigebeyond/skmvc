@@ -119,7 +119,9 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      */
     public function and_where($column, $op, $value)
     {
-        $this->_where->add_subexp(func_get_args(), 'AND');
+    	if($value === NULL && $op == '=')
+    		$op = 'IS';
+        $this->_where->add_subexp(array($column, $op, $value), 'AND');
         return $this;
     }
 
@@ -133,7 +135,9 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
      */
     public function or_where($column, $op, $value)
     {
-        $this->_where->add_subexp(func_get_args(), 'OR');
+    	if($value === NULL && $op == '=')
+    		$op = 'IS';
+        $this->_where->add_subexp(array($column, $op, $value), 'OR');
         return $this;
     }
 
