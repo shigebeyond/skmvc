@@ -276,9 +276,10 @@ class Sk_Response{
 	 */
 	public function send()
 	{
+		// 先略过, 不排除有其他输出
 		// 清空内容缓存
-		if (ob_get_length() > 0)
-			ob_end_clean();
+		/* if (ob_get_length() > 0)
+			ob_end_clean(); */
 		
 		// 先头部，后主体
 		echo $this->send_headers()->body();
