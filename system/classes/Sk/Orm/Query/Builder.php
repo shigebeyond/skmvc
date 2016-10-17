@@ -34,20 +34,27 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 	
 	/**
 	 * 查询单个
-	 * @return 
+	 * @return
+	 *
 	 */
-    public function find()
-    {
-    	$rows = $this->limit(1)->execute($this->_class);
+	public function find() 
+	{
+		$rows = $this->limit(1)->find_all();
 		return Arr::get($rows, 0);
-    }
+	}
 	
-    /**
-     * 查询多个
-     * @return array
-     */
-    public function find_all()
-    {
-    	return $this->execute($this->_class);
-    }
+	/**
+	 * 查询多个
+	 * @return array
+	 */
+	public function find_all() 
+	{
+		$rows = $this->execute();
+		foreach ($rows as $key => $row)
+		{
+			$orm = new $this->_class;
+			$orm->original($row);
+		}
+		return $rows;
+	}
 }
