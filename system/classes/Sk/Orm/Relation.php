@@ -11,6 +11,24 @@
  */
 class Sk_Orm_Relation extends Orm_Persistent
 {
+	/**
+	 * 关联关系 - 有一个
+	 * @var array
+	 */
+	protected static $_has_one = array();
+	
+	/**
+	 * 关联关系 - 从属于
+	 * @var array
+	*/
+	protected static $_belongs_to = array();
+	
+	/**
+	 * 关联关系 - 有多个
+	 * @var array
+	*/
+	protected static $_has_many = array();
+	
 	//重写try_get/try_set
 	
 	//关联查询
