@@ -9,7 +9,7 @@
  * @date 2016-10-10
  *
  */
-class Sk_Orm_MetaData extends Orm_Entity
+abstract class Sk_Orm_MetaData extends Orm_Entity
 {
 	/**
 	 * 数据库

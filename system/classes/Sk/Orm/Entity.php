@@ -157,5 +157,8 @@ abstract class Sk_Orm_Entity
 	 * 获得字段
 	 * @return array
 	 */
-	abstract public static function columns();
+	public static function columns()
+	{
+		throw new Exception("必须重写该方法");
+	}
 }
