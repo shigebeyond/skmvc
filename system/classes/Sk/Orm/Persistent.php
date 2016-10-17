@@ -35,6 +35,14 @@ class Sk_Orm_Persistent extends Orm_MetaData
 	}
 	
 	/**
+	 * 判断当前记录是否存在于db: 有原始数据就认为它是存在的
+	 */
+	public function exists()
+	{
+		return !empty($this->_original);
+	}
+	
+	/**
 	 * 获得sql构建器: (select) sql
 	 *
 	 * @param string $action
@@ -95,6 +103,9 @@ class Sk_Orm_Persistent extends Orm_MetaData
 	 */
 	public function update()
 	{
+		if(!$this->exists())
+			throw new Exception('更新对象['.static::$_name.'#'.$this->pk().']前先检查是否存在');
+		
 		if (empty($this->_dirty))
 			return $this;
 
@@ -105,6 +116,29 @@ class Sk_Orm_Persistent extends Orm_MetaData
 		$this->_original = $this->_dirty + $this->_original;
 		$this->_dirty = array();
 		
+		return $result;
+	}
+	
+	/**
+	 * 更新数据: update sql
+	 *
+	 *    $user = Model_User::query_builder()->where('id', '=', 1)->find();
+	 *    $user->name = "li";
+	 *    $user->update();
+	 *
+	 * @return int 影响行数
+	 */
+	public function delete()
+	{
+		if(!$this->exists())
+			throw new Exception('删除对象['.static::$_name.'#'.$this->pk().']前先检查是否存在');
+		
+		// 删除数据
+		$result = static::query_builder('delete')->where(static::$_primary_key, '=', $this->pk())->execute();
+	
+		// 更新内部数据
+		$this->_original = $this->_dirty = array();
+	
 		return $result;
 	}
 }

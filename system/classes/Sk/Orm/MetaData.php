@@ -18,7 +18,7 @@ abstract class Sk_Orm_MetaData extends Orm_Entity
 	protected static $_db = 'default';
 	
 	/**
-	 * 对象名
+	 * 模型名/对象名
 	 * @var string
 	 */
 	protected static $_name;
