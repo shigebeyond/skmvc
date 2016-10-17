@@ -12,13 +12,13 @@
 abstract class Sk_Orm_Entity
 {
 	/**
-	 * 原始的数据：<字段名 => 字段值>
+	 * 原始的字段值：<字段名 => 字段值>
 	 * @var array
 	*/
 	protected $_original = array();
 	
 	/**
-	 * 变化的数据：<字段名 => 字段值>
+	 * 变化的字段值：<字段名 => 字段值>
 	 * @var array
 	*/
 	protected $_dirty = array();
@@ -49,11 +49,17 @@ abstract class Sk_Orm_Entity
 	 */
 	public function try_get($column, &$value)
 	{
-		if(!isset($this->_original, $column))
+		// 判断是否是字段
+		if (!array_key_exists($column, $this->columns()))
 			return FALSE;
 		
 		// 先找dirty，后找original
-		$value = isset($this->_dirty[$column]) ? $this->_dirty[$column] : $this->_original[$column];
+		if(isset($this->_dirty[$column]))
+			$value = $this->_dirty[$column];
+		elseif(isset($this->_original[$column]))
+			$value = $this->_original[$column];
+		else 
+			$value = NULL;
 		return TRUE;
 	}
 	
@@ -83,7 +89,7 @@ abstract class Sk_Orm_Entity
 	public function try_set($column, $value)
 	{
 		// 判断是否是字段
-		if (!in_array($column, $this->columns()))
+		if (!array_key_exists($column, $this->columns()))
 			return FALSE;
 		
 		// 判断字段值是否真正有改变
@@ -114,7 +120,32 @@ abstract class Sk_Orm_Entity
 	}
 	
 	/**
-	 * 获得数据
+	 * 获得/设置原始的字段值
+	 * @param array $original
+	 * @return Sk_Orm_Entity|array
+	 */
+	public function original(array $original = NULL)
+	{
+		if ($original === NULL) 
+		{
+			$this->_original = $original;
+			return $this;
+		}
+		
+		return $this->_original; 
+	}
+	
+	/**
+	 * 获得变化的字段值
+	 * @return array
+	 */
+	public function dirty()
+	{
+		return $this->_dirty;
+	}
+	
+	/**
+	 * 获得字段值
 	 * @return array
 	 */
 	public function as_array()
