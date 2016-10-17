@@ -158,7 +158,6 @@ class Sk_Db extends Container_Component_Config
 
 		// 3 执行
 		$statement->execute();
-
 		return $statement;
 	}
 
@@ -200,13 +199,10 @@ class Sk_Db extends Container_Component_Config
 		try {
 			// 执行sql
 			$statement = $this->_exec($sql, $params);
-			// 封装结果
-			if($fetch_value === FALSE)
-				$statement->setFetchMode(PDO::FETCH_ASSOC); // fix bug: General error: fetch mode doesn't allow any extra arguments
-			else 
-				$statement->setFetchMode(static::fetch_mode($fetch_value), $fetch_value);
-			// Convert the result into an array, as PDOStatement::rowCount is not reliable
-			return $statement->fetchAll();
+			// 直接查出所有数据, 因为PDOStatement::rowCount是不可靠的
+			if(!$fetch_value)
+				return $statement->fetchAll(PDO::FETCH_ASSOC); // fix bug: General error: Extraneous additional parameters => 不需要第二个参数
+			return $statement->fetchAll(static::fetch_mode($fetch_value), $fetch_value);
 		} catch (PDOException $e) {
 			throw new Exception("执行sql出错: ", $e->getMessage());
 		}
@@ -222,6 +218,9 @@ class Sk_Db extends Container_Component_Config
 	{
 		if(is_int($fetch_value))
 			return PDO::FETCH_NUM;
+		
+		if(is_callable($fetch_value)) // 优先于string/object, 因为函数名是string, 匿名函数Closure是object
+			return PDO::FETCH_FUNC;
 
 		if(is_string($fetch_value))
 			return PDO::FETCH_CLASS;
@@ -457,10 +456,15 @@ class Sk_Db extends Container_Component_Config
 	 */
 	public function list_columns($table)
 	{
+		// 查询
 		list($sql, $field) = static::$columns_sql[$this->driver()];
 		$sql = str_replace(':table', $table, $sql);
-		$columns = $this->query($sql);
-		return array_column($columns, $field); // 只取字段名
+		$rows = $this->query($sql);
+		// 构建返回数组: <字段名 => 行>
+		$columns = array();
+		foreach ($rows as $row)
+			$columns[$row[$field]] = $row;
+		return $columns;
 	}
 	
 	/**
