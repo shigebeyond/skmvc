@@ -110,4 +110,25 @@ class Sk_Arr
 		// not be associative (e.g. the keys array looked like {0:0, 1:1...}).
 		return array_keys($keys) !== $keys;
 	}
+	
+	/**
+	 * 将多个对象中的指定的key字段与value字段给抽取为关联数组
+	 * 
+	 * @param array $arr
+	 * @param string $key_field 
+	 * @param string $value_field
+	 * @return array
+	 */
+	public static function assoc(array $arr, $key_field = NULL, $value_field = NULL)
+	{
+		$result = array();
+		foreach ($arr as $i => $item)
+		{
+			$key = $key_field === NULL ? $i : $item->$key_field;
+			$value = $value_field === NULL ? $item : $item->$value_field;
+			$result[$key] = $value;
+		}
+		return $result;
+	}
+	
 }
