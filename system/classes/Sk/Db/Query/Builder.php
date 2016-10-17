@@ -27,10 +27,10 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration
 	/**
 	 * 编译 + 执行
 	 * 
-	 * @param string $fetch_class 查询语句返回的对象类型, 如果是false, 则返回关联数组, 否则返回对应类的对象
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_NUM，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
 	 * @return int 影响行数
 	 */
-	public function execute($fetch_class = FALSE) 
+	public function execute($fetch_value = FALSE) 
 	{
 		// 1 编译
 		list ($sql, $params) = $this->compile();
@@ -38,7 +38,7 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration
 		// 2 执行
 		// select
 		if($this->_action == 'select') 
-			return $this->_db->query($sql, $params, $fetch_class);
+			return $this->_db->query($sql, $params, $fetch_value);
 		
 		// insert/update/delete 
 		return $this->_db->execute($sql, $params);

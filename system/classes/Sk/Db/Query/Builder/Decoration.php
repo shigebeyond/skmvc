@@ -96,286 +96,285 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 		return array($sql, array());
 	}
 
-    /**
-     * Alias of and_where()
-     *
-     * @param   mixed   $column  column name or array($column, $alias) or object
-     * @param   string  $op      logic operator
-     * @param   mixed   $value   column value
-     * @return Db_Query_Builder
-     */
-    public function where($column, $op, $value)
-    {
-        return $this->and_where($column, $op, $value);
-    }
-
-    /**
-     * Creates a new "AND WHERE" condition for the query.
-     *
-     * @param   mixed   $column  column name or array($column, $alias) or object
-     * @param   string  $op      logic operator
-     * @param   mixed   $value   column value
-     * @return Db_Query_Builder
-     */
-    public function and_where($column, $op, $value)
-    {
-    	if($value === NULL && $op == '=')
-    		$op = 'IS';
-        $this->_where->add_subexp(array($column, $op, $value), 'AND');
-        return $this;
-    }
-
-    /**
-     * Creates a new "OR WHERE" condition for the query.
-     *
-     * @param   mixed   $column  column name or array($column, $alias) or object
-     * @param   string  $op      logic operator
-     * @param   mixed   $value   column value
-     * @return Db_Query_Builder
-     */
-    public function or_where($column, $op, $value)
-    {
-    	if($value === NULL && $op == '=')
-    		$op = 'IS';
-        $this->_where->add_subexp(array($column, $op, $value), 'OR');
-        return $this;
-    }
-
-    /**
-     * Alias of and_where_open()
-     *
-     * @return Db_Query_Builder
-     */
-    public function where_open()
-    {
-        return $this->and_where_open();
-    }
-
-    /**
-     * Opens a new "AND WHERE (...)" grouping.
-     *
-     * @return Db_Query_Builder
-     */
-    public function and_where_open()
-    {
-        $this->_where->open('AND');
-        return $this;
-    }
-
-    /**
-     * Opens a new "OR WHERE (...)" grouping.
-     *
-     * @return Db_Query_Builder
-     */
-    public function or_where_open()
-    {
-        $this->_where->open('OR');
-        return $this;
-    }
-
-    /**
-     * Closes an open "WHERE (...)" grouping.
-     *
-     * @return Db_Query_Builder
-     */
-    public function where_close()
-    {
-        return $this->and_where_close();
-    }
-
-    /**
-     * Closes an open "WHERE (...)" grouping.
-     *
-     * @return Db_Query_Builder
-     */
-    public function and_where_close()
-    {
-        $this->_where->close();
-        return $this;
-    }
-
-    /**
-     * Closes an open "WHERE (...)" grouping.
-     *
-     * @return Db_Query_Builder
-     */
-    public function or_where_close()
-    {
-        $this->_where->close();
-        return $this;
-    }
-
-    /**
-     * Creates a "GROUP BY ..." filter.
-     *
-     * @param   mixed   $columns  column name or array($column, $alias) or object
-     * @return Db_Query_Builder
-     */
-    public function group_by($columns)
-    {
-        $columns = func_get_args();
-        $this->_group_by = array_merge($this->_group_by, $columns);
-        return $this;
-    }
-
-    /**
-     * Alias of and_having()
-     *
-     * @param   mixed   $column  column name or array($column, $alias) or object
-     * @param   string  $op      logic operator
-     * @param   mixed   $value   column value
-     * @return Db_Query_Builder
-     */
-    public function having($column, $op, $value = NULL)
-    {
-        return $this->and_having($column, $op, $value);
-    }
-
-    /**
-     * Creates a new "AND HAVING" condition for the query.
-     *
-     * @param   mixed   $column  column name or array($column, $alias) or object
-     * @param   string  $op      logic operator
-     * @param   mixed   $value   column value
-     * @return Db_Query_Builder
-     */
-    public function and_having($column, $op, $value)
-    {
-        $this->_having->add_subexp(func_get_args(), 'AND');
-        return $this;
-    }
-
-    /**
-     * Creates a new "OR HAVING" condition for the query.
-     *
-     * @param   mixed   $column  column name or array($column, $alias) or object
-     * @param   string  $op      logic operator
-     * @param   mixed   $value   column value
-     * @return Db_Query_Builder
-     */
-    public function or_having($column, $op, $value)
-    {
-        $this->_having->add_subexp(func_get_args(), 'OR');
-        return $this;
-    }
-
-    /**
-     * Alias of and_having_open()
-     *
-     * @return Db_Query_Builder
-     */
-    public function having_open()
-    {
-        return $this->and_having_open();
-    }
-
-    /**
-     * Opens a new "AND HAVING (...)" grouping.
-     *
-     * @return Db_Query_Builder
-     */
-    public function and_having_open()
-    {
-        $this->_where->open('AND');
-        return $this;
-    }
-
-    /**
-     * Opens a new "OR HAVING (...)" grouping.
-     *
-     * @return Db_Query_Builder
-     */
-    public function or_having_open()
-    {
-        $this->_where->open('OR');
-        return $this;
-    }
-
-    /**
-     * Closes an open "AND HAVING (...)" grouping.
-     *
-     * @return Db_Query_Builder
-     */
-    public function having_close()
-    {
-        return $this->and_having_close();
-    }
-
-    /**
-     * Closes an open "AND HAVING (...)" grouping.
-     *
-     * @return Db_Query_Builder
-     */
-    public function and_having_close()
-    {
-        $this->_where->close();
-        return $this;
-    }
-
-    /**
-     * Closes an open "OR HAVING (...)" grouping.
-     *
-     * @return Db_Query_Builder
-     */
-    public function or_having_close()
-    {
-        $this->_where->close();
-        return $this;
-    }
-
-    /**
-     * Applies sorting with "ORDER BY ..."
-     *
-     * @param   mixed   $column     column name or array($column, $alias) or object
-     * @param   string  $direction  direction of sorting
-     * @return Db_Query_Builder
-     */
-    public function order_by($column, $direction = NULL)
-    {
-        $this->_order_by->add_subexp(array($column, $direction));
-        return $this;
-    }
-
-    /**
-     * Return up to "LIMIT ..." results
-     *
-     * @param   integer  $limit
-     * @param   integer  $offset
-     * @return Db_Query_Builder
-     */
-    public function limit($limit, $offset = 0)
-    {
-        if($offset === 0)
-            $this->_limit->add_subexp(array($limit));
-        else
-            $this->_limit->add_subexp(array($offset, $limit));
-        return $this;
-    }
-
-    /**
-     * Adds addition tables to "JOIN ...".
-     *
-     * @param   mixed   $table  column name or array($column, $alias) or object
-     * @param   string  $type   join type (LEFT, RIGHT, INNER, etc)
-     * @return Db_Query_Builder
-     */
-    public function join($table, $type = NULL)
-    {
-        $this->_join[] = new Db_Query_Builder_Decoration_Expression_Join($this->_db, $table, $type);
-        return $this;
-    }
-
-    /**
-     * Adds "ON ..." conditions for the last created JOIN statement.
-     *
-     * @param   mixed   $c1  column name or array($column, $alias) or object
-     * @param   string  $op  logic operator
-     * @param   mixed   $c2  column name or array($column, $alias) or object
-     * @return Db_Query_Builder
-     */
-    public function on($c1, $op, $c2)
-    {
-        end($this->_join)->add_subexp(func_get_args(), 'AND');
-        return $this;
-    }
+	/**
+	 * Alias of and_where()
+	 *
+	 * @param   mixed   $column  column name or array($column, $alias) or object
+	 * @param   string  $op      logic operator
+	 * @param   mixed   $value   column value
+	 * @return Db_Query_Builder
+	 */
+	public function where($column, $op, $value) {
+		return $this->and_where ( $column, $op, $value );
+	}
+	
+	/**
+	 * Creates a new "AND WHERE" condition for the query.
+	 *
+	 * @param   mixed   $column  column name or array($column, $alias) or object
+	 * @param   string  $op      logic operator
+	 * @param   mixed   $value   column value
+	 * @return Db_Query_Builder
+	 */
+	public function and_where($column, $op, $value)
+	{
+		if($value === NULL && $op == '=')
+			$op = 'IS';
+		$this->_where->add_subexp(array($column, $op, $value), 'AND');
+		return $this;
+	}
+	
+	/**
+	 * Creates a new "OR WHERE" condition for the query.
+	 *
+	 * @param   mixed   $column  column name or array($column, $alias) or object
+	 * @param   string  $op      logic operator
+	 * @param   mixed   $value   column value
+	 * @return Db_Query_Builder
+	 */
+	public function or_where($column, $op, $value)
+	{
+		if($value === NULL && $op == '=')
+			$op = 'IS';
+		$this->_where->add_subexp(array($column, $op, $value), 'OR');
+		return $this;
+	}
+	
+	/**
+	 * Alias of and_where_open()
+	 *
+	 * @return Db_Query_Builder
+	 */
+	public function where_open()
+	{
+		return $this->and_where_open();
+	}
+	
+	/**
+	 * Opens a new "AND WHERE (...)" grouping.
+	 *
+	 * @return Db_Query_Builder
+	 */
+	public function and_where_open()
+	{
+		$this->_where->open('AND');
+		return $this;
+	}
+	
+	/**
+	 * Opens a new "OR WHERE (...)" grouping.
+	 *
+	 * @return Db_Query_Builder
+	 */
+	public function or_where_open()
+	{
+		$this->_where->open('OR');
+		return $this;
+	}
+	
+	/**
+	 * Closes an open "WHERE (...)" grouping.
+	 *
+	 * @return Db_Query_Builder
+	 */
+	public function where_close()
+	{
+		return $this->and_where_close();
+	}
+	
+	/**
+	 * Closes an open "WHERE (...)" grouping.
+	 *
+	 * @return Db_Query_Builder
+	 */
+	public function and_where_close()
+	{
+		$this->_where->close();
+		return $this;
+	}
+	
+	/**
+	 * Closes an open "WHERE (...)" grouping.
+	 *
+	 * @return Db_Query_Builder
+	 */
+	public function or_where_close()
+	{
+		$this->_where->close();
+		return $this;
+	}
+	
+	/**
+	 * Creates a "GROUP BY ..." filter.
+	 *
+	 * @param   mixed   $columns  column name or array($column, $alias) or object
+	 * @return Db_Query_Builder
+	 */
+	public function group_by($columns)
+	{
+		$columns = func_get_args();
+		$this->_group_by = array_merge($this->_group_by, $columns);
+		return $this;
+	}
+	
+	/**
+	 * Alias of and_having()
+	 *
+	 * @param   mixed   $column  column name or array($column, $alias) or object
+	 * @param   string  $op      logic operator
+	 * @param   mixed   $value   column value
+	 * @return Db_Query_Builder
+	 */
+	public function having($column, $op, $value = NULL)
+	{
+		return $this->and_having($column, $op, $value);
+	}
+	
+	/**
+	 * Creates a new "AND HAVING" condition for the query.
+	 *
+	 * @param   mixed   $column  column name or array($column, $alias) or object
+	 * @param   string  $op      logic operator
+	 * @param   mixed   $value   column value
+	 * @return Db_Query_Builder
+	 */
+	public function and_having($column, $op, $value)
+	{
+		$this->_having->add_subexp(func_get_args(), 'AND');
+		return $this;
+	}
+	
+	/**
+	 * Creates a new "OR HAVING" condition for the query.
+	 *
+	 * @param   mixed   $column  column name or array($column, $alias) or object
+	 * @param   string  $op      logic operator
+	 * @param   mixed   $value   column value
+	 * @return Db_Query_Builder
+	 */
+	public function or_having($column, $op, $value)
+	{
+		$this->_having->add_subexp(func_get_args(), 'OR');
+		return $this;
+	}
+	
+	/**
+	 * Alias of and_having_open()
+	 *
+	 * @return Db_Query_Builder
+	 */
+	public function having_open()
+	{
+		return $this->and_having_open();
+	}
+	
+	/**
+	 * Opens a new "AND HAVING (...)" grouping.
+	 *
+	 * @return Db_Query_Builder
+	 */
+	public function and_having_open()
+	{
+		$this->_where->open('AND');
+		return $this;
+	}
+	
+	/**
+	 * Opens a new "OR HAVING (...)" grouping.
+	 *
+	 * @return Db_Query_Builder
+	 */
+	public function or_having_open()
+	{
+		$this->_where->open('OR');
+		return $this;
+	}
+	
+	/**
+	 * Closes an open "AND HAVING (...)" grouping.
+	 *
+	 * @return Db_Query_Builder
+	 */
+	public function having_close()
+	{
+		return $this->and_having_close();
+	}
+	
+	/**
+	 * Closes an open "AND HAVING (...)" grouping.
+	 *
+	 * @return Db_Query_Builder
+	 */
+	public function and_having_close()
+	{
+		$this->_where->close();
+		return $this;
+	}
+	
+	/**
+	 * Closes an open "OR HAVING (...)" grouping.
+	 *
+	 * @return Db_Query_Builder
+	 */
+	public function or_having_close()
+	{
+		$this->_where->close();
+		return $this;
+	}
+	
+	/**
+	 * Applies sorting with "ORDER BY ..."
+	 *
+	 * @param   mixed   $column     column name or array($column, $alias) or object
+	 * @param   string  $direction  direction of sorting
+	 * @return Db_Query_Builder
+	 */
+	public function order_by($column, $direction = NULL)
+	{
+		$this->_order_by->add_subexp(array($column, $direction));
+		return $this;
+	}
+	
+	/**
+	 * Return up to "LIMIT ..." results
+	 *
+	 * @param   integer  $limit
+	 * @param   integer  $offset
+	 * @return Db_Query_Builder
+	 */
+	public function limit($limit, $offset = 0)
+	{
+		if($offset === 0)
+			$this->_limit->add_subexp(array($limit));
+		else
+			$this->_limit->add_subexp(array($offset, $limit));
+		return $this;
+	}
+	
+	/**
+	 * Adds addition tables to "JOIN ...".
+	 *
+	 * @param   mixed   $table  column name or array($column, $alias) or object
+	 * @param   string  $type   join type (LEFT, RIGHT, INNER, etc)
+	 * @return Db_Query_Builder
+	 */
+	public function join($table, $type = NULL)
+	{
+		$this->_join[] = new Db_Query_Builder_Decoration_Expression_Join($this->_db, $table, $type);
+		return $this;
+	}
+	
+	/**
+	 * Adds "ON ..." conditions for the last created JOIN statement.
+	 *
+	 * @param   mixed   $c1  column name or array($column, $alias) or object
+	 * @param   string  $op  logic operator
+	 * @param   mixed   $c2  column name or array($column, $alias) or object
+	 * @return Db_Query_Builder
+	 */
+	public function on($c1, $op, $c2)
+	{
+		end($this->_join)->add_subexp(func_get_args(), 'AND');
+		return $this;
+	}
 }
