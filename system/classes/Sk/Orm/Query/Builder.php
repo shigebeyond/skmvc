@@ -29,6 +29,10 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 	public function __construct($class, $action = 'select', $db = 'default', $table = NULL, $data = NULL)
 	{
 		parent::__construct($action, $db, $table, $data);
+		
+		// 检查是否是orm子类
+		if(!is_subclass_of($class, 'Orm'))
+			throw new Exception('Orm_Query_Builder::_class 必须是 Orm 的子类');
 		$this->_class = $class;
 	}
 	
@@ -53,7 +57,8 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 		foreach ($rows as $key => $row)
 		{
 			$orm = new $this->_class;
-			$orm->original($row);
+			$orm->original($row); // 设置原始字段值
+			$rows[$key] = $orm;
 		}
 		return $rows;
 	}
