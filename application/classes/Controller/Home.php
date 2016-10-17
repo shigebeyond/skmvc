@@ -36,8 +36,16 @@ class Controller_Home extends Controller
 		$result = $user->update();
 		print_r($user->as_array()); */
 		
-		$user = Model_User::query_builder()->find_all();
+// 		$users = Db::instance()->query('select * from user', array($this, 'handle_user'));
+
+		$users = Model_User::query_builder()->find_all();
+		print_r($users);
 		
 		$this->res->body("result is $result");
 	}
+	
+	public function handle_user($name, $age) {
+		return "{$name}: {$age}";
+	}
+	
 }

@@ -18,16 +18,22 @@ class Test_Orm extends PHPUnit_Framework_TestCase
 		print_r($user->as_array());
 	} */
 	
-	/* public function test_find(){
-		$user = Model_User::query_builder()->where('id', '=', 7)->find();
-		print_r($user->as_array());
-// 		$this->assertNotNull($user->id);
-	} */
+	public function test_find(){
+		$user = Model_User::query_builder()->where('id', '=', 5)->find();
+		if($user)
+		{
+			print_r($user->as_array());
+			$this->assertEquals(7, $user->id);
+		}
+		else 
+		{
+			echo '没有找到记录';
+		}
+	} 
 	
 	public function test_find_all(){
-		$user = Model_User::query_builder()->find_all();
-		print_r($user);
-// 		$this->assertNotNull($user->id);
+		$users = Model_User::query_builder()->find_all();
+		print_r($users);
 	}
 	
 }

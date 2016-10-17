@@ -2,10 +2,10 @@
 
 class Test_Db extends PHPUnit_Framework_TestCase
 {
-	public function test_connenct(){
+	/* public function test_connenct(){
 	  	$db = Db::instance();
 		$this->assertNotNull($db);
-	}
+	} */
 	
 	/* public function test_create(){
 		$sql = "CREATE TABLE IF NOT EXISTS `user` (
@@ -60,9 +60,18 @@ class Test_Db extends PHPUnit_Framework_TestCase
 		echo Db::instance()->preview('select * from user where id = :id', array(':id' => 3));
 	} */
 	
-	public function test_columns(){
+	/* public function test_columns(){
 		$columns = Db::instance()->list_columns('user');
 		print_r($columns);
 		$this->assertEquals(array('id', 'name', 'age'), $columns);
+	} */
+	
+	public function test_query_func(){
+		$users = Db::instance()->query('select * from user', array($this, 'handle_user'));
+		print_r($users);
+	}
+	
+	public function handle_user($name, $age) {
+		return "{$name}: {$age}";
 	}
 }
