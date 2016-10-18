@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * ORM
+ * ORM之关联对象操作
  * 
  * @Package package_name 
  * @category 
@@ -9,4 +9,4 @@
  * @date 2016-10-10 上午12:52:34 
  *
  */
-class Sk_Orm extends Orm_Related{}
+class Orm_Related extends Sk_Orm_Related{}

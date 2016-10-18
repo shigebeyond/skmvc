@@ -110,6 +110,35 @@ class Sk_Orm_Relation extends Sk_Orm_Relation
 	}
 	
 	/**
+	 * 查询从表
+	 *     从表.外键 = 主表.主键
+	 *
+	 * @param Orm_Query_Builder $query 如果不为空, 则为联表查询, 否则为单表查询
+	 * @return Orm_Query_Builder
+	 */
+	public function query_slave_xxxxx($master, $slave, $foreign_key, Orm_Query_Builder $query = NULL)
+	{
+		// 获得从表及其外键
+		$master_class = ($master instanceof Orm) ? get_class($master) : $master;
+		$master_table = $master_class::table();
+		$master_pk = $master_class::primary_key();
+	
+		// 获得主表及其主键
+		$slave_class = $slave;
+		$slave_table = $slave_class::table();
+		$slave_fk = $foreign_key;
+	
+		// 在原有的查询上, 加上联查从表
+		if($query)
+			return $query->join($slave_table)->on($this->slave_fk(TRUE), $this->master_pk(TRUE)); // 从表.外键 = 主表.主键
+	
+		// 直接查询从表
+		$class = $this->_slave_class;
+		return $class::query_builder()->where($this->slave_fk(), $this->master_pk()); // 从表.外键 = 主表.主键
+	}
+	
+	
+	/**
 	 * 获得主表
 	 * @return string
 	 */
