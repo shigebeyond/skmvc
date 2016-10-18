@@ -11,72 +11,127 @@
  */
 class Sk_Orm_Related extends Orm_Persistent
 {
-	/**
-	 * 关联关系 - 有一个
-	 *    当前表是主表, 关联表是从表
-	 *    
-	 * @var array
-	 */
-	protected static $_has_one = array(
-		'model' => 'user',
-		'foreign_key' => 'user_id',
-	);
-	
-	/**
-	 * 关联关系 - 有多个
-	 * 	当前表是主表, 关联表是从表
-	 *  
-	 * @var array
-	*/
-	protected static $_has_many = array();
-	
-	/**
-	 * 关联关系 - 从属于
-	 *    当前表是从表, 关联表是主表
-	 *    
-	 * @var array
-	 */
-	protected static $_belongs_to = array();
-	
-	public function get_has_one($config)
-	{
-		return $this->get_has_many($config)->limit(1);
-	}
-	
-	public function get_has_many($config)
-	{
-		$class = 'Model_'.$config['model'];
-		$relation = new Relation($this, $class, $config['foreign_key']);
-		return $class::query_builder()->where($config['foreign_key'], '=', $this->pk());
-	}
-	
-	public function get_belongs_to($config)
-	{
-		$class = 'Model_'.$config['model'];
-		$fk = $config['foreign_key'];
-		return $class::query_builder()->where($class::$_primary_key, '=', $this->$fk);
-	}
-	
 	
 	protected static $_relations = array(
-		'user' => array(
-			'type' => 'slave',	
-			'foreign_key' => 'has'
-		)
+			'user' => array(
+					'type' => 'slave',
+					'foreign_key' => 'has'
+			)
 	);
 	
+	/**
+	 * 获得关联关系
+	 * 
+	 * @param string $name
+	 * @return array
+	 */
 	public static function relation($name = NULL)
 	{
+		if($name === NULL)
+			return static::$_relations;
+		
 		return Arr::get(static::$_relations, $name);
 	}
 	
-
-	public function get_user()
+	/**
+	 * 缓存关联对象
+	 * @var array <name => Orm>
+	 */
+	protected $_related = array();
+	
+	/**
+	 * 尝试获得对象字段
+	 *
+	 * @param   string $column 字段名
+	 * @param   mixed $value 字段值，引用传递，用于获得值
+	 * @return  bool
+	 */
+	public function try_get($column, &$value)
 	{
-		return (new Orm_Relation($this, 'Model_User', 'class_id'))->query_slave();
+		// 获得关联对象
+		if (isset(static::$_relations[$column]))
+		{
+			$value = $this->_related($column);
+			return TRUE;
+		}
+		
+		return parent::try_get($column, $value);
 	}
 	
-	//重写try_get/try_set
+	/**
+	 * 尝试设置字段值
+	 *
+	 * @param  string $column 字段名
+	 * @param  mixed  $value  字段值
+	 * @return ORM
+	 */
+	public function try_set($column, $value)
+	{
+		// 设置关联对象
+		if (isset(static::$_relations[$column]))
+		{
+			$this->_related[$column] = $value;
+			// 如果关联的是主表，则更新从表的外键
+			extract(static::$_relations[$column]);
+			if($type == 'belongs_to')
+				$this->$foreign_key = $value->pk();
+			return TRUE;
+		}
+		
+		return parent::try_set($column, $value);
+	}
 	
-	//关联查询
+	/**
+	 * 获得关联对象
+	 *
+	 * @param string $name 关联对象名
+	 * @return Orm
+	 */
+	public function _related($name)
+	{
+		if(!isset($this->_related[$name]))
+		{
+			// 根据关联关系来构建查询
+			extract(static::$_relations[$name]);
+			$class = 'Model_'.ucfirst($model);
+			switch ($type)
+			{
+				case 'belongs_to': // belongs_to: 查主表
+					$this->_related[$name] = $this->_query_master($class, $foreign_key)->find();
+					break;
+				case 'has_many': // has_xxx: 查从表
+					$this->_related[$name] = $this->_query_slave($class, $foreign_key)->limit(1)->find();
+					break;
+				case 'has_one': // has_xxx: 查从表
+					$this->_related[$name] = $this->_query_slave($class, $foreign_key)->find_all();
+					break;
+			}
+		}
+		return $this->_related[$name];
+	}
+
+	/**
+	 * 查询关联的从表
+	 * 
+	 * @param string $class 从类
+	 * @param string $foreign_key 外键
+	 * @return Orm_Query_Builder
+	 */
+	protected function _query_slave($class, $foreign_key)
+	{
+		return $class::query_builder()->where($foreign_key, '=', $this->pk()); // 从表.外键 = 主表.主键
+	}
+	
+	/**
+	 * 查询关联的主表
+	 * 
+	 * @param string $class 主类
+	 * @param string $foreign_key 外键
+	 * @return Orm_Query_Builder
+	 */
+	protected function _query_master($class, $foreign_key)
+	{
+		return $class::query_builder()->where($class::$_primary_key, '=', $this->$foreign_key); // 主表.主键 = 从表.外键
+	}
+	
 }

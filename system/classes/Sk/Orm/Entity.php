@@ -44,7 +44,7 @@ abstract class Sk_Orm_Entity
 	 * 尝试获得对象字段
 	 *
 	 * @param   string $column 字段名
-	 * @param   unknow $value 字段值，引用传递，用于获得值
+	 * @param   mixed $value 字段值，引用传递，用于获得值
 	 * @return  bool
 	 */
 	public function try_get($column, &$value)
