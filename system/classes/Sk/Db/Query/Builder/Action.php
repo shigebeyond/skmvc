@@ -80,27 +80,30 @@ abstract class Sk_Db_Query_Builder_Action
 	
 	/**
 	 * 设置表名: 一般是单个表名
-	 * @param string $tables
+	 * @param tables 表名数组: array($table1, $table2, $alias => $table3), 
+	 * 								  如 array('user', 'contact', 'addr' => 'user_address'), 其中 user 与 contact 表不带别名, 而 user_address 表带别名 addr
 	 * @return Db_Query_Builder
 	 */
-	public function table($table)
+	public function table($tables)
 	{
-		return $this->_tables(func_get_args());
+		return $this->_tables($tables);
 	}
 	
 	/**
 	 * 设置表名: 可能有多个表名
-	 * @param string $table
+	 * @param tables 表名数组: array($table1, $table2, $alias => $table3), 
+	 * 								  如 array('user', 'contact', 'addr' => 'user_address'), 其中 user 与 contact 表不带别名, 而 user_address 表带别名 addr
 	 * @return Db_Query_Builder
 	 */
 	public function from($tables)
 	{
-		return $this->_tables(func_get_args());
+		return $this->_tables($tables);
 	}
 	
 	/**
 	 * 处理多个表名的设置
-	 * @param tables
+	 * @param tables 表名数组: array($table1, $table2, $alias => $table3), 
+	 * 								  如 array('user', 'contact', 'addr' => 'user_address'), 其中 user 与 contact 表不带别名, 而 user_address 表带别名 addr
 	 */
 	protected function _tables($tables) 
 	 {
@@ -141,32 +144,14 @@ abstract class Sk_Db_Query_Builder_Action
 	/**
 	 * 设置查询的字段, select时用
 	 *
-	 * @param string... $columns
+	 * @param array $columns 字段名数组: array($column1, $column2, $alias => $column3), 
+	 * 													如 array('name', 'age', 'birt' => 'birthday'), 其中 name 与 age 字段不带别名, 而 birthday 字段带别名 birt
 	 * @return Db_Query_Builder
 	 */
-	public function columns($columns)
+	public function columns(array $columns)
 	{
-		$columns = func_get_args();
-		$this->_prepare_alias($columns); // 准备好别名
 		$this->_data = $columns;
 		return $this;
-	}
-	
-	/**
-	 * 为字段/表准备别名
-	 * @param array $columns 字段名, 如 array('name', 'age', array('birthday', 'birt')), 其中某个元素是带有字段别名, 如array('birthday', 'birt') 其中 'birthday'是字段名, 'birt'是别名
-	 * 要转换为 <alias, column>, 即 array('name', 'age', 'birt' => 'birthday')
-	 */
-	protected function _prepare_alias(array &$columns)
-	{
-		foreach ($columns as $key => $column)
-		{
-			// 对有别名的字段,如 array('column', 'alias'), 将alias转换关联数组的键, column为值
-			if(is_array($column)){
-				unset($columns[$key]);
-				$columns[$column[0]] = $column[1];
-			}
-		}
 	}
 	
 	public function distinct($value)
