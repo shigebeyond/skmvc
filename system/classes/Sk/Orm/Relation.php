@@ -10,7 +10,7 @@
  * @date 2016-10-10 上午12:52:34 
  *
  */
-class Sk_Orm_Relation extends Sk_Orm_Relation
+class Sk_Orm_Relation
 {
 	/**
 	 * 主类
