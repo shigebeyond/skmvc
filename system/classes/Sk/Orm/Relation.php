@@ -2,7 +2,8 @@
 
 /**
  * ORM之关联关系
- * 
+ *        表之间的关联关系: 主表.主键 = 从表.外键
+ *        
  * @Package package_name 
  * @category 
  * @author shijianhang
@@ -13,9 +14,8 @@ class Sk_Orm_Relation extends Orm_Persistent
 {
 	/**
 	 * 关联关系 - 有一个
-	 *    主表.主键 = 关联表.外键
-	 *    master.id = other.master_id
-	 *  
+	 *    当前表是主表, 关联表是从表
+	 *    
 	 * @var array
 	 */
 	protected static $_has_one = array(
@@ -25,8 +25,7 @@ class Sk_Orm_Relation extends Orm_Persistent
 	
 	/**
 	 * 关联关系 - 有多个
-	 * 	  主表.主键 = 关联表.外键
-	 *    master.id = other.master_id
+	 * 	当前表是主表, 关联表是从表
 	 *  
 	 * @var array
 	*/
@@ -34,31 +33,39 @@ class Sk_Orm_Relation extends Orm_Persistent
 	
 	/**
 	 * 关联关系 - 从属于
-	 *    主表.主键 = 关联表.外键
-	 *  master.id = other.master_id
+	 *    当前表是从表, 关联表是主表
+	 *    
 	 * @var array
 	 */
 	protected static $_belongs_to = array();
 	
-	public function has_one($config)
+	public function get_has_one($config)
 	{
-		$class = 'Model_'.$config['model'];
-		return $class::query_builder()->where($config['foreign_key'], '=', $this->pk())->find();
+		return $this->get_has_many($config)->limit(1);
 	}
 	
-	public function has_many($config)
+	public function get_has_many($config)
 	{
 		$class = 'Model_'.$config['model'];
-		return $class::query_builder()->where($config['foreign_key'], '=', $this->pk())->find();
+		return $class::query_builder()->where($config['foreign_key'], '=', $this->pk());
+	}
+	
+	public function get_belongs_to($config)
+	{
+		$class = 'Model_'.$config['model'];
+		$fk = $config['foreign_key'];
+		return $class::query_builder()->where($class::$_primary_key, '=', $this->$fk);
 	}
 	
 	
-	public function belongs_to($config)
+	protected static $_relations = array();
+	
+	public static function relation($name = NULL)
 	{
-		$class = 'Model_'.$config['model'];
-		$pk = $config['foreign_key'];
-		return $class::query_builder()->where($class::$_primary_key, '=', $this->$pk)->find();
+		return Arr::get(static::$_relations, $name);
 	}
+	
+
 	
 	//重写try_get/try_set
 	

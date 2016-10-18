@@ -62,4 +62,36 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 		}
 		return $rows;
 	}
+	
+	public function join_has_one($config)
+	{
+		return $this->join_has_many($config)->limit(1);
+	}
+	
+	public function join_has_many($config)
+	{
+		// 获得主表及其主键
+		$master_class = $this->_class;
+		$master_table = $master_class::table();
+		$master_pk = $master_class::primary_key();
+		// 获得从表及其外键
+		$slave_class = 'Model_'.$config['model'];
+		$slave_table = $slave_class::table();
+		$slave_fk = $config['foreign_key'];
+		return $this->join($slave_table, 'LEFT')->on($slave_table.'.'.$slave_fk, '=', $master_table.'.'.$master_pk);
+	}
+	
+	public function join_belongs_to($config)
+	{
+		// 获得主表及其主键
+		$slave_class = $this->_class;
+		$slave_table = $slave_class::table();
+		$slave_fk = $config['foreign_key'];
+		// 获得从表及其外键
+		$master_class = 'Model_'.$config['model'];
+		$master_table = $master_class::table();
+		$master_pk = $slave_class::primary_key();
+		
+		return $class::query_builder()->where($class::$_primary_key, '=', $this->$fk);
+	}
 }

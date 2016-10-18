@@ -82,6 +82,15 @@ abstract class Sk_Orm_MetaData extends Orm_Entity
 	}
 	
 	/**
+	 * 获得主键
+	 * @return string
+	 */
+	public static function primary_key()
+	{
+		return static::$_primary_key;
+	}
+	
+	/**
 	 * 获得字段列表
 	 * @return array
 	 */
