@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * ORM之关联关系
+ * ORM之间的关联关系
  *        表之间的关联关系: 主表.主键 = 从表.外键
  *        
  * @Package package_name 
@@ -10,64 +10,161 @@
  * @date 2016-10-10 上午12:52:34 
  *
  */
-class Sk_Orm_Relation extends Orm_Persistent
+class Sk_Orm_Relation extends Sk_Orm_Relation
 {
 	/**
-	 * 关联关系 - 有一个
-	 *    当前表是主表, 关联表是从表
-	 *    
-	 * @var array
+	 * 主类
+	 * @var string
 	 */
-	protected static $_has_one = array(
-		'model' => 'user',
-		'foreign_key' => 'user_id',
-	);
-	
-	/**
-	 * 关联关系 - 有多个
-	 * 	当前表是主表, 关联表是从表
-	 *  
-	 * @var array
-	*/
-	protected static $_has_many = array();
-	
-	/**
-	 * 关联关系 - 从属于
-	 *    当前表是从表, 关联表是主表
-	 *    
-	 * @var array
-	 */
-	protected static $_belongs_to = array();
-	
-	public function get_has_one($config)
-	{
-		return $this->get_has_many($config)->limit(1);
-	}
-	
-	public function get_has_many($config)
-	{
-		$class = 'Model_'.$config['model'];
-		return $class::query_builder()->where($config['foreign_key'], '=', $this->pk());
-	}
-	
-	public function get_belongs_to($config)
-	{
-		$class = 'Model_'.$config['model'];
-		$fk = $config['foreign_key'];
-		return $class::query_builder()->where($class::$_primary_key, '=', $this->$fk);
-	}
-	
-	
-	protected static $_relations = array();
-	
-	public static function relation($name = NULL)
-	{
-		return Arr::get(static::$_relations, $name);
-	}
-	
+	protected $_master_class;
 
+	/**
+	 * 主对象
+	 * @var Orm
+	 */
+	protected $_master_object;
+
+	/**
+	 * 从类
+	 * @var string
+	 */
+	protected $_slave_class;
+
+	/**
+	 * 从对象
+	 * @var Orm
+	 */
+	protected $_slave_object;
+
+	/**
+	 * 外键
+	 * @var string
+	 */
+	protected $_foreign_key;
 	
-	//重写try_get/try_set
+	/**
+	 * 构造函数
+	 * @param string|Orm $master 主类|主对象
+	 * @param string|Orm $slave 从类|从对象
+	 * @param string $foreign_key 外键
+	 */
+	public function __construct($master, $slave, $foreign_key)
+	{
+		// 设置主类 + 主对象
+		if($master instanceof Orm)
+		{
+			$this->_master_class = get_class($master);
+			$this->_master_object = $master;
+		}
+		else 
+		{
+			$this->_master_class = $master;
+		}
+
+		// 设置从类 + 从对象
+		if($slave instanceof Orm)
+		{
+			$this->_slave_class = get_class($slave);
+			$this->_slave_object = $slave;
+		}
+		else
+		{
+			$this->_slave_class = $slave;
+		}
+	}
 	
-	//关联查询
+	/**
+	 * 查询主表
+	 *     主表.主键 = 从表.外键
+	 *     
+	 * @param Orm_Query_Builder $query 如果不为空, 则为联表查询, 否则为单表查询
+	 * @return Orm_Query_Builder
+	 */
+	public function query_master(Orm_Query_Builder $query = NULL)
+	{
+		// 在原有的查询上, 加上联查主表
+		if($query)
+			return $query->join($this->slave_table())->on($this->master_pk(TRUE), $this->slave_fk(TRUE)); // 主表.主键 = 从表.外键
+		
+		// 直接查询主表
+		$class = $this->_master_class;
+		return $class::query_builder()->where($this->master_pk(), $this->slave_fk()); // 主表.主键 = 从表.外键
+	}
+	
+	/**
+	 * 查询从表
+	 *     从表.外键 = 主表.主键
+	 *     
+	 * @param Orm_Query_Builder $query 如果不为空, 则为联表查询, 否则为单表查询
+	 * @return Orm_Query_Builder
+	 */
+	public function query_slave1(Orm_Query_Builder $query = NULL)
+	{
+		// 在原有的查询上, 加上联查从表
+		if($query)
+			return $query->join($this->slave_table())->on($this->slave_fk(TRUE), $this->master_pk(TRUE)); // 从表.外键 = 主表.主键
+		
+		// 直接查询从表
+		$class = $this->_slave_class;
+		return $class::query_builder()->where($this->slave_fk(), $this->master_pk()); // 从表.外键 = 主表.主键
+	}
+	
+	/**
+	 * 获得主表
+	 * @return string
+	 */
+	public function master_table()
+	{
+		$class = $this->_master_class;
+		return $class::table();
+	}
+	
+	/**
+	 * 获得主表的主键
+	 * @param string $with_table 是否带表名
+	 * @return string
+	 */
+	public function master_pk($with_table = FALSE)
+	{
+		// 1 返回值
+		if($this->_master_object)
+			return $this->_master_object->pk();
+
+		// 2 返回字段
+		$class = $this->_master_class;
+		if($with_table) // 带表名
+			return $class::table().'.'.$class::primary_key();
+		return $class::primary_key();
+	}
+	
+	/**
+	 * 获得从表
+	 * @return string
+	 */
+	public function slave_table()
+	{
+		$class = $this->_master_class;
+		return $class::table();
+	}
+	
+	/**
+	 * 获得从表的外键
+	 * @param string $with_table 是否带表名
+	 * @return string
+	 */
+	public function slave_fk($with_table = FALSE)
+	{
+		// 1 返回值
+		if($this->_slave_object)
+			return $this->_slave_object->{$this->_foreign_key}();
+		
+		// 2 返回字段
+		if($with_table) // 带表名
+		{
+			$class = $this->_slave_class;
+			return $class::table().'.'.$this->_foreign_key;
+		}
+		
+		return $this->_foreign_key;
+	}
 }
