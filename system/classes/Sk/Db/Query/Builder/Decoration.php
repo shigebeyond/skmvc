@@ -95,7 +95,43 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 		}
 		return array($sql, array());
 	}
-
+	
+	/**
+	 * 多个where条件
+	 * @param array $conditions
+	 * @return Sk_Db_Query_Builder_Decoration
+	 */
+	public function wheres(array $conditions)
+	{
+		foreach ($conditions as $column => $value)
+			$this->where($column, '=', $value);
+		return $this;
+	}
+	
+	/**
+	 * 多个on条件
+	 * @param array $conditions
+	 * @return Sk_Db_Query_Builder_Decoration
+	 */
+	public function ons(array $conditions)
+	{
+		foreach ($conditions as $column => $value)
+			$this->on($column, '=', $value);
+		return $this;
+	}
+	
+	/**
+	 * 多个having条件
+	 * @param array $conditions
+	 * @return Sk_Db_Query_Builder_Decoration
+	 */
+	public function havings(array $conditions)
+	{
+		foreach ($conditions as $column => $value)
+			$this->having($column, '=', $value);
+		return $this;
+	}
+	
 	/**
 	 * Alias of and_where()
 	 *

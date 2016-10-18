@@ -20,16 +20,12 @@ class Sk_Orm_Persistent extends Orm_MetaData
 		if($id === NULL)
 			return;
 		
+		// 根据id来查询结果
 		$query = static::query_builder();
-		if(is_array($id))
-		{
-			foreach ($id as $column => $value)
-				$query->where($column, '=', $value);
-		}
-		else 
-		{
+		if(is_array($id)) // id是多个查询条件
+			$query->wheres($id);
+		else // id是主键
 			$query->where(static::$_primary_key, '=', $id);
-		}
 		$rows = $query->execute();
 		$this->_original = Arr::get($rows, 0, array());
 	}
