@@ -46,7 +46,7 @@ abstract class Sk_Db_Query_Builder_Action
 	 * 要查询的字段名: [column]
 	 * @var string
 	 */
-	protected $_data;
+	protected $_data = array();
 	
 	/**
 	 * select语句中, 控制查询结果是否去重唯一
@@ -147,9 +147,9 @@ abstract class Sk_Db_Query_Builder_Action
 	 * 													如 array('name', 'age', 'birt' => 'birthday'), 其中 name 与 age 字段不带别名, 而 birthday 字段带别名 birt
 	 * @return Db_Query_Builder
 	 */
-	public function columns(array $columns)
+	public function select(array $columns)
 	{
-		$this->_data = $columns;
+		$this->_data = $columns + $this->_data;
 		return $this;
 	}
 	

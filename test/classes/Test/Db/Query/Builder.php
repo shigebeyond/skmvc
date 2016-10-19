@@ -41,7 +41,7 @@ class Test_Db_Query_Builder extends PHPUnit_Framework_TestCase
 	
 	public function test_join()
 	{
-		$query = Db::instance()->select('user')->columns('user.*', 'contact.email')->where('user.id', '=', 2)->join('contact', 'left')->on('user.id', '=', 'contact.user_id');
+		$query = Db::instance()->select('user')->select('user.*', 'contact.email')->where('user.id', '=', 2)->join('contact', 'left')->on('user.id', '=', 'contact.user_id');
 		echo "select sql: ".$query->compile()[0];
 		$result = $query->execute();
 		echo "select result: ".print_r($result);
