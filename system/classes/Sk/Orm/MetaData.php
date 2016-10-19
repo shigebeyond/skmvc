@@ -11,6 +11,10 @@
  */
 abstract class Sk_Orm_MetaData extends Orm_Entity
 {
+	//todo： 抽取单独的metadata类，跟当前类类似
+	// 当前类直接代理metadata类的方法
+	// 当前类缓存model类名与medata的映射
+	
 	/**
 	 * 数据库
 	 * @var Db
@@ -82,6 +86,33 @@ abstract class Sk_Orm_MetaData extends Orm_Entity
 	}
 	
 	/**
+	 * Get the table name for this class
+	 *
+	 * @return  string
+	 */
+	public static function table()
+	{
+		$class = get_called_class();
+	
+		// Table name unknown
+		if ( ! array_key_exists($class, static::$_table_names_cached))
+		{
+			// Table name set in Model
+			if (property_exists($class, '_table_name'))
+			{
+				static::$_table_names_cached[$class] = static::$_table_name;
+			}
+			else
+			{
+				static::$_table_names_cached[$class] = \Inflector::tableize($class);
+			}
+		}
+	
+		return static::$_table_names_cached[$class];
+	}
+	
+	
+	/**
 	 * 获得主键
 	 * @return string
 	 */
@@ -100,6 +131,57 @@ abstract class Sk_Orm_MetaData extends Orm_Entity
 			static::$_columns = static::db()->list_columns(static::table()); 
 		
 		return static::$_columns;
+	}
+	
+	/**
+	 * Get the class's properties
+	 *
+	 * @throws \FuelException Listing columns failed
+	 *
+	 * @return  array
+	 */
+	public static function properties()
+	{
+		$class = get_called_class();
+	
+		// If already determined
+		if (array_key_exists($class, static::$_properties_cached))
+		{
+			return static::$_properties_cached[$class];
+		}
+	
+		// Try to grab the properties from the class...
+		if (property_exists($class, '_properties'))
+		{
+			$properties = static::$_properties;
+			foreach ($properties as $key => $p)
+			{
+				if (is_string($p))
+				{
+					unset($properties[$key]);
+					$properties[$p] = array();
+				}
+			}
+		}
+	
+		// ...if the above failed, run DB query to fetch properties
+		if (empty($properties))
+		{
+			try
+			{
+				$properties = \DB::list_columns(static::table(), null, static::connection());
+			}
+			catch (\Exception $e)
+			{
+				throw new \FuelException('Listing columns failed, you have to set the model properties with a '.
+						'static $_properties setting in the model. Original exception: '.$e->getMessage());
+			}
+		}
+	
+		// cache the properties for next usage
+		static::$_properties_cached[$class] = $properties;
+	
+		return static::$_properties_cached[$class];
 	}
 	
 	/**
