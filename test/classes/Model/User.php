@@ -13,8 +13,9 @@ class Model_User extends Orm
 {
 	protected static $_relations = array(
 		'contacts' => array( // 有多个联系方式
-				'type' => 'has_many',
-				
+			'type' => Orm::RELATION_HAS_MANY,
+			'model' => 'Contact',
+			'foreign_key' => 'user_id'	
 		)
 	);
 }

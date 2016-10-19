@@ -38,8 +38,10 @@ class Controller_Home extends Controller
 		
 // 		$users = Db::instance()->query('select * from user', array($this, 'handle_user'));
 
-		$users = Model_User::query_builder()->find_all();
-		print_r($users);
+		/* $users = Model_User::query_builder()->find_all();
+		print_r($users); */
+		
+		$user = Model_User::query_builder()->with('contacts')->find();
 		
 		$this->res->body("result is $result");
 	}
