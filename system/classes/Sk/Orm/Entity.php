@@ -122,17 +122,17 @@ abstract class Sk_Orm_Entity
 	/**
 	 * 获得/设置原始的字段值
 	 * @param array $original
-	 * @return Sk_Orm_Entity|array
+	 * @return Orm|array
 	 */
 	public function original(array $original = NULL)
 	{
+		// getter
 		if ($original === NULL) 
-		{
-			$this->_original = $original;
-			return $this;
-		}
+			return $this->_original;
 		
-		return $this->_original; 
+		// setter
+		$this->_original = $original;
+		return $this;
 	}
 	
 	/**
