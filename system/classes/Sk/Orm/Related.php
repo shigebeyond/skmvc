@@ -13,10 +13,6 @@ class Sk_Orm_Related extends Orm_Persistent
 {
 	
 	protected static $_relations = array(
-			'user' => array(
-					'type' => 'slave',
-					'foreign_key' => 'has'
-			)
 	);
 	
 	/**
