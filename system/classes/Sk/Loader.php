@@ -29,7 +29,8 @@ class Sk_Loader{
 	 * @param string $path
 	 */
 	public static function add_path($path){
-		static::$_paths[] = $path;
+		//static::$_paths[] = $path;
+		array_unshift(static::$_paths, $path); // 直接插到开头
 	}
 
 	/**
