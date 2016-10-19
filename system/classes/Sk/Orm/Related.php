@@ -188,4 +188,19 @@ class Sk_Orm_Related extends Orm_Persistent
 		return $class::query_builder()->where($class::$_primary_key, '=', $this->$foreign_key); // 主表.主键 = 从表.外键
 	}
 	
+	/**
+	 * 获得字段值
+	 * @return array
+	 */
+	public function as_array()
+	{
+		$result = parent::as_array();
+		
+		// 包含已加载的关联对象
+		foreach ($this->_related as $name => $model)
+			$result[$name] = $model->as_array();
+		
+		return $result;
+	}
+	
 }
