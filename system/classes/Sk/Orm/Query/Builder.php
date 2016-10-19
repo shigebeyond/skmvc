@@ -82,11 +82,13 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 			switch ($type)
 			{
 				case 'belongs_to': // belongs_to: 查主表
-					$this->_join_master($class, $foreign_key);
+					$this->_join_master($class, $foreign_key, $name);
 				case 'has_many': // has_xxx: 查从表
 				case 'has_one': // has_xxx: 查从表
-					$this->_join_slave($class, $foreign_key);
+					$this->_join_slave($class, $foreign_key, $name);
 			}
+			// select字段
+			$this->_select_related($class, $name);
 		}
 		
 		return $this;
@@ -97,31 +99,59 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 	 *     从表.外键 = 主表.主键
 	 *
 	 * @param string $slave 从类
+	 * @param string $foreign_key 外键
+	 * @param string $table_alias 表别名
 	 * @return Orm_Query_Builder
 	 */
-	protected function _join_slave($slave, $foreign_key)
+	protected function _join_slave($slave, $foreign_key, $table_alias)
 	{
 		// 联查从表
 		$master = $this->_class;
 		$master_pk = $master::table().'.'.$master::primary_key();
-		$slave_fk = $slave::table().'.'.$foreign_key;
-		return $this->join($slave::table(), 'LEFT')->on($slave_fk, '=', $master_pk); // 从表.外键 = 主表.主键
+		$slave_fk = $table_alias.'.'.$foreign_key;
+		return $this->join(array($table_alias => $slave::table()), 'LEFT')->on($slave_fk, '=', $master_pk); // 从表.外键 = 主表.主键
 	}
 	
 	/**
 	 * 联查主表
 	 *     主表.主键 = 从表.外键
 	 *
-	 * @param string $slave 从类
+	 * @param string $master 主类
+	 * @param string $foreign_key 外键
+	 * @param string $table_alias 表别名
 	 * @return Orm_Query_Builder
 	 */
-	protected function _join_master($master, $foreign_key)
+	protected function _join_master($master, $foreign_key, $table_alias)
 	{
 		// 联查从表
 		$slave = $this->_class;
 		$master_pk = $master::table().'.'.$master::primary_key();
 		$slave_fk = $slave::table().'.'.$foreign_key;
 		return $this->join($master::table(), 'LEFT')->on($master_pk, '=', $slave_fk); // 主表.主键 = 从表.外键
+	}
+	
+	/**
+	 * select关联表的字段
+	 *
+	 * @param string $class 关联类
+	 * @param string $table_alias 表别名
+	 * @param array $columns 查询的列
+	 */
+	protected function _select_related($class, $table_alias, array $columns = NULL)
+	{
+		// 默认查询全部列
+		if($columns === NULL)
+			$columns = array_keys($class::columns());
+	
+		// 构建列别名
+		$select = array();
+		foreach ($columns as $column)
+		{
+			$column_alias = $table_alias.':'.$column; // 列别名 = 表别名 : 列名，以便在设置orm对象字段值时，可以逐层设置关联对象的字段值
+			$column = $table_alias.'.'.$column;
+			$select[$column_alias] = $column;
+		}
+		return $this->select($select);
 	}
 	
 }

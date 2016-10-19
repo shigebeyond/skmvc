@@ -11,6 +11,23 @@
  */
 class Sk_Orm_Related extends Orm_Persistent
 {
+	/**
+	 * 关联关系 - 有一个
+	 *    当前表是主表, 关联表是从表
+	 */
+	const RELATION_BELONGS_TO = 'belongs_to';
+	
+	/**
+	 * 关联关系 - 有多个
+	 * 	当前表是主表, 关联表是从表
+	 */
+	const RELATION_HAS_MANY = 'has_many';
+	
+	/**
+	 * 关联关系 - 从属于
+	 *    当前表是从表, 关联表是主表
+	 */
+	const RELATION_HAS_ONE = 'has_one';
 	
 	protected static $_relations = array(
 	);
@@ -69,7 +86,7 @@ class Sk_Orm_Related extends Orm_Persistent
 			$this->_related[$column] = $value;
 			// 如果关联的是主表，则更新从表的外键
 			extract(static::$_relations[$column]);
-			if($type == 'belongs_to')
+			if($type == static::RELATION_BELONGS_TO)
 				$this->$foreign_key = $value->pk();
 			return TRUE;
 		}
@@ -78,32 +95,73 @@ class Sk_Orm_Related extends Orm_Persistent
 	}
 	
 	/**
+	 * 获得/设置原始的字段值
+	 * 
+	 * @param array $original
+	 * @return Orm|array
+	 */
+	public function original(array $original = NULL)
+	{
+		// getter
+		if ($original === NULL)
+			return $this->_original;
+	
+		// setter
+		foreach ($original as $column => $value)
+		{
+			$i = strpos($column, ':'); // 关联查询时，会设置关联表字段的列别名（列别名 = 表别名 : 列名），可以据此来设置关联对象的字段值
+			if($i === FALSE) // 自身字段
+			{
+				$this->_original[$column] = $value;
+			}
+			else // 关联对象字段
+			{
+				$name = substr($column, 0, $i);
+				$column = substr($column, $i + 1);
+				$this->_related($name)->_original[$column] = $value;
+			}
+		}
+		
+		return $this;
+	}
+	
+	/**
 	 * 获得关联对象
 	 *
 	 * @param string $name 关联对象名
+	 * @param boolean $new 是否创建新对象：在查询db后设置原始字段值original()时使用
 	 * @return Orm
 	 */
-	public function _related($name)
+	public function _related($name, $new = FALSE)
 	{
-		if(!isset($this->_related[$name]))
+		// 已缓存
+		if(isset($this->_related[$name]))
+			return $this->_related[$name];
+		
+		// 获得关联关系
+		extract(static::$_relations[$name]);
+		$class = 'Model_'.ucfirst($model);
+		
+		// 创建新对象
+		if($new)
+			return $this->_related[$name] = new $class;
+		
+		// 根据关联关系来构建查询
+		$obj = NULL;
+		switch ($type)
 		{
-			// 根据关联关系来构建查询
-			extract(static::$_relations[$name]);
-			$class = 'Model_'.ucfirst($model);
-			switch ($type)
-			{
-				case 'belongs_to': // belongs_to: 查主表
-					$this->_related[$name] = $this->_query_master($class, $foreign_key)->find();
-					break;
-				case 'has_many': // has_xxx: 查从表
-					$this->_related[$name] = $this->_query_slave($class, $foreign_key)->limit(1)->find();
-					break;
-				case 'has_one': // has_xxx: 查从表
-					$this->_related[$name] = $this->_query_slave($class, $foreign_key)->find_all();
-					break;
-			}
+			case static::RELATION_BELONGS_TO: // belongs_to: 查主表
+				$obj = $this->_query_master($class, $foreign_key)->find();
+				break;
+			case static::RELATION_HAS_ONE: // has_xxx: 查从表
+				$obj = $this->_query_slave($class, $foreign_key)->limit(1)->find();
+				break;
+			case static::RELATION_HAS_MANY: // has_xxx: 查从表
+				$obj = $this->_query_slave($class, $foreign_key)->find_all();
+				break;
 		}
-		return $this->_related[$name];
+		
+		return $this->_related[$name] = $obj;
 	}
 
 	/**
