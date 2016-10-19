@@ -14,10 +14,6 @@
  */
 class Sk_Validation_Expression
 {
-	const OPERATOR_METHOD = array(
-		'&' 
-	);
-	
 	/**
 	 * 缓存校验表达式编译结果
 	 * @var array
@@ -62,24 +58,38 @@ class Sk_Validation_Expression
 		$pattern = '/(\w+)\((.*)\)/';
 		if(!preg_match($pattern, $subexp, $matches))
 			return array($subexp); // 只有函数名 
-		list($_, $func, $args) = $matches;
+		list($_, $func, $params) = $matches;
 		
 		// 编译参数
-		$args = preg_split('/\s*,\s*/', $args); // 根据,分割
-		foreach ($args as &$arg) // 去掉字符串的''
-			$arg = trim($arg, '\'');
+		$params = preg_split('/\s*,\s*/', $params); // 根据,分割
+		foreach (array_keys($params) as $i) // 逐个修正参数
+		{
+			$param = $params[$i];
+			switch($param[0])
+			{
+				case '\'': // 对字符串：去掉字符串的''
+					$params[$i] = trim($param, '\'');
+					break;
+				case ':': // 对变量：变量名作为key，如":name"，则变量名为"name"
+					$params[substr($param, 1)] = $param;
+					unset($params[$i]);
+					break;
+			}
+		}
 		
-		return array($func, $args);
+		return array($func, $params);
 	}
 	
 	/**
-	 * 运算符
+	 * 运算符的数组， 其长度 = 子表达式数组长度 - 1
 	 * @var array
 	 */
 	protected $_operators;
 	
 	/**
-	 * 子表达式
+	 * 子表达式的数组，其长度 = 运算符数组长度 + 1
+	 *   一个子表达式 = array(函数名，参数数组)
+	 *   参数数组 = array(1, 2, 'name' => ':name') 当参数为值时，key为int，当参数为变量（如":name"）时，key为变量名（如"name"）
 	 * @var array
 	 */
 	protected $_subexps;
@@ -99,36 +109,79 @@ class Sk_Validation_Expression
 	 * 执行校验表达式
 	 * 
 	 * @param unknown $value 要校验的数值
-	 * @param array $params 其他参数
+	 * @param array $data 其他参数
 	 * @return mixed
 	 */
-	public function execute($value, $params)
+	public function execute($value, $data)
 	{
 		if(empty($this->_subexps))
 			return NULL;
 		
-		
-		
-		foreach ($this->_operators as $i => $op)
+		// 逐个运算子表达式
+		$result;
+		foreach ($this->_subexps as $i => $subexp)
 		{
+			// 第一个表达式
+			if($i === 0) 
+			{
+				$result = $this->execute_subexp($subexp, $value, $data);
+				continue;
+			}
 			
+			// 累积结果运算：当前结果作为下次调用的参数
+			if($this->_operators[$i-1] == '>') 
+			{
+				$result = $this->execute_subexp($subexp, $result, $data); // $result 替代 $value 作为参数
+				continue;
+			}
+			
+			// 其他运算
+			$curr = $this->execute_subexp($subexp, $value, $data);
+			switch ($this->_operators[$i-1])
+			{
+				case '&':
+					$result = $result && $curr;
+					break;
+				case '&&':
+					$result = $result && $curr;
+					if(!$result) return FALSE;
+					break;
+				case '|':
+					$result = $result || $curr;
+					break;
+				case '||':
+					$result = $result || $curr;
+					if($result) return TRUE;
+					break;
+				case '.': // 字符串连接
+					$result .= $curr;
+					break;
+			}
 		}
+		
+		return $result;
 	}
 	
 	/**
 	 * 执行校验表达式
 	 *
+	 * @param array $subexp 子表达式
 	 * @param unknown $value 待校验的值
-	 * @param array $params 其他参数
-	 * @param unknown $result 上衣表达式的结果
+	 * @param array $data 其他参数
 	 * @return mixed
 	 */
-	public function execute_subexp($value, $params, $result)
+	public function execute_subexp($subexp, $value, $data)
 	{
-		list($func, $args) = $this->_subexps[0];
-		// 待校验的值为第一个参数
-		array_unshift($args, $value);
-		// 构建实际参数
-		$result = call_user_func_array($func, $args);
+		list($func, $params) = $subexp;
+		// 实际参数
+		foreach ($params as $i => $param)
+		{
+			if(is_string($i)) // 根据变量名，来替换变量值
+				$param = Arr::get($data, $i);
+		}
+		// 待校验的值: 作为第一参数
+		array_unshift($params, $value);
+		// 调用函数
+		return call_user_func_array($func, $params);
 	}
 }
