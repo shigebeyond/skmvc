@@ -107,7 +107,6 @@ abstract class Sk_Db_Query_Builder_Action
 	 */
 	protected function _tables($tables) 
 	 {
-		$this->_prepare_alias($tables); // 准备好别名
 		$this->_table = $tables;
 		return $this;
 	}

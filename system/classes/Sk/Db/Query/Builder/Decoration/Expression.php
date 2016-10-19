@@ -70,18 +70,22 @@ abstract class Sk_Db_Query_Builder_Decoration_Expression
      * @param string $delimiter 当前子表达式的连接符
      * @return Sk_Db_Query_Builder_Expression
      */
-    public abstract function add_subexp(array $subexp, $delimiter = ', ');
+  public abstract function add_subexp(array $subexp, $delimiter = ', ');
 
     /**
      * 编译一个子表达式
      * @param unknown $subexp
      * @return string
      */
-    public abstract function compile_subexp($subexp);
-	
-	public function __toString()
+  public abstract function compile_subexp($subexp);
+  
+  /**
+   * 转换字符串时, 直接编译
+   * @return string
+   */
+	public function __toString() 
 	{
-		return $this->compile();
+		return $this->compile ();
 	}
 	
 	public function _int($value)
