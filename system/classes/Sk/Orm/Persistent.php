@@ -54,9 +54,17 @@ class Sk_Orm_Persistent extends Orm_MetaData
 	public function check()
 	{
 		// 逐个字段校验
-		foreach ($static::$_rules as $column => $exp)
-			if(!Validation::execute($exp, $this->$column, $this, $message)) // 校验单个字段
+		foreach (static::$_rules as $column => $exp)
+		{
+			$value = $last = $this->$column;
+			// 校验单个字段: 字段值可能被修改
+			if(!Validation::execute($exp, $value, $this, $message)) 
 				throw new Exception($message);
+			
+			// 更新被修改的字段值
+			if($value !== $last)
+				$this->_dirty[$column] = $value;
+		}
 
 		return TRUE;
 	}
