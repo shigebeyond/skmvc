@@ -33,8 +33,7 @@ class Sk_Orm_Related extends Orm_Persistent
 	 * 自定义关联关系
 	 * @var array
 	 */
-	protected static $_relations = array(
-	);
+	protected static $_relations = array();
 
 	/**
 	 * 获得关联关系
@@ -56,6 +55,17 @@ class Sk_Orm_Related extends Orm_Persistent
 	 */
 	protected $_related = array();
 
+	/**
+	 * 判断对象是否存在指定字段
+	 *
+	 * @param  string $column Column name
+	 * @return boolean
+	 */
+	public function __isset($column)
+	{
+		return isset(static::$_relations[$column]) && parent::__isset($column);
+	}
+	
 	/**
 	 * 尝试获得对象字段
 	 *
@@ -96,6 +106,18 @@ class Sk_Orm_Related extends Orm_Persistent
 		}
 
 		return parent::try_set($column, $value);
+	}
+	
+	/**
+	 * 删除某个字段值
+	 *
+	 * @param  string $column 字段名
+	 * @return
+	 */
+	public function __unset($column)
+	{
+		parent::__unset($column);
+		unset($this->_related[$column]);
 	}
 
 	/**

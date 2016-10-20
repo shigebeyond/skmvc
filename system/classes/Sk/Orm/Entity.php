@@ -9,7 +9,7 @@
  * @date 2016-10-10 上午12:52:34
  *
  */
-abstract class Sk_Orm_Entity
+abstract class Sk_Orm_Entity implements ArrayAccess
 {
 	/**
 	 * 获得字段
@@ -32,6 +32,17 @@ abstract class Sk_Orm_Entity
 	*/
 	protected $_dirty = array();
 
+	/**
+	 * 判断对象是否存在指定字段
+	 *
+	 * @param  string $column Column name
+	 * @return boolean
+	 */
+	public function __isset($column)
+	{
+		return array_key_exists($column, $this->columns());
+	}
+	
 	/**
 	 * 获得对象字段
 	 *
@@ -71,7 +82,7 @@ abstract class Sk_Orm_Entity
 			$value = NULL;
 		return TRUE;
 	}
-
+	
 	/**
 	 * 设置对象字段值
 	 *
@@ -108,6 +119,17 @@ abstract class Sk_Orm_Entity
 			$this->_dirty[$column] = $value; // 记录变化字段
 
 		return TRUE;
+	}
+	
+	/**
+	 * 删除某个字段值
+	 *
+	 * @param  string $column 字段名
+	 * @return
+	 */
+	public function __unset($column)
+	{
+		unset($this->_original[$column], $this->_dirty[$column]);
 	}
 
 	/**
@@ -161,5 +183,42 @@ abstract class Sk_Orm_Entity
 	{
 		return $this->_dirty + $this->_original;
 	}
+	
+	/**
+	 * 判断数组是否存在指定key
+	 * @see ArrayAccess::offsetExists()
+	 */
+	public function offsetExists($offset) 
+	{
+		return $this->__isset($offset);
+	}
+
+	/**
+	 * 获得数组的元素
+	 * @see ArrayAccess::offsetGet()
+	 */
+	public function offsetGet($offset) 
+	{
+		return $this->__get($offset);
+	}
+
+	/**
+	 * 设置数组的元素
+	 * @see ArrayAccess::offsetSet()
+	 */
+	public function offsetSet($offset, $value) 
+	{
+		$this->__set($offset, $value);
+	}
+
+	/**
+	 * 删除数组的元素
+	 * @see ArrayAccess::offsetUnset()
+	 */
+	public function offsetUnset($offset) 
+	{
+		$this->__unset($offset);
+	}
+
 
 }
