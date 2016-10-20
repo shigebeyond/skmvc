@@ -17,7 +17,8 @@ class Sk_Validation
 	 */
 	protected static $_messages = array(
 		'not_empty' => '不能为空',
-		'length' => '长度必须在:0到:1之间',
+		'length' => '的长度必须在:0到:1之间',
+		'range' => '的数值必须是:0到:1之间的整数',
 	);
 	
 	/**
@@ -30,12 +31,12 @@ class Sk_Validation
 	 * 编译与执行校验表达式
 	 *
 	 * @param string $exp 校验表达式
-	 * @param unknown $value 要校验的数值
+	 * @param unknown $value 要校验的数值，该值可能被修改
 	 * @param array|ArrayAccess $data 其他参数
 	 * @param string message
 	 * @return mixed
 	 */
-	public static function execute($exp, $value, $data = NULL, &$message = NULL)
+	public static function execute($exp, &$value, $data = NULL, &$message = NULL)
 	{
 		// 编译
 		if(!isset(static::$_exps_cached[$exp]))
@@ -101,7 +102,7 @@ class Sk_Validation
 	*/
 	public static function range($value, $min, $max, $step = 1)
 	{
-		return ($value < $min || $value > $max) // 是否在范围内
+		return ($value >= $min && $value <= $max) // 是否在范围内
 						&& (($value - $min) % $step === 0); // 是否间隔指定步长
 	}
 	

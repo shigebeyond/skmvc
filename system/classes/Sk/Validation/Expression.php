@@ -109,12 +109,12 @@ class Sk_Validation_Expression
 	/**
 	 * 执行校验表达式
 	 * 
-	 * @param unknown $value 要校验的数值
+	 * @param unknown $value 要校验的数值，该值可能被修改
 	 * @param array|ArrayAccess $data 其他参数
 	 * @param array $last_subexp 短路时的最后一个子表达式
 	 * @return mixed
 	 */
-	public function execute($value, $data = NULL, array &$last_subexp = NULL)
+	public function execute(&$value, $data = NULL, array &$last_subexp = NULL)
 	{
 		if(empty($this->_subexps))
 			return NULL;
@@ -136,8 +136,9 @@ class Sk_Validation_Expression
 			
 			if($i === 0) // 第一个子表达式
 			{
-				$op = $this->_operators[$i];
-				if($op == '&&' && !$curr || $op == '||' && $curr) // 短路
+				// 下一个运算符
+				$next_op = $this->_operators[$i];
+				if($next_op == '&&' && !$curr || $next_op == '||' && $curr) // 短路
 				{
 					$last_subexp = $subexp;
 					return $curr;
@@ -146,12 +147,14 @@ class Sk_Validation_Expression
 			}
 			else // 其他子表达式
 			{
-				switch ($this->_operators[$i-1])
+				// 当前运算符
+				$op = $this->_operators[$i-1];
+				switch ($op)
 				{
-					case '&':
+					case '&': // 与
 						$result = $result && $curr;
 						break;
-					case '&&':
+					case '&&': // 短路与
 						$result = $result && $curr;
 						if(!$result)// 短路
 						{
@@ -159,10 +162,10 @@ class Sk_Validation_Expression
 							return $result;
 						}
 						break;
-					case '|':
+					case '|': // 或
 						$result = $result || $curr;
 						break;
-					case '||':
+					case '||': // 短路或
 						$result = $result || $curr;
 						if($result)// 短路
 						{
@@ -206,7 +209,7 @@ class Sk_Validation_Expression
 		array_unshift($params, $value);
 		// 调用函数
 		if(method_exists('Validation', $func)) // 优先调用 Validator 中的校验方法
-			$func = 'Validator::'.$func;
+			$func = 'Validation::'.$func;
 		return call_user_func_array($func, $params);
 	}
 }
