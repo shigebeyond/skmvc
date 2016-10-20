@@ -2,27 +2,36 @@
 
 /**
  * ORM之实体对象
- * 
- * @Package package_name 
- * @category 
+ *
+ * @Package package_name
+ * @category
  * @author shijianhang
- * @date 2016-10-10 上午12:52:34 
+ * @date 2016-10-10 上午12:52:34
  *
  */
 abstract class Sk_Orm_Entity
 {
 	/**
+	 * 获得字段
+	 * @return array
+	 */
+	public static function columns()
+	{
+		throw new Exception("必须重写该方法");
+	}
+
+	/**
 	 * 原始的字段值：<字段名 => 字段值>
 	 * @var array
 	*/
 	protected $_original = array();
-	
+
 	/**
 	 * 变化的字段值：<字段名 => 字段值>
 	 * @var array
 	*/
 	protected $_dirty = array();
-	
+
 	/**
 	 * 获得对象字段
 	 *
@@ -34,12 +43,12 @@ abstract class Sk_Orm_Entity
 		// 尝试获得对象字段
 		if($this->try_get($column, $value))
 			return $value;
-		
+
 		// 如果获得失败,则抛出异常
 		$class = get_class($this);
 		throw new Exception("类 $class 没有字段 $column");
 	}
-	
+
 	/**
 	 * 尝试获得对象字段
 	 *
@@ -52,17 +61,17 @@ abstract class Sk_Orm_Entity
 		// 判断是否是字段
 		if (!array_key_exists($column, $this->columns()))
 			return FALSE;
-		
+
 		// 先找dirty，后找original
 		if(isset($this->_dirty[$column]))
 			$value = $this->_dirty[$column];
 		elseif(isset($this->_original[$column]))
 			$value = $this->_original[$column];
-		else 
+		else
 			$value = NULL;
 		return TRUE;
 	}
-	
+
 	/**
 	 * 设置对象字段值
 	 *
@@ -78,7 +87,7 @@ abstract class Sk_Orm_Entity
 			throw new Exception("类 $class 没有字段 $column");
 		}
 	}
-	
+
 	/**
 	 * 尝试设置字段值
 	 *
@@ -91,16 +100,16 @@ abstract class Sk_Orm_Entity
 		// 判断是否是字段
 		if (!array_key_exists($column, $this->columns()))
 			return FALSE;
-		
+
 		// 判断字段值是否真正有改变
 		if ($value === Arr::get($this->_original, $column))
 			unset($this->_dirty[$column]);
-		else 
+		else
 			$this->_dirty[$column] = $value; // 记录变化字段
-		
+
 		return TRUE;
 	}
-	
+
 	/**
 	 * 设置多个字段值
 	 *
@@ -112,13 +121,13 @@ abstract class Sk_Orm_Entity
 	{
 		if ($expected === NULL)
 			$expected = array_keys($values);
-		
+
 		foreach ($expected as $column)
 			$this->$column = $values[$column];
 
 		return $this;
 	}
-	
+
 	/**
 	 * 获得/设置原始的字段值
 	 * @param array $original
@@ -127,14 +136,14 @@ abstract class Sk_Orm_Entity
 	public function original(array $original = NULL)
 	{
 		// getter
-		if ($original === NULL) 
+		if ($original === NULL)
 			return $this->_original;
-		
+
 		// setter
 		$this->_original = $original;
 		return $this;
 	}
-	
+
 	/**
 	 * 获得变化的字段值
 	 * @return array
@@ -143,7 +152,7 @@ abstract class Sk_Orm_Entity
 	{
 		return $this->_dirty;
 	}
-	
+
 	/**
 	 * 获得字段值
 	 * @return array
@@ -152,13 +161,5 @@ abstract class Sk_Orm_Entity
 	{
 		return $this->_dirty + $this->_original;
 	}
-	
-	/**
-	 * 获得字段
-	 * @return array
-	 */
-	public static function columns()
-	{
-		throw new Exception("必须重写该方法");
-	}
+
 }

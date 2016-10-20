@@ -2,11 +2,11 @@
 
 /**
  * ORM之关联对象操作
- *        
- * @Package package_name 
- * @category 
+ *
+ * @Package package_name
+ * @category
  * @author shijianhang
- * @date 2016-10-10 上午12:52:34 
+ * @date 2016-10-10 上午12:52:34
  *
  */
 class Sk_Orm_Related extends Orm_Persistent
@@ -16,25 +16,29 @@ class Sk_Orm_Related extends Orm_Persistent
 	 *    当前表是主表, 关联表是从表
 	 */
 	const RELATION_BELONGS_TO = 'belongs_to';
-	
+
 	/**
 	 * 关联关系 - 有多个
 	 * 	当前表是主表, 关联表是从表
 	 */
 	const RELATION_HAS_MANY = 'has_many';
-	
+
 	/**
 	 * 关联关系 - 从属于
 	 *    当前表是从表, 关联表是主表
 	 */
 	const RELATION_HAS_ONE = 'has_one';
-	
+
+	/**
+	 * 自定义关联关系
+	 * @var array
+	 */
 	protected static $_relations = array(
 	);
-	
+
 	/**
 	 * 获得关联关系
-	 * 
+	 *
 	 * @param string $name
 	 * @return array
 	 */
@@ -42,16 +46,16 @@ class Sk_Orm_Related extends Orm_Persistent
 	{
 		if($name === NULL)
 			return static::$_relations;
-		
+
 		return Arr::get(static::$_relations, $name);
 	}
-	
+
 	/**
 	 * 缓存关联对象
 	 * @var array <name => Orm>
 	 */
 	protected $_related = array();
-	
+
 	/**
 	 * 尝试获得对象字段
 	 *
@@ -67,10 +71,10 @@ class Sk_Orm_Related extends Orm_Persistent
 			$value = $this->_related($column);
 			return TRUE;
 		}
-		
+
 		return parent::try_get($column, $value);
 	}
-	
+
 	/**
 	 * 尝试设置字段值
 	 *
@@ -90,13 +94,13 @@ class Sk_Orm_Related extends Orm_Persistent
 				$this->$foreign_key = $value->pk();
 			return TRUE;
 		}
-		
+
 		return parent::try_set($column, $value);
 	}
-	
+
 	/**
 	 * 获得/设置原始的字段值
-	 * 
+	 *
 	 * @param array $original
 	 * @return Orm|array
 	 */
@@ -105,7 +109,7 @@ class Sk_Orm_Related extends Orm_Persistent
 		// getter
 		if ($original === NULL)
 			return $this->_original;
-	
+
 		// setter
 		foreach ($original as $column => $value)
 		{
@@ -121,10 +125,10 @@ class Sk_Orm_Related extends Orm_Persistent
 				$this->_related($name)->_original[$column] = $value;
 			}
 		}
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * 获得关联对象
 	 *
@@ -137,15 +141,15 @@ class Sk_Orm_Related extends Orm_Persistent
 		// 已缓存
 		if(isset($this->_related[$name]))
 			return $this->_related[$name];
-		
+
 		// 获得关联关系
 		extract(static::$_relations[$name]);
 		$class = 'Model_'.ucfirst($model);
-		
+
 		// 创建新对象
 		if($new)
 			return $this->_related[$name] = new $class;
-		
+
 		// 根据关联关系来构建查询
 		$obj = NULL;
 		switch ($type)
@@ -160,13 +164,13 @@ class Sk_Orm_Related extends Orm_Persistent
 				$obj = $this->_query_slave($class, $foreign_key)->find_all();
 				break;
 		}
-		
+
 		return $this->_related[$name] = $obj;
 	}
 
 	/**
 	 * 查询关联的从表
-	 * 
+	 *
 	 * @param string $class 从类
 	 * @param string $foreign_key 外键
 	 * @return Orm_Query_Builder
@@ -175,10 +179,10 @@ class Sk_Orm_Related extends Orm_Persistent
 	{
 		return $class::query_builder()->where($foreign_key, '=', $this->pk()); // 从表.外键 = 主表.主键
 	}
-	
+
 	/**
 	 * 查询关联的主表
-	 * 
+	 *
 	 * @param string $class 主类
 	 * @param string $foreign_key 外键
 	 * @return Orm_Query_Builder
@@ -187,7 +191,7 @@ class Sk_Orm_Related extends Orm_Persistent
 	{
 		return $class::query_builder()->where($class::$_primary_key, '=', $this->$foreign_key); // 主表.主键 = 从表.外键
 	}
-	
+
 	/**
 	 * 获得字段值
 	 * @return array
@@ -195,12 +199,12 @@ class Sk_Orm_Related extends Orm_Persistent
 	public function as_array()
 	{
 		$result = parent::as_array();
-		
+
 		// 包含已加载的关联对象
 		foreach ($this->_related as $name => $model)
 			$result[$name] = $model->as_array();
-		
+
 		return $result;
 	}
-	
+
 }

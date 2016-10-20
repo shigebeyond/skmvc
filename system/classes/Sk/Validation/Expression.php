@@ -15,12 +15,6 @@
 class Sk_Validation_Expression
 {
 	/**
-	 * 缓存校验表达式编译结果
-	 * @var array
-	 */
-	protected static $_exps_cached = array();
-	
-	/**
 	 * 编译 表达式
 	 *     表达式是由多个(函数调用的)子表达式组成, 子表达式之间用运算符连接, 运算符有 & && | || . >
 	 * 
@@ -29,22 +23,17 @@ class Sk_Validation_Expression
 	 */
 	public static function compile($exp)
 	{
-		if(!isset(static::$_exps_cached[$exp]))
-		{
-			// 编译运算符
-			$pattern = '/\s*([&\|\.\>]+)\s*/';
-			if(!preg_match_all($pattern, $exp, $matches))
-				return FALSE;
-			$ops = $matches[1];
-			
-			// 编译子表达式
-			$subexps = preg_split($pattern, $exp);
-			$subexps = array_map('Validation_Expression::compile_subexp', $subexps);
-			
-			static::$_exps_cached[$exp] = new Validation_Expression($ops, $subexps);
-		}
+		// 编译运算符
+		$pattern = '/\s*([&\|\.\>]+)\s*/';
+		if(!preg_match_all($pattern, $exp, $matches))
+			return FALSE;
+		$ops = $matches[1];
 		
-		return static::$_exps_cached[$exp];
+		// 编译子表达式
+		$subexps = preg_split($pattern, $exp);
+		$subexps = array_map('Validation_Expression::compile_subexp', $subexps);
+		
+		return array($ops, $subexps);
 	}
 	
 	/**
@@ -98,11 +87,11 @@ class Sk_Validation_Expression
 	
 	/**
 	 * 构造函数
-	 * @param array $operators 运算符
-	 * @param array $subexps 子表达式
+	 * @param string $exp 校验表达式字符串
 	 */
-	public function __construct(array $operators, array $subexps)
+	public function __construct($exp)
 	{
+		list($operators, $subexps) = static::compile($exp);
 		$this->_operators = $operators;
 		$this->_subexps = $subexps;
 	}
