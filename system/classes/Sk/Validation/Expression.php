@@ -15,6 +15,18 @@
 class Sk_Validation_Expression
 {
 	/**
+	 * 运算符的正则
+	 * @var string
+	 */
+	const REGEX_OPERATOR = '/\s*([&\|\.\>]+)\s*/';
+	
+	/**
+	 * 函数的正则
+	 * @var string
+	 */
+	const REGEX_FUNC = '/(\w+)\((.*)\)/';
+	
+	/**
 	 * 编译 表达式
 	 *     表达式是由多个(函数调用的)子表达式组成, 子表达式之间用运算符连接, 运算符有 & && | || . >
 	 * 
@@ -24,13 +36,12 @@ class Sk_Validation_Expression
 	public static function compile($exp)
 	{
 		// 编译运算符
-		$pattern = '/\s*([&\|\.\>]+)\s*/';
-		if(!preg_match_all($pattern, $exp, $matches))
+		if(!preg_match_all(static::REGEX_OPERATOR, $exp, $matches))
 			return FALSE;
 		$ops = $matches[1];
 		
 		// 编译子表达式
-		$subexps = preg_split($pattern, $exp);
+		$subexps = preg_split(static::REGEX_OPERATOR, $exp);
 		$subexps = array_map('Validation_Expression::compile_subexp', $subexps);
 		
 		return array($ops, $subexps);
@@ -46,8 +57,7 @@ class Sk_Validation_Expression
 	public static function compile_subexp($subexp)
 	{
 		// 编译函数名
-		$pattern = '/(\w+)\((.*)\)/';
-		if(!preg_match($pattern, $subexp, $matches))
+		if(!preg_match(static::REGEX_FUNC, $subexp, $matches))
 			return array($subexp, array()); // 只有函数名 
 		list($_, $func, $params) = $matches;
 		
@@ -100,11 +110,11 @@ class Sk_Validation_Expression
 	 * 执行校验表达式
 	 * 
 	 * @param unknown $value 要校验的数值
-	 * @param array $data 其他参数
+	 * @param array|ArrayAccess $data 其他参数
 	 * @param array $last_subexp 短路时的最后一个子表达式
 	 * @return mixed
 	 */
-	public function execute($value, array $data = NULL, array &$last_subexp = NULL)
+	public function execute($value, $data = NULL, array &$last_subexp = NULL)
 	{
 		if(empty($this->_subexps))
 			return NULL;
@@ -177,7 +187,7 @@ class Sk_Validation_Expression
 	 *
 	 * @param array $subexp 子表达式
 	 * @param unknown $value 待校验的值
-	 * @param array $data 其他参数
+	 * @param array|ArrayAccess $data 其他参数
 	 * @return mixed
 	 */
 	public function execute_subexp($subexp, $value, $data = NULL)
@@ -195,7 +205,7 @@ class Sk_Validation_Expression
 		// 待校验的值: 作为第一参数
 		array_unshift($params, $value);
 		// 调用函数
-		if(method_exists('Validator', $func)) // 优先调用 Validator 中的校验方法
+		if(method_exists('Validation', $func)) // 优先调用 Validator 中的校验方法
 			$func = 'Validator::'.$func;
 		return call_user_func_array($func, $params);
 	}
