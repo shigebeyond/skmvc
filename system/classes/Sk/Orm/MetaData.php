@@ -17,30 +17,40 @@ abstract class Sk_Orm_MetaData extends Orm_Entity
 	
 	/**
 	 * 数据库
+	 * 	默认一样, 基类给默认值, 子类可自定义
 	 * @var Db
 	 */
 	protected static $_db = 'default';
 	
 	/**
-	 * 模型名/对象名
+	 * 自定义的表名
+	 *     默认不一样, 基类不能给默认值, 子类可自定义
 	 * @var string
 	 */
-	protected static $_name;
+	//protected static $_table;
 	
 	/**
-	 * 表名
+	 * 缓存所有model类的表名: <类名 => 表名>
 	 * @var string
 	 */
-	protected static $_table;
+	protected static $_class_tables = array();
 	
 	/**
-	 * 表字段
+	 * 自定义的表字段
+	 *     默认不一样, 基类不能给默认值, 但子类可自定义
 	 * @var array
 	 */
-	protected static $_columns;
+	//protected static $_columns;
+	
+	/**
+	 * 缓存所有model类的字段列表: <类名 => 字段列表>
+	 * @var string
+	 */
+	protected static $_class_columns = array();
 	
 	/**
 	 * 主键
+	 *     默认一样, 基类给默认值, 子类可自定义
 	 * @var string
 	 */
 	protected static $_primary_key = 'id';
@@ -59,7 +69,9 @@ abstract class Sk_Orm_MetaData extends Orm_Entity
 	}
 	
 	/**
-	 * 获得对象名
+	 * 获得模型名
+	 *    假定model类名, 都是以"Model_"作为前缀
+	 *    
 	 * @return string
 	 */
 	public static function name()
@@ -72,45 +84,45 @@ abstract class Sk_Orm_MetaData extends Orm_Entity
 	
 	/**
 	 * 获得表名
-	 * @return string
-	 */
-	public static function table()
-	{
-		if(static::$_table === NULL)
-		{
-			// TODO 支持复数
-			static::$_table = static::name();
-		}
-		
-		return static::$_table;
-	}
-	
-	/**
-	 * Get the table name for this class
-	 *
+	 * 
 	 * @return  string
 	 */
 	public static function table()
 	{
 		$class = get_called_class();
 	
-		// Table name unknown
-		if ( ! array_key_exists($class, static::$_table_names_cached))
+		// 先查缓存
+		if (!isset(static::$_class_tables[$class]))
 		{
-			// Table name set in Model
-			if (property_exists($class, '_table_name'))
-			{
-				static::$_table_names_cached[$class] = static::$_table_name;
-			}
-			else
-			{
-				static::$_table_names_cached[$class] = \Inflector::tableize($class);
-			}
+			if (property_exists($class, '_table')) // 自定义表名
+				static::$_class_tables[$class] = static::$_table;
+			else // 默认表名 = 模型名
+				static::$_class_tables[$class] = static::name();
 		}
 	
-		return static::$_table_names_cached[$class];
+		return static::$_class_tables[$class];
 	}
 	
+	
+	/**
+	 * 获得字段列表
+	 * @return array
+	 */
+	public static function columns()
+	{
+		$class = get_called_class();
+		
+		// 先查缓存
+		if (!isset(static::$_class_columns[$class]))
+		{
+			if (property_exists($class, '_columns')) // 自定义字段列表
+				static::$_class_columns[$class] = $class::$_columns;
+			else // 默认字段列表 = 直接查db
+				static::$_class_columns[$class] = static::db()->list_columns(static::table());
+		}
+	
+		return static::$_class_columns[$class];
+	}
 	
 	/**
 	 * 获得主键
@@ -119,69 +131,6 @@ abstract class Sk_Orm_MetaData extends Orm_Entity
 	public static function primary_key()
 	{
 		return static::$_primary_key;
-	}
-	
-	/**
-	 * 获得字段列表
-	 * @return array
-	 */
-	public static function columns()
-	{
-		if(static::$_columns === NULL)
-			static::$_columns = static::db()->list_columns(static::table()); 
-		
-		return static::$_columns;
-	}
-	
-	/**
-	 * Get the class's properties
-	 *
-	 * @throws \FuelException Listing columns failed
-	 *
-	 * @return  array
-	 */
-	public static function properties()
-	{
-		$class = get_called_class();
-	
-		// If already determined
-		if (array_key_exists($class, static::$_properties_cached))
-		{
-			return static::$_properties_cached[$class];
-		}
-	
-		// Try to grab the properties from the class...
-		if (property_exists($class, '_properties'))
-		{
-			$properties = static::$_properties;
-			foreach ($properties as $key => $p)
-			{
-				if (is_string($p))
-				{
-					unset($properties[$key]);
-					$properties[$p] = array();
-				}
-			}
-		}
-	
-		// ...if the above failed, run DB query to fetch properties
-		if (empty($properties))
-		{
-			try
-			{
-				$properties = \DB::list_columns(static::table(), null, static::connection());
-			}
-			catch (\Exception $e)
-			{
-				throw new \FuelException('Listing columns failed, you have to set the model properties with a '.
-						'static $_properties setting in the model. Original exception: '.$e->getMessage());
-			}
-		}
-	
-		// cache the properties for next usage
-		static::$_properties_cached[$class] = $properties;
-	
-		return static::$_properties_cached[$class];
 	}
 	
 	/**
