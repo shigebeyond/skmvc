@@ -12,6 +12,15 @@
 class Model_User extends Orm
 {
 	/**
+	 * 每个字段的校验规则
+	 * @var array
+	 */
+	protected static $_rules = array(
+		'name' => 'trim > not_empty && length(1, 10)',
+		'age' => 'trim > is_numeric && range(0, 100)',
+	);
+	
+	/**
 	 * 关联关系
 	 * @var array
 	 */
