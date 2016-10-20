@@ -111,18 +111,19 @@ class Sk_Orm_Related extends Orm_Persistent
 			return $this->_original;
 
 		// setter
+		$related = array();
 		foreach ($original as $column => $value)
 		{
-			$i = strpos($column, ':'); // 关联查询时，会设置关联表字段的列别名（列别名 = 表别名 : 列名），可以据此来设置关联对象的字段值
-			if($i === FALSE) // 自身字段
+			// 关联查询时，会设置关联表字段的列别名（列别名 = 表别名 : 列名），可以据此来设置关联对象的字段值
+			if(strpos($column, ':') === FALSE) // 自身字段
 			{
 				$this->_original[$column] = $value;
 			}
-			else // 关联对象字段
+			elseif($value !== NULL) // 关联对象字段: 不处理NULL的值, 因为left join查询时, 关联对象可能没有匹配的行
 			{
-				$name = substr($column, 0, $i);
-				$column = substr($column, $i + 1);
-				$this->_related($name, TRUE)->_original[$column] = $value;
+				list($name, $column) = explode(':', $column);
+				$obj = $this->_related($name, TRUE); // 创建关联对象
+				$obj->_original[$column] = $value;
 			}
 		}
 
