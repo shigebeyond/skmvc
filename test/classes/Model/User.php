@@ -21,6 +21,15 @@ class Model_User extends Orm
 	);
 	
 	/**
+	 * 每个字段的标签（中文名）
+	 * @var array
+	 */
+	protected static $_labels = array(
+		'name' => '姓名',
+		'age' => '年龄',
+	);
+	
+	/**
 	 * 关联关系
 	 * @var array
 	 */

@@ -18,6 +18,12 @@ class Sk_Orm_Persistent extends Orm_MetaData
 	protected static $_rules = array();
 	
 	/**
+	 * 每个字段的标签（中文名）
+	 * @var array
+	 */
+	protected static $_labels = array();
+	
+	/**
 	 * 获得sql构建器: (select) sql
 	 *
 	 * @param string $action
@@ -59,7 +65,10 @@ class Sk_Orm_Persistent extends Orm_MetaData
 			$value = $last = $this->$column;
 			// 校验单个字段: 字段值可能被修改
 			if(!Validation::execute($exp, $value, $this, $message)) 
-				throw new Exception($message);
+			{
+				$label = Arr::get(static::$_labels, $column, $column); // 字段标签（中文名）
+				throw new Exception($label.$message);
+			}
 			
 			// 更新被修改的字段值
 			if($value !== $last)
