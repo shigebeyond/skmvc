@@ -12,6 +12,12 @@
 class Sk_Orm_Persistent extends Orm_MetaData
 {
 	/**
+	 * 每个字段的校验规则
+	 * @var array
+	 */
+	protected static $_rules = array();
+	
+	/**
 	 * 获得sql构建器: (select) sql
 	 *
 	 * @param string $action
@@ -40,6 +46,20 @@ class Sk_Orm_Persistent extends Orm_MetaData
 		$rows = $query->execute();
 		$this->_original = Arr::get($rows, 0, array());
 	}
+	
+	/**
+	 * 校验数据
+	 * @return boolean
+	 */
+	public function check()
+	{
+		// 逐个字段校验
+		foreach ($static::$_rules as $column => $exp)
+			if(!Validation::execute($exp, $this->$column, $this, $message)) // 校验单个字段
+				throw new Exception($message);
+
+		return TRUE;
+	}
 
 	/**
 	 * 判断当前记录是否存在于db: 有原始数据就认为它是存在的
@@ -56,7 +76,7 @@ class Sk_Orm_Persistent extends Orm_MetaData
 	 */
 	public function save()
 	{
-		if($this->pk())
+		if($this->exists())
 			return $this->update();
 
 		return $this->create();
@@ -75,7 +95,10 @@ class Sk_Orm_Persistent extends Orm_MetaData
 	public function create()
 	{
 		if(empty($this->_dirty))
-			return $this;
+			throw new Exception("没有要创建的数据");
+		
+		// 校验
+		$this->check();
 
 		// 插入数据库
 		static::query_builder('insert')->data($this->_dirty)->execute();
@@ -101,9 +124,12 @@ class Sk_Orm_Persistent extends Orm_MetaData
 	{
 		if(!$this->exists())
 			throw new Exception('更新对象['.static::$_name.'#'.$this->pk().']前先检查是否存在');
-
+		
 		if (empty($this->_dirty))
-			return $this;
+			throw new Exception("没有要更新的数据");
+		
+		// 校验
+		$this->check();
 
 		// 更新数据库
 		$result = static::query_builder('update')->data($this->_dirty)->where(static::$_primary_key, '=', $this->pk())->execute();
@@ -129,6 +155,9 @@ class Sk_Orm_Persistent extends Orm_MetaData
 		if(!$this->exists())
 			throw new Exception('删除对象['.static::$_name.'#'.$this->pk().']前先检查是否存在');
 
+		if(!$this->check())
+			return;
+		
 		// 删除数据
 		$result = static::query_builder('delete')->where(static::$_primary_key, '=', $this->pk())->execute();
 
