@@ -46,14 +46,14 @@ class Sk_Db_Query_Builder_Decoration_Expression_Simple extends Db_Query_Builder_
 	public function compile_subexp($subexp) 
 	{
 		// 遍历处理器来处理对应元素, 没有处理的元素也直接拼接
-		foreach ( $this->_element_handlers as $i => $handler ) 
+		foreach($this->_element_handlers as $i => $handler) 
 		{
 			// 处理某个元素的值
-			$value = Arr::get ( $subexp, $i ); // 有可能子表达式的size < 元素处理器的size(如limit表达式)
-			$subexp [$i] = $this->{"_$handler"} ( $value );
+			$value = Arr::get($subexp, $i); // 有可能子表达式的size < 元素处理器的size(如limit表达式)
+			$subexp [$i] = $this->$handler($value);
 		}
 		
-		return implode ( ' ', $subexp ); // 用空格拼接多个元素
+		return implode(' ', $subexp); // 用空格拼接多个元素
 	}
 
 }

@@ -88,32 +88,32 @@ abstract class Sk_Db_Query_Builder_Decoration_Expression
 		return $this->compile ();
 	}
 	
-	public function _int($value)
+	public function int($value)
 	{
 		return (int) $value;
 	}
 	
-	public function _str($value)
+	public function str($value)
 	{
 		return $value;
 	}
 	
 	public function _table($table)
 	{
-		return $this->_db->quote_table($table);
+		return $this->db->quote_table($table);
 	}
 	
-	public function _column($column)
+	public function column($column)
 	{
 		return $this->_db->quote_column($column);
 	}
 	
-	public function _value($value)
+	public function value($value)
 	{
 		return $this->_db->quote($value);
 	}
 	
-	public function _order_direction($value)
+	public function order_direction($value)
 	{
 		if($value !== NULL){
 			$value = strtoupper($value);
@@ -123,7 +123,7 @@ abstract class Sk_Db_Query_Builder_Decoration_Expression
 		return NULL;
 	}
 	
-	public function _join_type($value)
+	public function join_type($value)
 	{
 		if($value !== NULL){
 			$value = strtoupper($value);
