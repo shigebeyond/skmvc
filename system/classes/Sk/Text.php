@@ -77,4 +77,35 @@ class Sk_Text
 		$end_pos = strlen($str) - strlen($substr);
 		return static::pos($str, $substr, $ignore_case) === $end_pos; // pos为$end_pos
 	}
+	
+	/**
+	 * 翻译字符串
+	 * 
+	 * @param string $str 字符串模板
+	 * @param array $values 参数
+	 * @return string
+	 */
+	public static function strtr($str, array $values)
+	{
+		$params = array();
+		foreach ($values as $key => $value)
+		{
+			$params[':'.$key] = $value;
+		}
+		return strtok($str, $params);
+	}
+	
+	/**
+	 * 替换字符串
+	 * 
+	 * @param string $str 字符串模板
+	 * @param array $params 参数
+	 * @return string
+	 */
+	public static function replace($str, array $params)
+	{
+		return preg_replace_callback('/:([\w\d]+)/', function($mathes) use($params) {
+			return $params[$mathes[1]];
+		}, $str);
+	}
 }
