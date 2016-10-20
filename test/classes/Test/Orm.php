@@ -63,4 +63,12 @@ class Test_Orm extends PHPUnit_Framework_TestCase
 		$users = Model_User::query_builder()->find_all();
 		print_r($users);
 	} */
+	
+	public function test_array_access(){
+		$user = new Model_User(2);
+// 		echo "name = {$user['name']}, age = {$user['age']}";
+// 		print_r($user['contacts']);
+		$this->assertEquals($user->name, $user['name']);
+		$this->assertEquals($user->age, $user['age']);
+	} 
 }
