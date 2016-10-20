@@ -71,8 +71,13 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 	 */
 	public function with($name)
 	{
-		// 获得关联关系
 		$class = $this->_class;
+		
+		// select当前表字段
+		if(empty($this->_data))
+			$this->select(array($class::table().'.*'));
+		
+		// 获得关联关系
 		$relation = $class::relation($name);
 		if($relation)
 		{
@@ -87,7 +92,7 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 				case 'has_one': // has_xxx: 查从表
 					$this->_join_slave($class, $foreign_key, $name);
 			}
-			// select字段
+			// select关联表字段
 			$this->_select_related($class, $name);
 		}
 		
