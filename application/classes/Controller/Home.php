@@ -80,4 +80,15 @@ class Controller_Home extends Controller
 		$result = $exp->execute(' model ', NULL);
 		$this->res->body($result);
 	}
+	
+	public function action_orm_rule()
+	{
+		$user = new Model_User(7);
+		$user->name = '          shi ';
+		$user->age = '26oo';
+		$result = $user->update();
+		print_r($user->as_array());
+	
+		$this->res->body($result);
+	}
 }

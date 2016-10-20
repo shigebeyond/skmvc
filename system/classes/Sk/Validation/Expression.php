@@ -123,21 +123,21 @@ class Sk_Validation_Expression
 		$result;
 		foreach ($this->_subexps as $i => $subexp)
 		{
-			// 运算子表达式
+			// 1 运算子表达式
 			$curr = $this->execute_subexp($subexp, $value, $data);
 			
-			// 处理结果
-			// 累积结果运算: 当前结果 $result 作为下一参数 $value
-			if(Arr::get($this->_operators, $i) === '>')
+			// 2 处理结果
+			$next_op = Arr::get($this->_operators, $i);
+			// 2.1 累积结果运算: 当前结果 $result 作为下一参数 $value
+			if($next_op === '>')
 			{
 				$value = $result = $curr;
 				continue;
 			}
 			
-			if($i === 0) // 第一个子表达式
+			if($i === 0) // 2.2 第一个子表达式
 			{
 				// 下一个运算符
-				$next_op = $this->_operators[$i];
 				if($next_op == '&&' && !$curr || $next_op == '||' && $curr) // 短路
 				{
 					$last_subexp = $subexp;
@@ -145,7 +145,7 @@ class Sk_Validation_Expression
 				}
 				$result = $curr;
 			}
-			else // 其他子表达式
+			else // 2.3 其他子表达式
 			{
 				// 当前运算符
 				$op = $this->_operators[$i-1];
