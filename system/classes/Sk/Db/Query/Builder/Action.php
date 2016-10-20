@@ -149,7 +149,7 @@ abstract class Sk_Db_Query_Builder_Action
 	 */
 	public function select(array $columns)
 	{
-		$this->_data = $columns + $this->_data;
+		$this->_data = $this->_data + $columns; // 假设: 有先后, 无覆盖
 		return $this;
 	}
 	
