@@ -5,8 +5,8 @@ return array(
 	//1 完整的配置
 	'(<controller>(\/<action>(\/<id>)?)?)?' /* uri的正则 */ => array( // 参数的配置, 可省略
 			'params' => array( // 参数的子正则, 可省略
-				'controller' => '[a-z]+',
-				'action' => '[a-z]+',
+				'controller' => '[\w_]+',
+				'action' => '[\w_]+',
 				'id' => '\d+',
 			),
 			'defaults' => array( // 参数的默认值, 可省略
