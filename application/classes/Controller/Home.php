@@ -42,7 +42,7 @@ class Controller_Home extends Controller
 		print_r($users); */
 		
 		$user = Model_User::query_builder()->with('contacts')->find();
-		
+		$result = print_r($user->as_array());
 		$this->res->body("result is $result");
 	}
 	

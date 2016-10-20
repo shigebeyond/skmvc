@@ -11,11 +11,15 @@
  */
 class Model_Contact extends Orm
 {
+	/**
+	 * 关联关系
+	 * @var array
+	 */
 	protected static $_relations = array(
-		'contacts' => array( // 有多个联系方式
-			'type' => Orm::RELATION_BELONGS_TO,
-			'model' => 'User',
-			'foreign_key' => 'user_id'
+		'user' => array( // 从属于某个用户
+			'type' => Orm::RELATION_BELONGS_TO, // 关联类型: 从属于
+			'model' => 'User', // 关联模型
+			'foreign_key' => 'user_id' // 外键
 		)
 	);
 }

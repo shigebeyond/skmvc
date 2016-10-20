@@ -63,9 +63,4 @@ class Test_Orm extends PHPUnit_Framework_TestCase
 		$users = Model_User::query_builder()->find_all();
 		print_r($users);
 	} */
-	
-	public function test_relation(){
-		$user = Model_User::query_builder()->with('contacts')->find();
-		print_r($user->as_array());
-	}
 }
