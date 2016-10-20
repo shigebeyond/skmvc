@@ -11,10 +11,20 @@
  */
 abstract class Sk_Orm_MetaData extends Orm_Entity
 {
-	//todo： 抽取单独的metadata类，跟当前类类似
-	// 当前类直接代理metadata类的方法
-	// 当前类缓存model类名与medata的映射
+	/****************** 部分元数据有不一样的默认值, 不能在基类定义 => 默认值不能保存在类结构中, 因此只能缓存默认值 ********************/
+	/**
+	 * 缓存所有model类的表名: <类名 => 表名>
+	 * @var string
+	 */
+	protected static $_tables_cached = array();
 	
+	/**
+	 * 缓存所有model类的字段列表: <类名 => 字段列表>
+	 * @var string
+	 */
+	protected static $_columns_cached = array();
+	
+	/****************** 部分元数据有一样的默认值, 可在基类定义 => 默认值直接保存在类结构中 ********************/	
 	/**
 	 * 数据库
 	 * 	默认一样, 基类给默认值, 子类可自定义
@@ -30,23 +40,11 @@ abstract class Sk_Orm_MetaData extends Orm_Entity
 	//protected static $_table;
 	
 	/**
-	 * 缓存所有model类的表名: <类名 => 表名>
-	 * @var string
-	 */
-	protected static $_class_tables = array();
-	
-	/**
 	 * 自定义的表字段
 	 *     默认不一样, 基类不能给默认值, 但子类可自定义
 	 * @var array
 	 */
 	//protected static $_columns;
-	
-	/**
-	 * 缓存所有model类的字段列表: <类名 => 字段列表>
-	 * @var string
-	 */
-	protected static $_class_columns = array();
 	
 	/**
 	 * 主键
@@ -92,15 +90,15 @@ abstract class Sk_Orm_MetaData extends Orm_Entity
 		$class = get_called_class();
 	
 		// 先查缓存
-		if (!isset(static::$_class_tables[$class]))
+		if (!isset(static::$_tables_cached[$class]))
 		{
 			if (property_exists($class, '_table')) // 自定义表名
-				static::$_class_tables[$class] = static::$_table;
+				static::$_tables_cached[$class] = static::$_table;
 			else // 默认表名 = 模型名
-				static::$_class_tables[$class] = static::name();
+				static::$_tables_cached[$class] = static::name();
 		}
 	
-		return static::$_class_tables[$class];
+		return static::$_tables_cached[$class];
 	}
 	
 	
@@ -113,15 +111,15 @@ abstract class Sk_Orm_MetaData extends Orm_Entity
 		$class = get_called_class();
 		
 		// 先查缓存
-		if (!isset(static::$_class_columns[$class]))
+		if (!isset(static::$_columns_cached[$class]))
 		{
 			if (property_exists($class, '_columns')) // 自定义字段列表
-				static::$_class_columns[$class] = $class::$_columns;
+				static::$_columns_cached[$class] = $class::$_columns;
 			else // 默认字段列表 = 直接查db
-				static::$_class_columns[$class] = static::db()->list_columns(static::table());
+				static::$_columns_cached[$class] = static::db()->list_columns(static::table());
 		}
 	
-		return static::$_class_columns[$class];
+		return static::$_columns_cached[$class];
 	}
 	
 	/**

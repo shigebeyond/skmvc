@@ -18,7 +18,7 @@ class Sk_Validation_Expression
 	 * 缓存校验表达式编译结果
 	 * @var array
 	 */
-	protected static $_exps = array();
+	protected static $_exps_cached = array();
 	
 	/**
 	 * 编译 表达式
@@ -29,7 +29,7 @@ class Sk_Validation_Expression
 	 */
 	public static function compile($exp)
 	{
-		if(!isset(static::$_exps[$exp]))
+		if(!isset(static::$_exps_cached[$exp]))
 		{
 			// 编译运算符
 			$pattern = '/\s*([&\|\.\>]+)\s*/';
@@ -39,10 +39,12 @@ class Sk_Validation_Expression
 			
 			// 编译子表达式
 			$subexps = preg_split($pattern, $exp);
-			return array_map('Validation_Expression::compile_subexp', $subexps);
+			$subexps = array_map('Validation_Expression::compile_subexp', $subexps);
+			
+			static::$_exps_cached[$exp] = new Validation_Expression($ops, $subexps);
 		}
 		
-		return static::$_exps[$exp];
+		return static::$_exps_cached[$exp];
 	}
 	
 	/**
