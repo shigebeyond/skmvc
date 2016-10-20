@@ -350,14 +350,14 @@ class Sk_Db extends Container_Component_Config
 		if(is_array($table))
 			return $this->_quote_tables($table);
 
-		// 加表前缀
-		$table = $this->_config['table_prefix'].$table;
+		// 表名
+		$table = "`$table`"; // 转义
 
-		// 加表别名
+		// 表别名
 		if($alias)
-			return "`$table` AS `$alias`"; // 转义
+			$alias = " AS `$alias`"; // 转义
 
-		return "`$table`";// 转义
+		return $this->_config['table_prefix'].$table.$alias; // 表前缀 + 表名 + 表别名
 	}
 
 	/**
@@ -397,18 +397,24 @@ class Sk_Db extends Container_Component_Config
 		if(is_array($column))
 			return $this->_quote_columns($column, $with_brackets);
 
-		// *
-		if($column == '*')
-			return $column;
-
-		// 表名.字段名
-		$column = str_replace('.', '`.`', $column);
-
-		// 加字段别名
+		// 表名
+		$table = NULL;
+		$parts = explode('.', $column, 2); //分离"表名.字段名"
+		if(isset($parts[1]))
+		{
+			list($table, $column) = $parts;
+			$table = "`$table`.";
+		}
+		
+		// 字段名
+		if($column != '*') // 非*
+			$column = "`$column`"; // 转义
+		
+		// 字段别名
 		if($alias)
-			return "`$column` AS `$alias`"; // 转义
+			$alias = " AS `$alias`"; // 转义
 
-		return "`$column`"; // 转义
+		return $table.$column.$alias;
 	}
 
 	/**
