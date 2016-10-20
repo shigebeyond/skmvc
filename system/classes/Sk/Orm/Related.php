@@ -122,7 +122,7 @@ class Sk_Orm_Related extends Orm_Persistent
 			{
 				$name = substr($column, 0, $i);
 				$column = substr($column, $i + 1);
-				$this->_related($name)->_original[$column] = $value;
+				$this->_related($name, TRUE)->_original[$column] = $value;
 			}
 		}
 

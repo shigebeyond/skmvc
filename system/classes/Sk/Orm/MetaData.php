@@ -74,10 +74,7 @@ abstract class Sk_Orm_MetaData extends Orm_Entity
 	 */
 	public static function name()
 	{
-		if(static::$_name === NULL)
-			static::$_name = strtolower(substr(get_called_class(), 6));
-		
-		return static::$_name;
+		return strtolower(substr(get_called_class(), 6));
 	}
 	
 	/**
