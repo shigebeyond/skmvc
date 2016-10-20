@@ -11,43 +11,73 @@
  */
 class Controller_Home extends Controller
 {
-	public function action_index()
+	public function action_db()
 	{
 // 		$result = Db::instance()->preview('select * from user where id = ?', array(3));
 // 		$result = Db::instance()->preview('select * from user where id = :id', array(':id' => 3));
 
-		//$result = Db::instance()->insert('user', array('name' => 'kkk', 'age' => 12))->execute();
+// 		$columns = Db::instance()->list_columns('user');
+// 		$result = print_r($columns);
 		
-// 		$query = Db::instance()->delete('user')->where('id', '=', '1');
-// 		$result = $query->execute();
+		$users = Db::instance()->query('select * from user', array($this, 'handle_user'));
+		$result = print_r($users);
 		
-		/* $query = Db::instance()->select('user')->where('user.id', '=', 2);
-// 		$query = Db::instance()->select('user')->where('id', '=', 2)->where_open()->where('name', '=', 'li')->where_close();
-		$msg = "sql: ".$query->compile()[0];
-		$result = $query->execute();
-		$msg .= "select result: ".print_r($result); */
-		
-		/* $columns = Db::instance()->list_columns('user');
-		print_r($columns); */
-		
-		/* $user = new Model_User(7);
-		$user->name = 'shi';
-		$user->age = 24;
-		$result = $user->update();
-		print_r($user->as_array()); */
-		
-// 		$users = Db::instance()->query('select * from user', array($this, 'handle_user'));
-
-		/* $users = Model_User::query_builder()->find_all();
-		print_r($users); */
-		
-		$user = Model_User::query_builder()->with('contacts')->find();
-		$result = print_r($user->as_array());
-		$this->res->body("result is $result");
+		$this->res->body($result);
 	}
 	
 	public function handle_user($name, $age) {
 		return "{$name}: {$age}";
 	}
 	
+	public function action_query_builder()
+	{
+// 		$result = Db::instance()->insert('user', array('name' => 'kkk', 'age' => 12))->execute();
+// 		$result = Db::instance()->delete('user')->where('id', '=', '1')->execute();
+	
+		$query = Db::instance()->select('user')->where('user.id', '=', 2);
+// 		$query = Db::instance()->select('user')->where('id', '=', 2)->where_open()->where('name', '=', 'li')->where_close();
+		$result = "sql: ".$query->compile()[0];
+		$result .= "select result: ".print_r($query->execute());
+	
+		$this->res->body($result);
+	}
+	
+	public function action_orm()
+	{
+		$user = new Model_User(7);
+		$user->name = 'shi';
+		$user->age = 24;
+		$result = $user->update();
+		print_r($user->as_array());
+	
+		$this->res->body($result);
+	}
+	
+	public function action_orm_query_builder()
+	{
+		$users = Model_User::query_builder()->find_all();
+		$result = print_r($users);
+		$this->res->body($result);
+	}
+	
+	public function action_orm_relation()
+	{
+		$user = Model_User::query_builder()->with('contacts')->find();
+		$result = print_r($user->as_array());
+		$this->res->body($result);
+	}
+	
+	public function action_validation()
+	{
+// 		$exp = new Validation_Expression('not_empty | length(2)');
+// 		$result = $exp->execute('1', NULL, $last_subexp);
+// 		$result = "last_subexp: ".print_r($last_subexp);
+
+// 		$exp = new Validation_Expression('trim > strtoupper > substr(2)');
+// 		$result = $exp->execute(' model ', NULL);
+
+		$exp = new Validation_Expression('trim . strtoupper . substr(2)');
+		$result = $exp->execute(' model ', NULL);
+		$this->res->body($result);
+	}
 }

@@ -48,7 +48,7 @@ class Sk_Validation_Expression
 		// 编译函数名
 		$pattern = '/(\w+)\((.*)\)/';
 		if(!preg_match($pattern, $subexp, $matches))
-			return array($subexp); // 只有函数名 
+			return array($subexp, array()); // 只有函数名 
 		list($_, $func, $params) = $matches;
 		
 		// 编译参数
@@ -101,9 +101,10 @@ class Sk_Validation_Expression
 	 * 
 	 * @param unknown $value 要校验的数值
 	 * @param array $data 其他参数
+	 * @param array $last_subexp 短路时的最后一个子表达式
 	 * @return mixed
 	 */
-	public function execute($value, $data)
+	public function execute($value, array $data = NULL, array &$last_subexp = NULL)
 	{
 		if(empty($this->_subexps))
 			return NULL;
@@ -112,41 +113,59 @@ class Sk_Validation_Expression
 		$result;
 		foreach ($this->_subexps as $i => $subexp)
 		{
-			// 第一个表达式
-			if($i === 0) 
-			{
-				$result = $this->execute_subexp($subexp, $value, $data);
-				continue;
-			}
-			
-			// 累积结果运算：当前结果作为下次调用的参数
-			if($this->_operators[$i-1] == '>') 
-			{
-				$result = $this->execute_subexp($subexp, $result, $data); // $result 替代 $value 作为参数
-				continue;
-			}
-			
-			// 其他运算
+			// 运算子表达式
 			$curr = $this->execute_subexp($subexp, $value, $data);
-			switch ($this->_operators[$i-1])
+			
+			// 处理结果
+			// 累积结果运算: 当前结果 $result 作为下一参数 $value
+			if(Arr::get($this->_operators, $i) === '>')
 			{
-				case '&':
-					$result = $result && $curr;
-					break;
-				case '&&':
-					$result = $result && $curr;
-					if(!$result) return FALSE;
-					break;
-				case '|':
-					$result = $result || $curr;
-					break;
-				case '||':
-					$result = $result || $curr;
-					if($result) return TRUE;
-					break;
-				case '.': // 字符串连接
-					$result .= $curr;
-					break;
+				$value = $result = $curr;
+				continue;
+			}
+			
+			if($i === 0) // 第一个子表达式
+			{
+				$op = $this->_operators[$i];
+				if($op == '&&' && !$curr || $op == '||' && $curr) // 短路
+				{
+					$last_subexp = $subexp;
+					return $curr;
+				}
+				$result = $curr;
+			}
+			else // 其他子表达式
+			{
+				switch ($this->_operators[$i-1])
+				{
+					case '&':
+						$result = $result && $curr;
+						break;
+					case '&&':
+						$result = $result && $curr;
+						if(!$result)// 短路
+						{
+							$last_subexp = $subexp;
+							return $result;
+						}
+						break;
+					case '|':
+						$result = $result || $curr;
+						break;
+					case '||':
+						$result = $result || $curr;
+						if($result)// 短路
+						{
+							$last_subexp = $subexp;
+							return $result;
+						}
+						break;
+					case '.': // 字符串连接
+						$result .= $curr;
+						break;
+					default:
+						$result = $curr;
+				}
 			}
 		}
 		
@@ -161,18 +180,23 @@ class Sk_Validation_Expression
 	 * @param array $data 其他参数
 	 * @return mixed
 	 */
-	public function execute_subexp($subexp, $value, $data)
+	public function execute_subexp($subexp, $value, $data = NULL)
 	{
 		list($func, $params) = $subexp;
 		// 实际参数
-		foreach ($params as $i => $param)
+		if (!empty($data)) 
 		{
-			if(is_string($i)) // 根据变量名，来替换变量值
-				$param = Arr::get($data, $i);
+			foreach ($params as $i => $param)
+			{
+				if(is_string($i)) // 根据变量名，来替换变量值
+					$params[$i] = Arr::get($data, $i);
+			}
 		}
 		// 待校验的值: 作为第一参数
 		array_unshift($params, $value);
 		// 调用函数
+		if(method_exists('Validator', $func)) // 优先调用 Validator 中的校验方法
+			$func = 'Validator::'.$func;
 		return call_user_func_array($func, $params);
 	}
 }
