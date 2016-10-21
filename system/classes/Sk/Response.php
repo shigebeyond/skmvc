@@ -109,6 +109,9 @@ class Sk_Response{
 			return $this->_body;
 	
 		//setter
+		if($content instanceof View)
+			$content = $content->render();
+		
 		$this->_body = (string) $content;
 		return $this;
 	}

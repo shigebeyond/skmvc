@@ -2,21 +2,21 @@
 
 /**
  * 面向orm对象的sql构建器
- * 
- * @Package package_name 
- * @category 
+ *
+ * @Package package_name
+ * @category
  * @author shijianhang
- * @date 2016-10-16 下午8:02:28 
+ * @date 2016-10-16 下午8:02:28
  *
  */
-class Sk_Orm_Query_Builder extends Db_Query_Builder 
+class Sk_Orm_Query_Builder extends Db_Query_Builder
 {
 	/**
 	 * model的类
 	 * @var string
 	 */
 	protected $_class;
-	
+
 	/**
 	 * 构造函数
 	 *
@@ -29,29 +29,29 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 	public function __construct($class, $action = 'select', $db = 'default', $table = NULL, $data = NULL)
 	{
 		parent::__construct($action, $db, $table, $data);
-		
+
 		// 检查是否是orm子类
 		if(!is_subclass_of($class, 'Orm'))
-			throw new Exception('Orm_Query_Builder::_class 必须是 Orm 的子类');
+			throw new Orm_Exception('Orm_Query_Builder::_class 必须是 Orm 的子类');
 		$this->_class = $class;
 	}
-	
+
 	/**
 	 * 查询单个
 	 * @return
 	 *
 	 */
-	public function find() 
+	public function find()
 	{
 		$rows = $this->limit(1)->find_all();
 		return Arr::get($rows, 0);
 	}
-	
+
 	/**
 	 * 查询多个
 	 * @return array
 	 */
-	public function find_all() 
+	public function find_all()
 	{
 		$rows = $this->execute();
 		foreach ($rows as $key => $row)
@@ -62,21 +62,21 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 		}
 		return $rows;
 	}
-	
+
 	/**
 	 * 联查表
-	 * 
+	 *
 	 * @param string $name 关联关系名
 	 * @return Sk_Orm_Query_Builder
 	 */
 	public function with($name)
 	{
 		$class = $this->_class;
-		
+
 		// select当前表字段
 		if(empty($this->_data))
 			$this->select(array($class::table().'.*'));
-		
+
 		// 获得关联关系
 		$relation = $class::relation($name);
 		if($relation)
@@ -95,10 +95,10 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 			// select关联表字段
 			$this->_select_related($class, $name);
 		}
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * 联查从表
 	 *     从表.外键 = 主表.主键
@@ -116,7 +116,7 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 		$slave_fk = $table_alias.'.'.$foreign_key;
 		return $this->join(array($table_alias => $slave::table()), 'LEFT')->on($slave_fk, '=', $master_pk); // 从表.外键 = 主表.主键
 	}
-	
+
 	/**
 	 * 联查主表
 	 *     主表.主键 = 从表.外键
@@ -134,7 +134,7 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 		$slave_fk = $slave::table().'.'.$foreign_key;
 		return $this->join($master::table(), 'LEFT')->on($master_pk, '=', $slave_fk); // 主表.主键 = 从表.外键
 	}
-	
+
 	/**
 	 * select关联表的字段
 	 *
@@ -147,7 +147,7 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 		// 默认查询全部列
 		if($columns === NULL)
 			$columns = array_keys($class::columns());
-	
+
 		// 构建列别名
 		$select = array();
 		foreach ($columns as $column)
@@ -158,5 +158,5 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 		}
 		return $this->select($select);
 	}
-	
+
 }

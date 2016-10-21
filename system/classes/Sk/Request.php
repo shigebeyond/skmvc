@@ -193,7 +193,7 @@ class Sk_Request{
 	 * @param   string  $value  参数默认值
 	 * @return  mixed
 	 */
-	public function query($key = NULL, $value = NULL)
+	public function get($key = NULL, $value = NULL)
 	{
 		// 获得全部参数
 		if ($key === NULL)

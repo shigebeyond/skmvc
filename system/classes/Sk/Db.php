@@ -22,7 +22,7 @@ class Sk_Db extends Container_Component_Config
 		'sqlsrv' => array("SELECT * FROM INFORMATION_SCHEMA.columns WHERE TABLE_NAME=':table'", 'COLUMN_NAME'), // sql server
 		'oci' => array("SELECT * FROM user_tab_columns WHERE Table_Name=':table'", 'column_name'), // oracle
 	);
-	
+
 	/**
 	 *  获得db单例
 	 * @param string $group 数据库配置的分组名
@@ -32,7 +32,7 @@ class Sk_Db extends Container_Component_Config
 	{
 		return Container::component_config('Db', $group);
 	}
-	
+
 	/**
 	 * 当前事务的嵌套层级
 	 * @var int
@@ -51,12 +51,12 @@ class Sk_Db extends Container_Component_Config
 		// 创建pdo连接
 		$this->connect();
 	}
-	
+
 	/**
 	 * 获得驱动类型
 	 * 	从数据库配置项dsn中获取
 	 * 	如dsn为mysql:host=localhost;dbname=test， 则driver为mysql
-	 * @return 
+	 * @return
 	 */
 	public function driver()
 	{
@@ -64,7 +64,7 @@ class Sk_Db extends Container_Component_Config
 		$i = strpos($dsn, ':');
 		if($i !== FALSE)
 			return substr($dsn, 0, $i);
-		
+
 		return NULL;
 	}
 
@@ -89,7 +89,7 @@ class Sk_Db extends Container_Component_Config
 		}
 		catch (PDOException $e)
 		{
-			throw new Exception("连接失败: " . $e->getMessage());
+			throw new Db_Exception("连接失败: " . $e->getMessage());
 		}
 
 		// 设置字符集
@@ -109,7 +109,7 @@ class Sk_Db extends Container_Component_Config
 
 	/**
 	 * 获得值的pdo类型
-	 * 
+	 *
 	 * @param unknown $value
 	 * @return number
 	 */
@@ -178,7 +178,7 @@ class Sk_Db extends Container_Component_Config
 			// 执行sql + 返回影响行数
 			return $this->_exec($sql, $params)->rowCount();
 		} catch (PDOException $e) {
-			throw new Exception("执行sql出错: ", $e->getMessage());
+			throw new Db_Exception("执行sql出错: ", $e->getMessage());
 		}
 	}
 
@@ -204,13 +204,13 @@ class Sk_Db extends Container_Component_Config
 				return $statement->fetchAll(PDO::FETCH_ASSOC); // fix bug: General error: Extraneous additional parameters => 不需要第二个参数
 			return $statement->fetchAll(static::fetch_mode($fetch_value), $fetch_value);
 		} catch (PDOException $e) {
-			throw new Exception("执行sql出错: ", $e->getMessage());
+			throw new Db_Exception("执行sql出错: ", $e->getMessage());
 		}
 	}
-	
+
 	/**
 	 * 根据$pdo->setFetchMode()的第二个参数来确定fetchMode
-	 * 
+	 *
 	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_NUM，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
 	 * @return number
 	 */
@@ -218,16 +218,16 @@ class Sk_Db extends Container_Component_Config
 	{
 		if(is_int($fetch_value))
 			return PDO::FETCH_NUM;
-		
+
 		if(is_callable($fetch_value)) // 优先于string/object, 因为函数名是string, 匿名函数Closure是object
 			return PDO::FETCH_FUNC;
 
 		if(is_string($fetch_value))
 			return PDO::FETCH_CLASS;
-		
+
 		if(is_object($fetch_value))
 			return PDO::FETCH_INTO;
-		
+
 		return PDO::FETCH_ASSOC;
 	}
 
@@ -405,11 +405,11 @@ class Sk_Db extends Container_Component_Config
 			list($table, $column) = $parts;
 			$table = "`$table`.";
 		}
-		
+
 		// 字段名
 		if($column != '*') // 非*
 			$column = "`$column`"; // 转义
-		
+
 		// 字段别名
 		if($alias)
 			$alias = " AS `$alias`"; // 转义
@@ -452,7 +452,7 @@ class Sk_Db extends Container_Component_Config
 		// 转义
 		return $this->_pdo->quote ( $value );
 	}
-	
+
 	/**
 	 * 查询表的字段
 	 * @param string $table
@@ -470,10 +470,10 @@ class Sk_Db extends Container_Component_Config
 			$columns[$row[$field]] = $row;
 		return $columns;
 	}
-	
+
 	/**
 	 * select的sql构建器
-	 * 
+	 *
 	 * @param string $table 表名
 	 * @param string $data 数据
 	 * @return Sk_Db_Query_Builder
@@ -482,10 +482,10 @@ class Sk_Db extends Container_Component_Config
 	{
 		return new Sk_Db_Query_Builder ( 'select', $this, $table, $data );
 	}
-	
+
 	/**
 	 * insert的sql构建器
-	 * 
+	 *
 	 * @param string $table 表名
 	 * @param string $data 数据
 	 * @return Sk_Db_Query_Builder
@@ -494,10 +494,10 @@ class Sk_Db extends Container_Component_Config
 	{
 		return new Sk_Db_Query_Builder ( 'insert', $this, $table, $data );
 	}
-	
+
 	/**
 	 * update的sql构建器
-	 * 
+	 *
 	 * @param string $table 表名
 	 * @param string $data 数据
 	 * @return Sk_Db_Query_Builder
@@ -506,10 +506,10 @@ class Sk_Db extends Container_Component_Config
 	{
 		return new Sk_Db_Query_Builder ( 'update', $this, $table, $data );
 	}
-	
+
 	/**
 	 * delete的sql构建器
-	 * 
+	 *
 	 * @param string $table 表名
 	 * @return Sk_Db_Query_Builder
 	 */

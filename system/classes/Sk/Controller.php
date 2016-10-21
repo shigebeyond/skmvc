@@ -9,7 +9,8 @@
  * @date 2016-10-8 下午8:02:47 
  *
  */
-class Sk_Controller{
+class Sk_Controller
+{
 
 	/**
 	 * 请求对象
@@ -26,5 +27,16 @@ class Sk_Controller{
 	public function __construct(Request $req, Response $res){
 		$this->req = $req;
 		$this->res = $res;
+	}
+	
+	/**
+	 * 给默认的视图
+	 * 
+	 * @param array $data
+	 * @return View
+	 */
+	public function view($data = NULL)
+	{
+		return new View($this->req->controller().'/'.$this->req->action(), $data);
 	}
 }

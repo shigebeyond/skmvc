@@ -190,19 +190,19 @@ class Sk_Validation_Expression
 	 *
 	 * @param array $subexp 子表达式
 	 * @param unknown $value 待校验的值
-	 * @param array|ArrayAccess $data 其他参数
+	 * @param array|ArrayAccess $binds 变量
 	 * @return mixed
 	 */
-	public function execute_subexp($subexp, $value, $data = NULL)
+	public function execute_subexp($subexp, $value, $binds = NULL)
 	{
 		list($func, $params) = $subexp;
 		// 实际参数
-		if (!empty($data)) 
+		if (!empty($binds)) 
 		{
 			foreach ($params as $i => $param)
 			{
 				if(is_string($i)) // 根据变量名，来替换变量值
-					$params[$i] = Arr::get($data, $i);
+					$params[$i] = Arr::get($binds, $i);
 			}
 		}
 		// 待校验的值: 作为第一参数

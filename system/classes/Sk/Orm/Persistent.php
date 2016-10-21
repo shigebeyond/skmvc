@@ -16,13 +16,13 @@ class Sk_Orm_Persistent extends Orm_MetaData
 	 * @var array
 	 */
 	protected static $_rules = array();
-	
+
 	/**
 	 * 每个字段的标签（中文名）
 	 * @var array
 	 */
 	protected static $_labels = array();
-	
+
 	/**
 	 * 获得sql构建器: (select) sql
 	 *
@@ -52,7 +52,7 @@ class Sk_Orm_Persistent extends Orm_MetaData
 		$rows = $query->execute();
 		$this->_original = Arr::get($rows, 0, array());
 	}
-	
+
 	/**
 	 * 校验数据
 	 * @return boolean
@@ -64,12 +64,12 @@ class Sk_Orm_Persistent extends Orm_MetaData
 		{
 			$value = $last = $this->$column;
 			// 校验单个字段: 字段值可能被修改
-			if(!Validation::execute($exp, $value, $this, $message)) 
+			if(!Validation::execute($exp, $value, $this, $message))
 			{
 				$label = Arr::get(static::$_labels, $column, $column); // 字段标签（中文名）
-				throw new Exception($label.$message);
+				throw new Orm_Exception($label.$message);
 			}
-			
+
 			// 更新被修改的字段值
 			if($value !== $last)
 				$this->_dirty[$column] = $value;
@@ -112,8 +112,8 @@ class Sk_Orm_Persistent extends Orm_MetaData
 	public function create()
 	{
 		if(empty($this->_dirty))
-			throw new Exception("没有要创建的数据");
-		
+			throw new Orm_Exception("没有要创建的数据");
+
 		// 校验
 		$this->check();
 
@@ -140,11 +140,11 @@ class Sk_Orm_Persistent extends Orm_MetaData
 	public function update()
 	{
 		if(!$this->exists())
-			throw new Exception('更新对象['.static::$_name.'#'.$this->pk().']前先检查是否存在');
-		
+			throw new Orm_Exception('更新对象['.static::$_name.'#'.$this->pk().']前先检查是否存在');
+
 		if (empty($this->_dirty))
-			throw new Exception("没有要更新的数据");
-		
+			throw new Orm_Exception("没有要更新的数据");
+
 		// 校验
 		$this->check();
 
@@ -170,11 +170,11 @@ class Sk_Orm_Persistent extends Orm_MetaData
 	public function delete()
 	{
 		if(!$this->exists())
-			throw new Exception('删除对象['.static::$_name.'#'.$this->pk().']前先检查是否存在');
+			throw new Orm_Exception('删除对象['.static::$_name.'#'.$this->pk().']前先检查是否存在');
 
 		if(!$this->check())
 			return;
-		
+
 		// 删除数据
 		$result = static::query_builder('delete')->where(static::$_primary_key, '=', $this->pk())->execute();
 

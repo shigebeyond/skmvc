@@ -17,7 +17,7 @@ abstract class Sk_Orm_Entity implements ArrayAccess
 	 */
 	public static function columns()
 	{
-		throw new Exception("必须重写该方法");
+		throw new Orm_Exception("必须重写该方法");
 	}
 
 	/**
@@ -42,7 +42,7 @@ abstract class Sk_Orm_Entity implements ArrayAccess
 	{
 		return array_key_exists($column, $this->columns());
 	}
-	
+
 	/**
 	 * 获得对象字段
 	 *
@@ -57,7 +57,7 @@ abstract class Sk_Orm_Entity implements ArrayAccess
 
 		// 如果获得失败,则抛出异常
 		$class = get_class($this);
-		throw new Exception("类 $class 没有字段 $column");
+		throw new Orm_Exception("类 $class 没有字段 $column");
 	}
 
 	/**
@@ -82,7 +82,7 @@ abstract class Sk_Orm_Entity implements ArrayAccess
 			$value = NULL;
 		return TRUE;
 	}
-	
+
 	/**
 	 * 设置对象字段值
 	 *
@@ -95,7 +95,7 @@ abstract class Sk_Orm_Entity implements ArrayAccess
 		if(!$this->try_set($column, $value))
 		{
 			$class = get_class($this);
-			throw new Exception("类 $class 没有字段 $column");
+			throw new Orm_Exception("类 $class 没有字段 $column");
 		}
 	}
 
@@ -120,7 +120,7 @@ abstract class Sk_Orm_Entity implements ArrayAccess
 
 		return TRUE;
 	}
-	
+
 	/**
 	 * 删除某个字段值
 	 *
@@ -183,12 +183,12 @@ abstract class Sk_Orm_Entity implements ArrayAccess
 	{
 		return $this->_dirty + $this->_original;
 	}
-	
+
 	/**
 	 * 判断数组是否存在指定key
 	 * @see ArrayAccess::offsetExists()
 	 */
-	public function offsetExists($offset) 
+	public function offsetExists($offset)
 	{
 		return $this->__isset($offset);
 	}
@@ -197,7 +197,7 @@ abstract class Sk_Orm_Entity implements ArrayAccess
 	 * 获得数组的元素
 	 * @see ArrayAccess::offsetGet()
 	 */
-	public function offsetGet($offset) 
+	public function offsetGet($offset)
 	{
 		return $this->__get($offset);
 	}
@@ -206,7 +206,7 @@ abstract class Sk_Orm_Entity implements ArrayAccess
 	 * 设置数组的元素
 	 * @see ArrayAccess::offsetSet()
 	 */
-	public function offsetSet($offset, $value) 
+	public function offsetSet($offset, $value)
 	{
 		$this->__set($offset, $value);
 	}
@@ -215,7 +215,7 @@ abstract class Sk_Orm_Entity implements ArrayAccess
 	 * 删除数组的元素
 	 * @see ArrayAccess::offsetUnset()
 	 */
-	public function offsetUnset($offset) 
+	public function offsetUnset($offset)
 	{
 		$this->__unset($offset);
 	}

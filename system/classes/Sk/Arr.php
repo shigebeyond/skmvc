@@ -131,4 +131,12 @@ class Sk_Arr
 		return $result;
 	}
 	
+	/* public function set($arr, $key, $value = NULL)
+	{
+		if(is_array($key))
+			$data = $key;
+		else
+			$data[$key] = $value;
+	} */
+	
 }

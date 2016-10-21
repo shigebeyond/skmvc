@@ -91,4 +91,17 @@ class Controller_Home extends Controller
 	
 		$this->res->body($result);
 	}
+	
+	public function action_view()
+	{
+		// 自定义视图
+// 		$view = new View('test0', array('name' => 'shi'));
+		// 默认视图
+		$view = $this->view(array('name' => 'shi'));
+		
+		$view->set('age', 24);	
+		
+// 		$this->res->body($view->render()); // 显示渲染视图: 调用view::render()
+		$this->res->body($view); // 隐式渲染视图
+	}
 }
