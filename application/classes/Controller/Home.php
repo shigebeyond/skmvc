@@ -36,8 +36,9 @@ class Controller_Home extends Controller
 	
 		$query = Db::instance()->select('user')->where('user.id', '=', 2);
 // 		$query = Db::instance()->select('user')->where('id', '=', 2)->where_open()->where('name', '=', 'li')->where_close();
-		$result = "sql: ".$query->compile()[0];
-		$result .= "select result: ".print_r($query->execute());
+		list($sql, $params) = $query->compile();
+		$result = "select sql: $sql, params: ".implode(',', $params);
+		$result .= " select result: ".print_r($query->execute());
 	
 		$this->res->body($result);
 	}
