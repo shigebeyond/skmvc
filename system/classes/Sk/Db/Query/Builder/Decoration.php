@@ -12,6 +12,12 @@
 abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 {
 	/**
+	 * sql参数
+	 * @var array
+	 */
+	protected $_params = array();
+	
+	/**
 	 * 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
 	 * @var array
 	 */
@@ -62,17 +68,17 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 		parent::__construct($action, $db, $table, $data);
 		
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		$this->_where = new Db_Query_Builder_Decoration_Expression_Group($this->_db, 'WHERE',array('column', 'str', 'value'));
+		$this->_where = new Db_Query_Builder_Decoration_Expression_Group($this->_db, 'WHERE', array('column', 'str', array($this, 'quote')/* 转义值 */));
 		// 字段数组
 		$this->_group_by = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, 'GROUP BY', array('column'));
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		$this->_having = new Db_Query_Builder_Decoration_Expression_Group($this->_db, 'HAVING', array('column', 'str', 'value'));
+		$this->_having = new Db_Query_Builder_Decoration_Expression_Group($this->_db, 'HAVING', array('column', 'str', array($this, 'quote')/* 转义值 */));
 		// 排序数组, 每个排序 = 字段+方向
 		$this->_order_by = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, 'ORDER BY', array('column', 'order_direction'));
 		// 行限数组 limit, offset
 		$this->_limit = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, 'LIMIT', array('int'));
         // 联表数组，每个联表join = 表名 + 联表方式 | 每个联表条件on = 字段 + 运算符 + 字段, 都写死在Db_Query_Builder_Decoration_Expression_Join类
-//         $this->_join = new Db_Query_Builder_Decoration_Expression_Join($this->_db, $table, $type);
+//  $this->_join = new Db_Query_Builder_Decoration_Expression_Join($this->_db, $table, $type);
 		$this->_join = array();
 	}
 	
@@ -93,7 +99,22 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 				$exp = implode(' ', $exp); 
 			$sql .= ' '.$exp;
 		}
-		return array($sql, array());
+		return array($sql, $this->_params);
+	}
+	
+	/**
+	 * 转义值
+	 * @param mixed $value
+	 * @return string
+	 */
+	public function quote($value)
+	{
+		// 1 将参数值直接拼接到sql
+		//return $this->_db->quote($value);
+		
+		// 2 sql参数化: 将参数名拼接到sql, 独立出参数值, 以便执行时绑定参数值
+		$this->_params[] = $value;
+		return '?';
 	}
 	
 	/**

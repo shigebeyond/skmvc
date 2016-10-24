@@ -49,8 +49,13 @@ class Sk_Db_Query_Builder_Decoration_Expression_Simple extends Db_Query_Builder_
 		foreach($this->_element_handlers as $i => $handler) 
 		{
 			// 处理某个元素的值
-			$value = Arr::get($subexp, $i); // 有可能子表达式的size < 元素处理器的size(如limit表达式)
-			$subexp [$i] = $this->$handler($value);
+			if(isset($subexp[$i])) // 有可能子表达式的size < 元素处理器的size(如limit表达式)
+			{
+				if (is_callable($handler)) // 自定义处理函数
+					$subexp [$i] = call_user_func($subexp[$i]);
+				else // 内部方法
+					$subexp [$i] = $this->$handler($subexp[$i]);
+			}
 		}
 		
 		return implode(' ', $subexp); // 用空格拼接多个元素

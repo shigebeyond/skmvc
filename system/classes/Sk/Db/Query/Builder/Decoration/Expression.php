@@ -98,7 +98,7 @@ abstract class Sk_Db_Query_Builder_Decoration_Expression
 		return $value;
 	}
 	
-	public function _table($table)
+	public function table($table)
 	{
 		return $this->db->quote_table($table);
 	}

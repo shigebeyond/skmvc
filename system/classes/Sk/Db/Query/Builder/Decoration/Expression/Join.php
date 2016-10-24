@@ -40,7 +40,7 @@ class Sk_Db_Query_Builder_Decoration_Expression_Join extends Db_Query_Builder_De
 	public function compile()
 	{
 		// join表达式
-		$join = ' JOIN '.$this->_table($this->_table);
+		$join = ' JOIN '.$this->table($this->_table);
 		if($this->_type)
 			$join = ' '.$this->_join_type($this->_type).$join;
 		
