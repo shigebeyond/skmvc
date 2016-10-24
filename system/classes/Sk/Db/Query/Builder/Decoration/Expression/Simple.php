@@ -52,7 +52,7 @@ class Sk_Db_Query_Builder_Decoration_Expression_Simple extends Db_Query_Builder_
 			if(isset($subexp[$i])) // 有可能子表达式的size < 元素处理器的size(如limit表达式)
 			{
 				if (is_callable($handler)) // 自定义处理函数
-					$subexp [$i] = call_user_func($subexp[$i]);
+					$subexp [$i] = call_user_func($handler, $subexp[$i]);
 				else // 内部方法
 					$subexp [$i] = $this->$handler($subexp[$i]);
 			}
