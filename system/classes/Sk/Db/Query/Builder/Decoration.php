@@ -89,6 +89,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 	public function compile_decoration()
 	{
 		$sql = '';
+		$this->_params = array(); // 清空参数
 		// 逐个处理修饰词及其表达式
 		foreach (array('join', 'where', 'group_by', 'having', 'order_by', 'limit') as $name)
 		{
