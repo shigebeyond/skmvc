@@ -17,7 +17,7 @@ class Model_User extends Orm
 	 */
 	protected static $_rules = array(
 		'name' => 'trim > not_empty && length(1, 10)',
-		'age' => 'trim > is_numeric && range(0, 100)',
+		'age' => 'trim > is_numeric && range(0, 100)', // 1 trim > 修改值 2  is_numeric && range(0, 100) 校验值
 	);
 	
 	/**
