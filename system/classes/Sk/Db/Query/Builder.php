@@ -3,6 +3,7 @@
 /**
  * sql构建器
  *   依次继承 Db_Query_Builder_Action 处理动作子句 + Db_Query_Builder_Decoration 处理修饰子句
+ *  提供select/where等类sql的方法, 但是调用方法时, 不直接拼接sql, 而是在compile()时才延迟拼接sql, 因为调用方法时元素可以无序, 但生成sql时元素必须有序
  * 
  * @Package package_name 
  * @category 
@@ -13,7 +14,7 @@
 class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration
 {
 	/**
-	 * 编译sql: 延迟拼接sql, 因为调用方法时元素无序, 但生成sql时元素有序
+	 * 编译sql
 	 * @return array(sql, 参数)
 	 */
 	public function compile()

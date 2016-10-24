@@ -2,7 +2,8 @@
 
 /**
  * 分组表达式
- *
+ *     可以支持分组, 就是使用()来包含的表达式
+ * 
  * @Package package_name 
  * @category 
  * @author shijianhang
@@ -47,8 +48,8 @@ class Sk_Db_Query_Builder_Decoration_Expression_Group extends Db_Query_Builder_D
 	public function end_subexp() 
 	{
 		$last = end ( $this->_subexps );
-		if (! $last instanceof Sk_Db_Query_Builder_Decoration_Expression_Simple)
-			$this->_subexps [] = $last = new Sk_Db_Query_Builder_Decoration_Expression_Simple ( $this->_db, NULL, $this->_element_handlers );
+		if (! $last instanceof Db_Query_Builder_Decoration_Expression_Simple)
+			$this->_subexps [] = $last = new Db_Query_Builder_Decoration_Expression_Simple ( $this->_db, NULL, $this->_element_handlers );
 		return $last;
 	}
 	
