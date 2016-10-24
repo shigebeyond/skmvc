@@ -38,6 +38,9 @@ class Sk_Validation
 	 */
 	public static function execute($exp, &$value, $data = NULL, &$message = NULL)
 	{
+		if(!$exp)
+			return $value;
+		
 		// 编译
 		if(!isset(static::$_exps_cached[$exp]))
 			static::$_exps_cached[$exp] = new Validation_Expression($exp);

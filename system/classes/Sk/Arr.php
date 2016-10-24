@@ -139,4 +139,29 @@ class Sk_Arr
 			$data[$key] = $value;
 	} */
 	
+	/**
+	 * 过滤数组中的某个元素值
+	 * 
+	 * @param array $data
+	 * @param   string $key    参数名
+	 * @param   string $default  参数默认值
+	 * @param   string $filter  参数过滤表达式, 如 "trim > htmlspecialchars"
+	 * @return mixed
+	 */
+	public static function filter_value(array $data, $key = NULL, $default = NULL, $filter_exp = NULL)
+	{
+		// 获得全部元素
+		if ($key === NULL)
+			return $data;
+	
+		// 获得单个元素
+		$value = Arr::path($data, $key, $default);
+		
+		// 过滤元素值
+		if($filter_exp)
+			$value = Validation::execute($filter_exp, $value, $data);
+		
+		return $value;
+	}
+	
 }

@@ -130,16 +130,12 @@ class Sk_Request{
 	 *
 	 * @param string $key 如果是null，则返回所有参数，否则，返回该key对应的单个参数
 	 * @param string $default 单个参数的默认值
+	 * @param   string $filter  参数过滤表达式, 如 "trim > htmlspecialchars"
 	 * @return multitype
 	 */
-	public function param($key = NULL, $default = NULL)
+	public function param($key = NULL, $default = NULL, $filter_exp = NULL)
 	{
-		// 全部参数
-		if ($key === NULL)
-			return $this->_params;
-
-		// 单个参数
-		return Arr::get($this->_params, $key, $default);
+		return Arr::filter_value($this->_params, $key, $default, $filter_exp);
 	}
 
 	/**
@@ -189,37 +185,29 @@ class Sk_Request{
 	/**
 	 * 获得get参数
 	 *
-	 * @param   string  $key    参数名
-	 * @param   string  $value  参数默认值
+	 * @param   string $key    参数名
+	 * @param   string $default  参数默认值
+	 * @param   string $filter  参数过滤表达式, 如 "trim > htmlspecialchars"
 	 * @return  mixed
 	 */
-	public function get($key = NULL, $value = NULL)
+	public function get($key = NULL, $default = NULL, $filter_exp = NULL)
 	{
-		// 获得全部参数
-		if ($key === NULL)
-			return $_GET;
-
-		// 获得单个参数
-		return Arr::path($_GET, $key);
+		return Arr::filter_value($_GET, $key, $default, $filter_exp);
 	}
 
 	/**
 	 * 获得post参数
 	 *
 	 * @param   string $key    参数名
-	 * @param   string $value  参数默认值
+	 * @param   string $default  参数默认值
+	 * @param   string $filter  参数过滤表达式, 如 "trim > htmlspecialchars"
 	 * @return  mixed
 	 */
-	public function post($key = NULL, $value = NULL)
+	public function post($key = NULL, $default = NULL, $filter_exp = NULL)
 	{
-		// 获得全部参数
-		if ($key === NULL)
-			return $_POST;
-
-		// 获得单个参数
-		return Arr::path($_POST, $key);
+		return Arr::filter_value($_POST, $key, $default, $filter_exp);
 	}
-
+	
 	/**
 	 * 请求方法
 	 * @return string
