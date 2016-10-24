@@ -11,7 +11,7 @@
  * @date 2016-10-11 上午12:06:58
  *
  */
-class Sk_Db extends Container_Component_Config
+class Sk_Db extends Container_Component_Configurable
 {
 	/**
 	 * 查询表字段的sql/字段名

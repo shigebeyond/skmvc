@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * 读取配置文件的组件
+ * 带配置的组件/读取配置文件的组件
  * 
  * @Package package_name 
  * @category 
@@ -9,7 +9,7 @@
  * @date 2016-10-6 上午9:27:56 
  *
  */
-class Sk_Container_Component_Config
+class Sk_Container_Component_Configurable
 {
 	protected $_config;
 	
