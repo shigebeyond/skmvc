@@ -1,8 +1,12 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * 分组表达式
- *     可以支持分组, 就是使用()来包含的表达式
+ * 分组子句
+ * 	子句中有子句, 而第二层的子句由分组来管理
+ *     一个分组有多个子句, 就是使用()来包含的子句
+ *     
+ *  实现:
+ *     子表达式还是子句
  * 
  * @Package package_name 
  * @category 
@@ -10,13 +14,13 @@
  * @date 2016-10-13
  *
  */
-class Sk_Db_Query_Builder_Decoration_Expression_Group extends Db_Query_Builder_Decoration_Expression
+class Sk_Db_Query_Builder_Decoration_Clauses_Group extends Db_Query_Builder_Decoration_Clauses
 {
 	/**
 	 * 开启一个分组
 	 * 
 	 * @param	$delimiter
-	 * @return Sk_Db_Query_Builder_Decoration_Expression_Group
+	 * @return Sk_Db_Query_Builder_Decoration_Clauses_Group
 	 */
 	public function open($delimiter) 
 	{
@@ -32,7 +36,7 @@ class Sk_Db_Query_Builder_Decoration_Expression_Group extends Db_Query_Builder_D
 	/**
 	 * 结束一个分组
 	 * 
-	 * @return Sk_Db_Query_Builder_Decoration_Expression_Group
+	 * @return Sk_Db_Query_Builder_Decoration_Clauses_Group
 	 */
 	public function close() 
 	{
@@ -43,13 +47,13 @@ class Sk_Db_Query_Builder_Decoration_Expression_Group extends Db_Query_Builder_D
 	/**
 	 * 获得最后一个子表达式
 	 * 
-	 * @return Db_Query_Builder_Decoration_Expression
+	 * @return Db_Query_Builder_Decoration_Clauses
 	 */
 	public function end_subexp() 
 	{
-		$last = end ( $this->_subexps );
-		if (! $last instanceof Db_Query_Builder_Decoration_Expression_Simple)
-			$this->_subexps [] = $last = new Db_Query_Builder_Decoration_Expression_Simple ( $this->_db, NULL, $this->_element_handlers );
+		$last = end($this->_subexps);
+		if (! $last instanceof Db_Query_Builder_Decoration_Clauses_Simple)
+			$this->_subexps[] = $last = new Db_Query_Builder_Decoration_Clauses_Simple ( $this->_db, NULL, $this->_element_handlers );
 		return $last;
 	}
 	
@@ -58,12 +62,12 @@ class Sk_Db_Query_Builder_Decoration_Expression_Group extends Db_Query_Builder_D
 	 * 
 	 * @param array $subexp        	
 	 * @param string $delimiter        	
-	 * @return Sk_Db_Query_Builder_Decoration_Expression_Group
+	 * @return Sk_Db_Query_Builder_Decoration_Clauses_Group
 	 */
 	public function add_subexp(array $subexp, $delimiter = ', ') 
 	{
 		// 代理最后一个子表达式
-		$this->end_subexp ()->add_subexp ( $subexp, $delimiter );
+		$this->end_subexp()->add_subexp ( $subexp, $delimiter );
 		return $this;
 	}
 	
@@ -75,8 +79,8 @@ class Sk_Db_Query_Builder_Decoration_Expression_Group extends Db_Query_Builder_D
 	 */
 	public function compile_subexp($subexp) 
 	{
-		// 子表达式是: string / Sk_Db_Query_Builder_Decoration_Expression_Simple
-		// Sk_Db_Query_Builder_Decoration_Expression_Simple 转字符串自动compile
+		// 子表达式是: string / Sk_Db_Query_Builder_Decoration_Clauses_Simple
+		// Sk_Db_Query_Builder_Decoration_Clauses_Simple 转字符串自动compile
 		return "$subexp";
 	}
 

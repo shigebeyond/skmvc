@@ -68,17 +68,17 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 		parent::__construct($action, $db, $table, $data);
 		
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		$this->_where = new Db_Query_Builder_Decoration_Expression_Group($this->_db, 'WHERE', array('column', 'str', array($this, 'quote')/* 转义值 */));
+		$this->_where = new Db_Query_Builder_Decoration_Clauses_Group($this->_db, 'WHERE', array('column', 'str', array($this, 'quote')/* 转义值 */));
 		// 字段数组
-		$this->_group_by = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, 'GROUP BY', array('column'));
+		$this->_group_by = new Db_Query_Builder_Decoration_Clauses_Simple($this->_db, 'GROUP BY', array('column'));
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		$this->_having = new Db_Query_Builder_Decoration_Expression_Group($this->_db, 'HAVING', array('column', 'str', array($this, 'quote')/* 转义值 */));
+		$this->_having = new Db_Query_Builder_Decoration_Clauses_Group($this->_db, 'HAVING', array('column', 'str', array($this, 'quote')/* 转义值 */));
 		// 排序数组, 每个排序 = 字段+方向
-		$this->_order_by = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, 'ORDER BY', array('column', 'order_direction'));
+		$this->_order_by = new Db_Query_Builder_Decoration_Clauses_Simple($this->_db, 'ORDER BY', array('column', 'order_direction'));
 		// 行限数组 limit, offset
-		$this->_limit = new Db_Query_Builder_Decoration_Expression_Simple($this->_db, 'LIMIT', array('int'));
-        // 联表数组，每个联表join = 表名 + 联表方式 | 每个联表条件on = 字段 + 运算符 + 字段, 都写死在Db_Query_Builder_Decoration_Expression_Join类
-//  $this->_join = new Db_Query_Builder_Decoration_Expression_Join($this->_db, $table, $type);
+		$this->_limit = new Db_Query_Builder_Decoration_Clauses_Simple($this->_db, 'LIMIT', array('int'));
+        // 联表数组，每个联表join = 表名 + 联表方式 | 每个联表条件on = 字段 + 运算符 + 字段, 都写死在Db_Query_Builder_Decoration_Clauses_Join类
+//  $this->_join = new Db_Query_Builder_Decoration_Clauses_Join($this->_db, $table, $type);
 		$this->_join = array();
 	}
 	
@@ -418,7 +418,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 	 */
 	public function join($table, $type = NULL)
 	{
-		$this->_join[] = new Db_Query_Builder_Decoration_Expression_Join($this->_db, $table, $type);
+		$this->_join[] = new Db_Query_Builder_Decoration_Clauses_Join($this->_db, $table, $type);
 		return $this;
 	}
 	

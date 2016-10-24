@@ -1,9 +1,9 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * join表达式
+ * join子句
  * 	由于join的语法比较特别，是故特殊处理
- *  1 on： 直接继承Db_Query_Builder_Decoration_Expression_Group
+ *  1 on： 直接继承Db_Query_Builder_Decoration_Clauses_Group
  *  2 join：单独处理表名+联表类型
  *  
  * @Package package_name 
@@ -12,7 +12,7 @@
  * @date 2016-10-13
  *
  */
-class Sk_Db_Query_Builder_Decoration_Expression_Join extends Db_Query_Builder_Decoration_Expression_Group
+class Sk_Db_Query_Builder_Decoration_Clauses_Join extends Db_Query_Builder_Decoration_Clauses_Group
 {
 	/**
 	 * 联表类型：inner/left/right
@@ -39,12 +39,12 @@ class Sk_Db_Query_Builder_Decoration_Expression_Join extends Db_Query_Builder_De
 	 */
 	public function compile()
 	{
-		// join表达式
+		// join子句
 		$join = ' JOIN '.$this->table($this->_table);
 		if($this->_type)
 			$join = ' '.$this->_join_type($this->_type).$join;
 		
-		// on表达式
+		// on子句
 		$on = parent::compile();
 		return $join.' '.$on;
 	}

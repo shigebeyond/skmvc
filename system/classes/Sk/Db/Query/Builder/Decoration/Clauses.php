@@ -1,8 +1,8 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * sql修饰子句的表达式模拟构建
- *     每个修饰词是一个表达式(如where/group by), 其包含多个子表达式(如where可以有多个条件, 如name='shi', age=1), 每个子表达式有多个元素组成(如name/=/'shi')
+ * sql修饰子句的模拟构建
+ *     每个修饰子句(如where xxx and yyy/group by xxx, yyy)包含多个子表达式(如where可以有多个条件子表达式, 如name='shi', age=1), 每个子表达式有多个元素组成(如name/=/'shi')
  *     每个元素有对应的处理函数
  * 
  * @Package package_name 
@@ -11,7 +11,7 @@
  * @date 2016-10-13
  *
  */
-abstract class Sk_Db_Query_Builder_Decoration_Expression
+abstract class Sk_Db_Query_Builder_Decoration_Clauses
 {
 	/**
 	 * 

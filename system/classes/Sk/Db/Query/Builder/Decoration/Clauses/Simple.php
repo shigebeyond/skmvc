@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * 简单表达式
+ * 简单的(sql修饰)子句
  * 
  * 	在子表达式的拼接中，何时拼接连接符？
  *     1 在compile()时拼接连接符 => 你需要单独保存每个子表达式对应的连接符，在拼接时取出
@@ -14,7 +14,7 @@
  * @date 2016-10-13
  *
  */
-class Sk_Db_Query_Builder_Decoration_Expression_Simple extends Db_Query_Builder_Decoration_Expression
+class Sk_Db_Query_Builder_Decoration_Clauses_Simple extends Db_Query_Builder_Decoration_Clauses
 {
 	/**
 	 * 添加一个子表达式+连接符
