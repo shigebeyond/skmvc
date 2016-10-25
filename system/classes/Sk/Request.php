@@ -9,7 +9,8 @@
  * @date 2016-10-6 上午9:27:56
  *
  */
-class Sk_Request{
+class Sk_Request implements Interface_Request
+{
 
 	/**
 	 * 当前请求对象

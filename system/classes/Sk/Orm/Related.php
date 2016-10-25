@@ -9,7 +9,7 @@
  * @date 2016-10-10 上午12:52:34
  *
  */
-class Sk_Orm_Related extends Orm_Persistent
+class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Related
 {
 	/**
 	 * 关联关系 - 有一个
@@ -78,7 +78,7 @@ class Sk_Orm_Related extends Orm_Persistent
 		// 获得关联对象
 		if (isset(static::$_relations[$column]))
 		{
-			$value = $this->_related($column);
+			$value = $this->related($column);
 			return TRUE;
 		}
 
@@ -144,7 +144,7 @@ class Sk_Orm_Related extends Orm_Persistent
 			elseif($value !== NULL) // 关联对象字段: 不处理NULL的值, 因为left join查询时, 关联对象可能没有匹配的行
 			{
 				list($name, $column) = explode(':', $column);
-				$obj = $this->_related($name, TRUE); // 创建关联对象
+				$obj = $this->related($name, TRUE); // 创建关联对象
 				$obj->_original[$column] = $value;
 			}
 		}
@@ -159,7 +159,7 @@ class Sk_Orm_Related extends Orm_Persistent
 	 * @param boolean $new 是否创建新对象：在查询db后设置原始字段值original()时使用
 	 * @return Orm
 	 */
-	public function _related($name, $new = FALSE)
+	public function related($name, $new = FALSE)
 	{
 		// 已缓存
 		if(isset($this->_related[$name]))

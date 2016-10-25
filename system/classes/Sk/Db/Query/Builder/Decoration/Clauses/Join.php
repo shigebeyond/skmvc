@@ -12,7 +12,7 @@
  * @date 2016-10-13
  *
  */
-class Sk_Db_Query_Builder_Decoration_Clauses_Join extends Db_Query_Builder_Decoration_Clauses_Group
+class Sk_Db_Query_Builder_Decoration_Clauses_Join extends Db_Query_Builder_Decoration_Clauses_Group implements Interface_Db_Query_Builder_Decoration_Clauses_Join
 {
 	/**
 	 * 联表类型：inner/left/right

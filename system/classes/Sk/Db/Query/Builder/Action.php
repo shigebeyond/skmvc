@@ -10,7 +10,7 @@
  * @date 2016-10-12
  *
  */
-abstract class Sk_Db_Query_Builder_Action
+abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_Action
 {
 	/**
 	 * 动作子句的sql模板
@@ -153,6 +153,12 @@ abstract class Sk_Db_Query_Builder_Action
 		return $this;
 	}
 	
+	/**
+	 * 设置查询结果是否去重唯一
+	 * 
+	 * @param boolean $value
+	 * @return Sk_Db_Query_Builder_Action
+	 */
 	public function distinct($value)
 	{
 		$this->_distinct = (bool) $value;

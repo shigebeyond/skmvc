@@ -21,7 +21,7 @@
  * @date 2016-10-19 下午3:40:55  
  *
  */
-class Sk_Validation_Expression
+class Sk_Validation_Expression implements Interface_Validation_Expression
 {
 	/**
 	 * 运算符的正则

@@ -11,7 +11,8 @@
  * @date 2016-10-6 上午12:01:17
  *
  */
-class Sk_Router{
+class Sk_Router implements Interface_Router
+{
 	
 	/**
 	 * 全部路由规则

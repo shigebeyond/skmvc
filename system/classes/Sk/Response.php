@@ -10,7 +10,8 @@
  * @date 2016-10-7 下午11:32:07 
  *
  */
-class Sk_Response{
+class Sk_Response implements Interface_Response
+{
 	
 	/**
 	 * 过期的期限
@@ -113,6 +114,21 @@ class Sk_Response{
 			$content = $content->render();
 		
 		$this->_body = (string) $content;
+		return $this;
+	}
+	
+	/**
+	 * 追加响应主体
+	 *
+	 * @param string $content
+	 * @return string|Sk_Response
+	 */
+	public function append($content = NULL)
+	{
+		if($content instanceof View)
+			$content = $content->render();
+		
+		$this->_body .= $content;
 		return $this;
 	}
 	

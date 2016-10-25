@@ -9,7 +9,7 @@
  * @date 2016-10-12
  *
  */
-abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
+abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action implements Interface_Db_Query_Builder_Decoration
 {
 	/**
 	 * sql参数
@@ -104,7 +104,8 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action
 	}
 	
 	/**
-	 * 转义值
+	 * 改写转义值的方法，搜集sql参数
+	 * 
 	 * @param mixed $value
 	 * @return string
 	 */

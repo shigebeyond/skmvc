@@ -9,7 +9,7 @@
  * @date 2016-10-20 下午2:20:13  
  *
  */
-class Sk_Validation
+class Sk_Validation implements Interface_Validation
 {
 	/**
 	 * 校验方法对应的错误消息

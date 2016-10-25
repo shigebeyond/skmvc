@@ -9,7 +9,8 @@
  * @date 2016-10-6 上午12:01:17
  *
  */
-class Sk_Config extends ArrayObject{
+class Sk_Config extends ArrayObject implements Interface_Config
+{
 	
 	/**
 	 * 分组配置的缓存: <分组 => 配置>

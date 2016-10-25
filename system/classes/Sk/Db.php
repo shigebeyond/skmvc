@@ -11,7 +11,7 @@
  * @date 2016-10-11 上午12:06:58
  *
  */
-class Sk_Db extends Container_Component_Configurable
+class Sk_Db extends Container_Component_Configurable implements Interface_Db
 {
 	/**
 	 * 查询表字段的sql/字段名
@@ -100,12 +100,19 @@ class Sk_Db extends Container_Component_Configurable
 	/**
 	 * 关闭pdo连接
 	 */
-	public function __destruct()
+	public function disconnect()
 	{
 		$this->_pdo = NULL;
 		$this->remove_from_container();
 	}
 
+	/**
+	 * 关闭pdo连接
+	 */
+	public function __destruct()
+	{
+		$this->disconnect();
+	}
 
 	/**
 	 * 获得值的pdo类型
@@ -164,10 +171,12 @@ class Sk_Db extends Container_Component_Configurable
 	/**
 	 * 执行数据变更的sql
 	 *
+	 * <code>
 	 *	  // 插入
 	 *    $row_count = $db->execute("INSERT INTO user VALUES (1, 'shi')");
 	 *    $row_count = $db->execute("INSERT INTO user VALUES (?, ?)", array(1, 'shi'));
-	 *
+	 * </code>
+	 * 
 	 * @param string $sql
 	 * @param array  $params
 	 * @return int 影响行数
@@ -185,10 +194,12 @@ class Sk_Db extends Container_Component_Configurable
 	/**
 	 * 执行查询的sql
 	 *
+	 * <code>
 	 *    // 查询
 	 *    $resultset = $db->query("SELECT * FROM users WHERE id=1");
 	 *    $resultset = $db->query("SELECT * FROM users WHERE id=?", array(1));
-	 *
+	 * </code>
+	 * 
 	 * @param string $sql
 	 * @param array  $params
 	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_NUM，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组

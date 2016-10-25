@@ -11,7 +11,7 @@
  * @date 2016-10-13
  *
  */
-class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration
+class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration implements Interface_Db_Query_Builder
 {
 	/**
 	 * 编译sql

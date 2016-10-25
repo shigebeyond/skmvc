@@ -14,7 +14,7 @@
  * @date 2016-10-13
  *
  */
-class Sk_Db_Query_Builder_Decoration_Clauses_Simple extends Db_Query_Builder_Decoration_Clauses
+class Sk_Db_Query_Builder_Decoration_Clauses_Simple extends Db_Query_Builder_Decoration_Clauses implements Interface_Db_Query_Builder_Decoration_Clauses_Simple
 {
 	/**
 	 * 添加一个子表达式+连接符

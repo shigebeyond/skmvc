@@ -9,7 +9,8 @@
  * @date 2016-10-6 上午9:27:56
  *
  */
-class Sk_Server{
+class Sk_Server implements Interface_Server
+{
 
 	/**
 	 * 结束输出缓冲

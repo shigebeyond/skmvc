@@ -9,7 +9,7 @@
  * @date 2016-10-14
  *
  */
-class Sk_Container extends ArrayObject 
+class Sk_Container implements Interface_Container
 {
 	/**
 	 * 组件池: <$name, 组件>

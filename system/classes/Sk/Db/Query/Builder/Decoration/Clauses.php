@@ -11,7 +11,7 @@
  * @date 2016-10-13
  *
  */
-abstract class Sk_Db_Query_Builder_Decoration_Clauses
+abstract class Sk_Db_Query_Builder_Decoration_Clauses implements Interface_Db_Query_Builder_Decoration_Clauses
 {
 	/**
 	 * 

@@ -9,7 +9,7 @@
  * @date 2016-10-21 下午3:14:54  
  *
  */
-class Sk_View
+class Sk_View implements Interface_View
 {
 	/**
 	 * 全局变量

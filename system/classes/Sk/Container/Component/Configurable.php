@@ -9,7 +9,7 @@
  * @date 2016-10-6 上午9:27:56 
  *
  */
-class Sk_Container_Component_Configurable
+class Sk_Container_Component_Configurable implements Interface_Container_Component_Configurable
 {
 	protected $_config;
 	

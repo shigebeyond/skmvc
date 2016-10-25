@@ -9,7 +9,7 @@
  * @date 2016-10-8 下午8:02:47 
  *
  */
-class Sk_Controller
+class Sk_Controller implements Interface_Controller
 {
 
 	/**

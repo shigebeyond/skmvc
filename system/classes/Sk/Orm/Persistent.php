@@ -9,7 +9,7 @@
  * @date 2016-10-10
  *
  */
-class Sk_Orm_Persistent extends Orm_MetaData
+class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_Persistent
 {
 	/**
 	 * 每个字段的校验规则

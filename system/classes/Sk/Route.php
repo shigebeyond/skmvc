@@ -9,7 +9,8 @@
  * @date 2016-10-6 上午12:01:17
  *
  */
-class Sk_Route{
+class Sk_Route implements Interface_Route
+{
 
 	/**
 	 * 参数的默认正则
@@ -20,6 +21,8 @@ class Sk_Route{
 	/**
 	 * 将简化的路由正则，转换为完整的正则：主要是将<参数>替换为子正则
 	 *
+	 * <code>
+	 * 	   // 将 <controller>(\/<action>(\/<id>)?)? 编译为 '/(?P<controller>[a-z]+)(\/(?P<action>[a-z]+)\/(?P<id>\d+)?)?/'
 	 *     $compiled = Route::compile(
 	 *        '<controller>(\/<action>(\/<id>)?)?',
 	 *         array(
@@ -28,8 +31,7 @@ class Sk_Route{
 	 *           'id' => '\d+',
 	 *         )
 	 *     );
-	 *
-	 * => 将 <controller>(\/<action>(\/<id>)?)? 编译为 '/(?P<controller>[a-z]+)(\/(?P<action>[a-z]+)\/(?P<id>\d+)?)?/'
+	 * </code>
 	 *
 	 * @param array $regex 整个uri的正则　
 	 * @param array $params 参数的正则

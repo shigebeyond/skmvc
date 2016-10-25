@@ -9,7 +9,7 @@
  * @date 2016-10-16 下午8:02:28
  *
  */
-class Sk_Orm_Query_Builder extends Db_Query_Builder
+class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Query_Builder
 {
 	/**
 	 * model的类
@@ -67,9 +67,11 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder
 	 * 联查表
 	 *
 	 * @param string $name 关联关系名
+	 * @param array $columns 字段名数组: array($column1, $column2, $alias => $column3), 
+	 * 													如 array('name', 'age', 'birt' => 'birthday'), 其中 name 与 age 字段不带别名, 而 birthday 字段带别名 birt
 	 * @return Sk_Orm_Query_Builder
 	 */
-	public function with($name)
+	public function with($name, array $columns = NULL)
 	{
 		$class = $this->_class;
 

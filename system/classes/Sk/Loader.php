@@ -1,5 +1,8 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
+// 加载器需要手动添加自己的依赖
+require SYSPATH.'classes/Interface/Loader.php';
+
 /**
  * 加载器，负责加载文件与类
  *
@@ -9,7 +12,8 @@
  * @date 2016-10-6 上午12:01:17
  *
  */
-class Sk_Loader{
+class Sk_Loader implements Interface_Loader
+{
 	
 	/**
 	 * 顶级目录

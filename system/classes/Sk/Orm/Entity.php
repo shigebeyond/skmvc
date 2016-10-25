@@ -9,7 +9,7 @@
  * @date 2016-10-10 上午12:52:34
  *
  */
-abstract class Sk_Orm_Entity implements ArrayAccess
+abstract class Sk_Orm_Entity implements ArrayAccess, Interface_Orm_Entity 
 {
 	/**
 	 * 获得字段
