@@ -27,15 +27,26 @@ interface Interface_Validation_Expression
 	 * 编译 表达式
 	 *     表达式是由多个(函数调用的)子表达式组成, 子表达式之间用运算符连接, 运算符有 & && | || . >
 	 * 
+	 * <code>
+	 *     list($ops, $subexps) = Validation_Expression::compile('trim > not_empty && email');
+	 * </code>
+	 * 
 	 * @param string $exp
-	 * @return boolean
+	 * @return array
 	 */
 	public static function compile($exp);
 	
 	/**
 	 * 执行校验表达式
 	 * 
-	 * @param unknown $value 要校验的数值，该值可能被修改
+	 * <code>
+	 * 	   // 编译
+	 *     $exp = new Validation_Expression('trim > not_empty && email');
+	 *     // 执行
+	 *     $result = $exp->execute($value, $data, $last_subexp);
+	 * </code>
+	 * 
+	 * @param mixed $value 要校验的数值，该值可能被修改
 	 * @param array|ArrayAccess $data 其他参数
 	 * @param array $last_subexp 短路时的最后一个子表达式
 	 * @return mixed

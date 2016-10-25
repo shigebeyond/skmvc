@@ -102,11 +102,13 @@ class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_Persistent
 	/**
 	 * 插入数据: insert sql
 	 *
+	 * <code>
 	 *    $user = new Model_User();
 	 *    $user->name = 'shi';
 	 *    $user->age = 24;
 	 *    $user->create();
-	 *
+	 * </code>
+	 * 
 	 * @return int 新增数据的主键
 	 */
 	public function create()
@@ -131,10 +133,12 @@ class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_Persistent
 	/**
 	 * 更新数据: update sql
 	 *
+	 * <code>
 	 *    $user = Model_User::query_builder()->where('id', '=', 1)->find();
 	 *    $user->name = "li";
 	 *    $user->update();
-	 *
+	 * </code>
+	 * 
 	 * @return int 影响行数
 	 */
 	public function update()
@@ -159,11 +163,12 @@ class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_Persistent
 	}
 
 	/**
-	 * 更新数据: update sql
+	 * 删除数据: delete sql
 	 *
+	 *　<code>
 	 *    $user = Model_User::query_builder()->where('id', '=', 1)->find();
-	 *    $user->name = "li";
-	 *    $user->update();
+	 *    $user->delete();
+	 *　</code>
 	 *
 	 * @return int 影响行数
 	 */
