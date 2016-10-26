@@ -54,6 +54,17 @@ class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Related
 	 * @var array <name => Orm>
 	 */
 	protected $_related = array();
+	
+	/**
+	 * 返回要序列化的属性
+	 * @return array
+	 */
+	public function __sleep()
+	{
+		$props = parent::__sleep();
+		$props[] = '_related';
+		return $props;
+	}
 
 	/**
 	 * 判断对象是否存在指定字段

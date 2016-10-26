@@ -31,6 +31,15 @@ abstract class Sk_Orm_Entity implements ArrayAccess, Interface_Orm_Entity
 	 * @var array
 	*/
 	protected $_dirty = array();
+	
+	/**
+	 * 返回要序列化的属性
+	 * @return array
+	 */
+	public function __sleep()
+	{
+		return array('_original', '_dirty');
+	}
 
 	/**
 	 * 判断对象是否存在指定字段
