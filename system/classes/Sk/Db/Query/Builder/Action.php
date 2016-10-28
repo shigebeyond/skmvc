@@ -57,15 +57,12 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	/**
 	 * 构造函数
 	 *
-	 * @param string $action sql动作：select/insert/update/delete
 	 * @param string|Db $db 数据库配置的分组名/数据库连接
 	 * @param string $table 表名
 	 * @param string $data 数据
 	 */
-	public function __construct($action, $db = 'default', $table = NULL, $data = NULL) 
+	public function __construct($db = 'default', $table = NULL, $data = NULL) 
 	{
-		$this->_action = $action;
-		
 		// 获得db
 		if (! $db instanceof Db)
 			$db = Db::instance ( $db );
@@ -76,6 +73,18 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 		
 		if ($data)
 			$this->data ( $data );
+	}
+	
+	/**
+	 * 设置动作
+	 * 
+	 * @param string $action sql动作：select/insert/update/delete
+	 * @return Db_Query_Builder
+	 */
+	public function action($action)
+	{
+		$this->_action = $action;
+		return $this;
 	}
 	
 	/**
@@ -132,7 +141,8 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	 */
 	public function set($column, $value)
 	{
-		return $this->data($column, $value);
+		$this->_data[$column] = $value;
+		return $this;
 	}
 	
 	/**

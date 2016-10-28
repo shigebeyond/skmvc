@@ -55,6 +55,27 @@ class Sk_Mongoo_Query_Builder
 	protected $_skip = 0;
 	
 	/**
+	 * 构造函数
+	 *
+	 * @param string|Db $db 数据库配置的分组名/数据库连接
+	 * @param string $table 表名
+	 * @param string $data 数据
+	 */
+	public function __construct($db = 'default', $table = NULL, $data = NULL)
+	{
+		// 获得db
+		if (! $db instanceof Mongoo)
+			$db = Mongoo::instance ( $db );
+		$this->_db = $db;
+	
+		if ($table)
+			$this->table ( $table );
+	
+		if ($data)
+			$this->data ( $data );
+	}
+	
+	/**
 	 * 清空条件
 	 * @return Mongoo_Query_Builder
 	 */

@@ -73,7 +73,7 @@ interface Interface_Db
 	 * 
 	 * @param string $sql
 	 * @param array  $params
-	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_NUM，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
 	 * @return array
 	 */
 	public function query($sql, $params = [], $fetch_value = FALSE);
@@ -81,7 +81,7 @@ interface Interface_Db
 	/**
 	 * 根据$pdo->setFetchMode()的第二个参数来确定fetchMode
 	 *
-	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_NUM，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
 	 * @return number
 	 */
 	public static function fetch_mode($fetch_value);
@@ -150,38 +150,12 @@ interface Interface_Db
 	public function list_columns($table);
 
 	/**
-	 * select的sql构建器
+	 * sql构建器
 	 *
 	 * @param string $table 表名
 	 * @param string $data 数据
 	 * @return Sk_Db_Query_Builder
 	 */
-	public function select($table = NULL, $data = NULL);
-
-	/**
-	 * insert的sql构建器
-	 *
-	 * @param string $table 表名
-	 * @param string $data 数据
-	 * @return Sk_Db_Query_Builder
-	 */
-	public function insert($table = NULL, $data = NULL);
-
-	/**
-	 * update的sql构建器
-	 *
-	 * @param string $table 表名
-	 * @param string $data 数据
-	 * @return Sk_Db_Query_Builder
-	 */
-	public function update($table = NULL, $data = NULL);
-
-	/**
-	 * delete的sql构建器
-	 *
-	 * @param string $table 表名
-	 * @return Sk_Db_Query_Builder
-	 */
-	public function delete($table = NULL);
+	public function query_builder($table = NULL, $data = NULL);
 	
 }

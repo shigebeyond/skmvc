@@ -31,14 +31,14 @@ class Controller_Home extends Controller
 	
 	public function action_query_builder()
 	{
-// 		$result = Db::instance()->insert('user', array('name' => 'kkk', 'age' => 12))->execute();
-// 		$result = Db::instance()->delete('user')->where('id', '=', '1')->execute();
+// 		$result = Db::instance()->query_builder('user', array('name' => 'kkk', 'age' => 12))->insert();
+// 		$result = Db::instance()->query_builder('user')->where('id', '=', '1')->delete();
 	
-// 		$query = Db::instance()->select('user')->where('user.id', '=', 2);
-// // 		$query = Db::instance()->select('user')->where('id', '=', 2)->where_open()->where('name', '=', 'li')->where_close();
-// 		list($sql, $params) = $query->compile();
+// 		$query = Db::instance()->query_builder('user')->where('user.id', '=', 2);
+// // 		$query = Db::instance()->query_builder('user')->where('id', '=', 2)->where_open()->where('name', '=', 'li')->where_close();
+// 		list($sql, $params) = $query->compile('select');
 // 		$result = "select sql: $sql, params: ".implode(',', $params);
-// 		$result .= " select result: ".print_r($query->execute());
+// 		$result .= " select result: ".print_r($query->select());
 	
 		$query = Db::instance()->select('user')->where('name', '=', 'li');
 		$result = print_r($query->count());

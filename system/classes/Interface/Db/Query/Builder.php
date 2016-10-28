@@ -18,18 +18,44 @@ interface Interface_Db_Query_Builder
 	 * @return array(sql, 参数)
 	 */
 	public function compile();
-	
-	/**
-	 * 编译 + 执行
-	 * 
-	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_NUM，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
-	 * @return mixed 结果数据
-	 */
-	public function execute($fetch_value = FALSE);
 
 	/**
-	 * 统计行数
+	 * 查找多个： select 语句
+	 *
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
+	 * @return array
+	 */
+	public function find_all($fetch_value = FALSE);
+	
+	/**
+	 * 查找一个： select ... limit 1语句
+	 *
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
+	 * @return object
+	 */
+	public function find($fetch_value = FALSE);
+	
+	/**
+	 * 统计行数： count语句
 	 * @return int
 	 */
 	public function count();
+	
+	/**
+	 * 插入：insert语句
+	 * @return int 新增的id
+	 */
+	public function insert();
+	
+	/**
+	 *	更新：update语句
+	 *	@return	bool
+	 */
+	public function update();
+	
+	/**
+	 *	删除
+	 *	@return	bool
+	 */
+	public function delete();
 }

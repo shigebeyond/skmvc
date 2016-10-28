@@ -24,14 +24,13 @@ class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_Persistent
 	protected static $_labels = array();
 
 	/**
-	 * 获得sql构建器: (select) sql
+	 * 获得sql构建器
 	 *
-	 * @param string $action
 	 * @return Orm_Query_Builder
 	 */
 	public static function query_builder($action = 'select')
 	{
-		return new Orm_Query_Builder(get_called_class(), $action, static::db($action), static::table());
+		return new Orm_Query_Builder(get_called_class(), static::db($action), static::table());
 	}
 
 	/**
@@ -49,7 +48,7 @@ class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_Persistent
 			$query->wheres($id);
 		else // id是主键
 			$query->where(static::$_primary_key, '=', $id);
-		$rows = $query->execute();
+		$rows = $query->find_all();
 		$this->_original = Arr::get($rows, 0, array());
 	}
 
@@ -120,7 +119,7 @@ class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_Persistent
 		$this->check();
 
 		// 插入数据库
-		static::query_builder('insert')->data($this->_dirty)->execute();
+		static::query_builder('insert')->data($this->_dirty)->insert();
 
 		// 更新内部数据
 		$this->_original = $this->_dirty + $this->_original;
@@ -153,7 +152,7 @@ class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_Persistent
 		$this->check();
 
 		// 更新数据库
-		$result = static::query_builder('update')->data($this->_dirty)->where(static::$_primary_key, '=', $this->pk())->execute();
+		$result = static::query_builder('update')->data($this->_dirty)->where(static::$_primary_key, '=', $this->pk())->update();
 
 		// 更新内部数据
 		$this->_original = $this->_dirty + $this->_original;
@@ -181,7 +180,7 @@ class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_Persistent
 			return;
 
 		// 删除数据
-		$result = static::query_builder('delete')->where(static::$_primary_key, '=', $this->pk())->execute();
+		$result = static::query_builder('delete')->where(static::$_primary_key, '=', $this->pk())->delete();
 
 		// 更新内部数据
 		$this->_original = $this->_dirty = array();

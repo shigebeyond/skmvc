@@ -12,7 +12,7 @@
  * @date 2016-10-28 下午9:44:43 
  *
  */
-class Mongoo extends MongoClient
+class Sk_Mongoo extends MongoClient
 {
 	/**
 	 * 配置信息
@@ -49,5 +49,16 @@ class Mongoo extends MongoClient
 		$this->_config = $config;
 		$this->_name = $name;
 	}
-
+	
+	/**
+	 * Mongodb查询构建器
+	 *
+	 * @param string $collection 集合名
+	 * @param string $data 数据
+	 * @return Mongoo_Query_Builder
+	 */
+	public function query_builder($collection = NULL, $data = NULL)
+	{
+		return new Mongoo_Query_Builder($this, $collection, $data);
+	}
 }

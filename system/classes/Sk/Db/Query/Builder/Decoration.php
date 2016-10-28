@@ -58,14 +58,13 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	/**
 	 * 构造函数
 	 *
-	 * @param string $action sql动作：select/insert/update/delete
 	 * @param string|Db $db 数据库配置的分组名/数据库连接
 	 * @param string $table 表名
 	 * @param string $data 数据
 	 */
-	public function __construct($action, $db = 'default', $table = NULL, $data = NULL)
+	public function __construct($db = 'default', $table = NULL, $data = NULL)
 	{
-		parent::__construct($action, $db, $table, $data);
+		parent::__construct($db, $table, $data);
 		
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
 		$this->_where = new Db_Query_Builder_Decoration_Clauses_Group($this->_db, 'WHERE', array('column', 'str', array($this, 'quote')/* 转义值 */));

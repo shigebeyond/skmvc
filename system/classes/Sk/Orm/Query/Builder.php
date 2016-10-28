@@ -21,14 +21,13 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 	 * 构造函数
 	 *
 	 * string $class model类名，其基类为Orm
-	 * @param string $action sql动作：select/insert/update/delete
 	 * @param string|Db $db 数据库配置的分组名/数据库连接
 	 * @param string $table 表名
 	 * @param string $data 数据
 	 */
-	public function __construct($class, $action = 'select', $db = 'default', $table = NULL, $data = NULL)
+	public function __construct($class, $db = 'default', $table = NULL, $data = NULL)
 	{
-		parent::__construct($action, $db, $table, $data);
+		parent::__construct($db, $table, $data);
 
 		// 检查是否是orm子类
 		if(!is_subclass_of($class, 'Orm'))
@@ -43,8 +42,7 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 	 */
 	public function find()
 	{
-		$rows = $this->limit(1)->find_all();
-		return Arr::get($rows, 0);
+		return $this->model(parent::find());
 	}
 
 	/**
@@ -53,14 +51,28 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 	 */
 	public function find_all()
 	{
-		$rows = $this->execute();
+		$rows = parent::find_all();
 		foreach ($rows as $key => $row)
 		{
-			$orm = new $this->_class;
-			$orm->original($row); // 设置原始字段值
-			$rows[$key] = $orm;
+			$rows[$key] = $this->model($row);
 		}
 		return $rows;
+	}
+	
+	/**
+	 * 创建新模型对象
+	 * 
+	 * @param array $data
+	 * @return NULL|Orm
+	 */
+	public function model(array $data)
+	{
+		if(empty($data))
+			return NULL;
+		
+		$model = new $this->_class;
+		$model->original($data); // 设置原始字段值
+		return $model;
 	}
 
 	/**

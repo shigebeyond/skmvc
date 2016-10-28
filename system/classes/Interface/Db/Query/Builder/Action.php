@@ -31,11 +31,10 @@ interface Interface_Db_Query_Builder_Action
 	/**
 	 * 设置插入/更新的值
 	 *
-	 * @param string $column
-	 * @param string $value
+	 * @param array $data
 	 * @return Db_Query_Builder
 	 */
-	public function data($column, $value = NULL);
+	public function data(array $data);
 	
 	/**
 	 * 设置更新的值, update时用
