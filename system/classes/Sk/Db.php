@@ -228,7 +228,7 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 	public static function fetch_mode($fetch_value)
 	{
 		if(is_int($fetch_value))
-			return PDO::FETCH_NUM;
+			return PDO::FETCH_COLUMN;
 
 		if(is_callable($fetch_value)) // 优先于string/object, 因为函数名是string, 匿名函数Closure是object
 			return PDO::FETCH_FUNC;
