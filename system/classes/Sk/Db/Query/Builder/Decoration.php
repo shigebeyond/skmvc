@@ -418,9 +418,9 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	public function limit($limit, $offset = 0)
 	{
 		if($offset === 0)
-			$this->_limit->add_subexp(array($limit));
+			$this->_limit->add_subexp(array((int)$limit));
 		else
-			$this->_limit->add_subexp(array($offset, $limit));
+			$this->_limit->add_subexp(array((int)$offset, (int)$limit));
 		return $this;
 	}
 	

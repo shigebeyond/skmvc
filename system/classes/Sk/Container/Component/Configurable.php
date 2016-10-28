@@ -11,8 +11,16 @@
  */
 class Sk_Container_Component_Configurable implements Interface_Container_Component_Configurable
 {
+	/**
+	 * 配置信息
+	 * @var array
+	 */
 	protected $_config;
 	
+	/**
+	 * 组件名
+	 * @var string
+	 */
 	protected $_name;
 	
 	public function __construct($config, $name)
