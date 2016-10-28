@@ -34,12 +34,15 @@ class Controller_Home extends Controller
 // 		$result = Db::instance()->insert('user', array('name' => 'kkk', 'age' => 12))->execute();
 // 		$result = Db::instance()->delete('user')->where('id', '=', '1')->execute();
 	
-		$query = Db::instance()->select('user')->where('user.id', '=', 2);
-// 		$query = Db::instance()->select('user')->where('id', '=', 2)->where_open()->where('name', '=', 'li')->where_close();
-		list($sql, $params) = $query->compile();
-		$result = "select sql: $sql, params: ".implode(',', $params);
-		$result .= " select result: ".print_r($query->execute());
+// 		$query = Db::instance()->select('user')->where('user.id', '=', 2);
+// // 		$query = Db::instance()->select('user')->where('id', '=', 2)->where_open()->where('name', '=', 'li')->where_close();
+// 		list($sql, $params) = $query->compile();
+// 		$result = "select sql: $sql, params: ".implode(',', $params);
+// 		$result .= " select result: ".print_r($query->execute());
 	
+		$query = Db::instance()->select('user')->where('name', '=', 'li');
+		$result = print_r($query->count());
+		
 		$this->res->body($result);
 	}
 	

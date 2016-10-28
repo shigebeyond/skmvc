@@ -53,4 +53,12 @@ class Test_Db_Query_Builder extends PHPUnit_Framework_TestCase
 		echo "select result: ".print_r($result);
 	}
 
+	public function test_count()
+	{
+		$query = Db::instance()->select('user')->where('id', '=', 2)->where_open()->where('name', '=', 'li')->where_close();
+		list($sql, $params) = $query->compile();
+		echo "where sql: $sql, params: ".implode(',', $params);
+		$result = $query->count();
+		echo "count result: ".print_r($result);
+	}
 }
