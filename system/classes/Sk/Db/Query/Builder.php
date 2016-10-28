@@ -45,4 +45,15 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration implements Interfa
 		return $this->_db->execute($sql, $params);
 	}
 	
+	/**
+	 * 统计行数
+	 * @return int
+	 */
+	public function count()
+	{
+		// count语句
+		$query = $this->select(array('num' => 'count(1)'));
+		//return $query->execute(0)[0]; // 结果集是第一列
+		return $query->execute()[0]['num']; // 结果集是关联数组
+	}
 }
