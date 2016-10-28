@@ -28,13 +28,13 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	 * @var string
 	 */
 	protected $_action;
-
-    /**
-     * 数据库连接
-     * @var Db
-     */
-  protected $_db;
-
+	
+	/**
+	 * 数据库连接
+	 * @var Db
+	 */
+	protected $_db;
+	
 	/**
 	 * 表名
 	 * @var string
@@ -44,9 +44,9 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	/**
 	 * 要插入/更新字段: <column => value>
 	 * 要查询的字段名: [column]
-	 * @var string
+	 * @var array
 	 */
-	protected $_data = array();
+	protected $_data = array ();
 	
 	/**
 	 * select语句中, 控制查询结果是否去重唯一
@@ -114,17 +114,12 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	/**
 	 * 设置插入/更新的值
 	 *
-	 * @param string $column
-	 * @param string $value
+	 * @param array $data
 	 * @return Db_Query_Builder
 	 */
-	public function data($column, $value = NULL)
+	public function data(array $data)
 	{
-		if(is_array($column))
-			$this->_data = $column;
-		else
-			$this->_data[$column] = $value;
-	
+		$this->_data = $data;
 		return $this;
 	}
 	
