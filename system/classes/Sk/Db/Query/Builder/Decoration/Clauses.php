@@ -100,7 +100,7 @@ abstract class Sk_Db_Query_Builder_Decoration_Clauses implements Interface_Db_Qu
 	
 	public function table($table)
 	{
-		return $this->db->quote_table($table);
+		return $this->_db->quote_table($table);
 	}
 	
 	public function column($column)
