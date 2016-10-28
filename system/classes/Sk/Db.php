@@ -211,7 +211,7 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 			// 执行sql
 			$statement = $this->_exec($sql, $params);
 			// 直接查出所有数据, 因为PDOStatement::rowCount是不可靠的
-			if(!$fetch_value)
+			if($fetch_value === FALSE)
 				return $statement->fetchAll(PDO::FETCH_ASSOC); // fix bug: General error: Extraneous additional parameters => 不需要第二个参数
 			return $statement->fetchAll(static::fetch_mode($fetch_value), $fetch_value);
 		} catch (PDOException $e) {
