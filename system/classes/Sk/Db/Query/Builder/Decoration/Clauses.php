@@ -80,6 +80,16 @@ abstract class Sk_Db_Query_Builder_Decoration_Clauses implements Interface_Db_Qu
   public abstract function compile_subexp($subexp);
   
   /**
+   * 清空
+   * @return Db_Query_Builder_Decoration_Clauses
+   */
+	public function clear() 
+	{
+		$this->_subexps = array();
+		return $this;
+	}
+  
+  /**
    * 转换字符串时, 直接编译
    * @return string
    */

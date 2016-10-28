@@ -104,6 +104,20 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	}
 	
 	/**
+	 * 清空条件
+	 * @return Db_Query_Builder
+	 */
+	public function clear()
+	{
+		foreach (array('where', 'group_by', 'having', 'order_by', 'limit') as $name)
+			$this->$name->clear();
+		
+		$this->_join = $this->_params = array();
+		
+		return parent::clear();
+	}
+	
+	/**
 	 * 改写转义值的方法，搜集sql参数
 	 * 
 	 * @param mixed $value
@@ -122,7 +136,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	/**
 	 * 多个where条件
 	 * @param array $conditions
-	 * @return Sk_Db_Query_Builder_Decoration
+	 * @return Db_Query_Builder
 	 */
 	public function wheres(array $conditions)
 	{
@@ -134,7 +148,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	/**
 	 * 多个on条件
 	 * @param array $conditions
-	 * @return Sk_Db_Query_Builder_Decoration
+	 * @return Db_Query_Builder
 	 */
 	public function ons(array $conditions)
 	{
@@ -146,7 +160,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	/**
 	 * 多个having条件
 	 * @param array $conditions
-	 * @return Sk_Db_Query_Builder_Decoration
+	 * @return Db_Query_Builder
 	 */
 	public function havings(array $conditions)
 	{

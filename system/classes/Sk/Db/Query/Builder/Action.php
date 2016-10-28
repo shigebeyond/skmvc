@@ -33,7 +33,7 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
      * 数据库连接
      * @var Db
      */
-    protected $_db;
+  protected $_db;
 
 	/**
 	 * 表名
@@ -53,30 +53,30 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	 * @var bool
 	 */
 	protected $_distinct = FALSE;
-
+	
 	/**
 	 * 构造函数
-	 * 
+	 *
 	 * @param string $action sql动作：select/insert/update/delete
 	 * @param string|Db $db 数据库配置的分组名/数据库连接
 	 * @param string $table 表名
 	 * @param string $data 数据
 	 */
-    public function __construct($action, $db = 'default', $table = NULL, $data = NULL)
-    {
-        $this->_action = $action;
-
-        // 获得db
-        if(!$db instanceof Db)
-            $db = Db::instance($db);
-        $this->_db = $db;
-
-        if($table)
-            $this->table($table);
-
-        if($data)
-            $this->data($data);
-    }
+	public function __construct($action, $db = 'default', $table = NULL, $data = NULL) 
+	{
+		$this->_action = $action;
+		
+		// 获得db
+		if (! $db instanceof Db)
+			$db = Db::instance ( $db );
+		$this->_db = $db;
+		
+		if ($table)
+			$this->table ( $table );
+		
+		if ($data)
+			$this->data ( $data );
+	}
 	
 	/**
 	 * 设置表名: 一般是单个表名
@@ -163,6 +163,17 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	{
 		$this->_distinct = (bool) $value;
 		return $this;
+	}
+	
+	/**
+	 * 清空条件
+	 * @return Db_Query_Builder
+	 */
+	public function clear()
+	{
+		$this->_table = NULL;
+		$this->_data = array();
+		$this->_distinct = FALSE;
 	}
 	
 	/**
