@@ -110,34 +110,10 @@ class Sk_Arr
 		$array = self::_prepare_path($array, $path, $delimiter);
 
 		// 3 设置最后一层的元素值
-		$array[$last_key] = $value;
-	}
-	
-	/**
-	 * 使用多级路径来添加多维数组中的值，其中路径是以.为分割
-	 *
-	 *     // Push the value of $array['foo']['bar']
-	 *     Arr::push_path($array, 'foo.bar', 'shi');
-	 *
-	 * @param   array   $array      数组
-	 * @param   mixed   $path       多级路径，由多个key组成，以.为分割
-	 * @param   mixed   $value    		要设置的元素值
-	 * @param   string  $delimiter  路径的分割符
-	 * @return  mixed
-	 */
-	public static function push_path(&$array, $path, $value, $delimiter = '.')
-	{
-		// 1 获得路径中的key
-		if(is_array($path))
-			$keys = $path;
-		else // 从多级路径中分离出多个key
-			$keys = explode($delimiter, $path);
-		
-		// 2 准备好路径
-		$array = self::_prepare_path($array, $path, $delimiter);
-
-		// 3 设置最后一层的元素值
-		$array[] = $value;
+		if($last_key === '') // 如果最后一个key是空字符串, 则直接追加
+			$array[] = $value;
+		else
+			$array[$last_key] = $value;
 	}
 	
 	/**
