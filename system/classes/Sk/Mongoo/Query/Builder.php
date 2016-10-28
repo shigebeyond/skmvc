@@ -1,10 +1,19 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
+/**
+ * Mongodb查询构建器
+ * 
+ * @Package package_name 
+ * @category 
+ * @author shijianhang
+ * @date 2016-10-28 下午10:18:27 
+ *
+ */
 class Sk_Mongoo_Query_Builder
 {
 	/**
 	 * 数据库连接
-	 * @var  MongoClient
+	 * @var string|MongoClient|Mongoo
 	 */
 	protected $_db;
 	
@@ -15,10 +24,11 @@ class Sk_Mongoo_Query_Builder
 	protected $_collection;
 	
 	/**
-	 * 查询的字段
+	 * 要插入/更新字段: <column => value>
+	 * 要查询的字段名: [column]
 	 * @var  array
 	 */
-	protected $_select = array();
+	protected $_data = array();
 	
 	/**
 	 * 查询条件
@@ -50,8 +60,8 @@ class Sk_Mongoo_Query_Builder
 	 */
 	public function clear()
 	{
-		$this->_select	= $this->_wheres = $this->_sort = array();
-		$this->_limit	= $this->_skip = 0;
+		$this->_data = $this->_wheres = $this->_sort = array();
+		$this->_limit = $this->_skip = 0;
 		return $this;
 	}
 	
@@ -76,7 +86,33 @@ class Sk_Mongoo_Query_Builder
 	public function select(array $columns)
 	{
 		foreach ($columns as $col)
-			$this->_select[$col] = 1;
+			$this->_data[$col] = 1;
+		return $this;
+	}
+	
+	/**
+	 * 设置插入/更新的值
+	 *
+	 * @param array $data
+	 * @param　bool $partial 是否部分更新
+	 * @return Db_Query_Builder
+	 */
+	public function data(array $data, $partial = FALSE)
+	{
+		$this->_data = $partial ? array('$set' => $data) : $data;
+		return $this;
+	}
+	
+	/**
+	 * 设置插入/更新的值
+	 *
+	 * @param string $column
+	 * @param string $value
+	 * @return Db_Query_Builder
+	 */
+	public function set($column, $value)
+	{
+		Arr::set_path($this->_data, array('$set', $column), $value);
 		return $this;
 	}
 	
@@ -105,7 +141,7 @@ class Sk_Mongoo_Query_Builder
 		if($value === NULL && $op[0] !== '$') // 无运算符
 			$this->_wheres[$column] = $op;
 		else // 有运算符
-			Arr::set_path($this->_wheres, "$column.$op", $value);
+			Arr::set_path($this->_wheres, array($column, $op), $value);
 		return $this;
 	}
 	
@@ -119,11 +155,11 @@ class Sk_Mongoo_Query_Builder
 	{
 		if($value === NULL && $op[0] !== '$') // 无运算符
 		{
-			$path = "\$or.$column.";
+			$path = array('$or', $column, '');
 			$value = $op;
 		}
 		else // 有运算符
-			$path = "\$or.$column.$op";
+			$path = array('$or', $column, $op);;
 		
 		Arr::set_path($this->_wheres, $path, $value);
 		return $this;
@@ -143,52 +179,15 @@ class Sk_Mongoo_Query_Builder
 	}
 	
 	/**
-	 *	--------------------------------------------------------------------------------
-	 *	LIKE PARAMETERS
-	 *	--------------------------------------------------------------------------------
-	 *
-	 *	Get the documents where the (string) value of a $column is like a value. The defaults
-	 *	allow for a case-insensitive search.
-	 *
-	 *	@param	string	$column
-	 *	@param	string	$value
-	 *	@param	string	$flags
-	 *	Allows for the typical regular expression flags:
-	 *		i = case insensitive
-	 *		m = multiline
-	 *		x = can contain comments
-	 *		l = locale
-	 *		s = dotall, "." matches everything, including newlines
-	 *		u = match unicode
-	 *
-	 *	@param	bool	$disable_start_wildcard
-	 *	If this value evaluates to false, no starting line character "^" will be prepended
-	 *	to the search value, representing only searching for a value at the start of
-	 *	a new line.
-	 *
-	 *	@param	bool	$disable_end_wildcard
-	 *	If this value evaluates to false, no ending line character "$" will be appended
-	 *	to the search value, representing only searching for a value at the end of
-	 *	a line.
-	 *
-	 *	@return Mongoo_Query_Builder
-	 *	@usage	$mongodb->like('foo', 'bar', 'im', false, true);
+	 * 正则匹配
+	 * 
+	 * @param string $column
+	 * @param string $regex
+	 * @return Mongoo_Query_Builder
 	 */
-	public function like($column = '', $value = '', $flags = 'i', $disable_start_wildcard = false, $disable_end_wildcard = false)
+	public function like($column, $regex)
 	{
-		$column = (string) trim($column);
-		$this->_where_init($column);
-	
-		$value = (string) trim($value);
-		$value = quotemeta($value);
-	
-		(bool) $disable_start_wildcard === false and $value = '^'.$value;
-		(bool) $disable_end_wildcard === false and $value .= '$';
-	
-		$regex = "/$value/$flags";
-		$this->_wheres[$column] = new \MongoRegex($regex);
-	
-		return $this;
+		return $this->where($column, new MongoRegex($regex));
 	}
 	
 	/**
@@ -218,15 +217,24 @@ class Sk_Mongoo_Query_Builder
 		return $this;
 	}
 	
-	public function execute()
+	/**
+	 * 查找一个
+	 * @return object
+	 */
+	public function find()
 	{
-		$query = $this->_db->{$this->_collection};
-		// 查一个
-		if($this->_limit == 1 && $this->_skip == 0)
-			return $query->findOne($this->_wheres, $this->_select);
-		
-		// 查多个
-		$cursor = $query->find($this->_wheres, $this->_select);
+		return $this->_db->{$this->_collection}->findOne($this->_wheres, $this->_data);
+	}
+	
+	/**
+	 * 查找多个
+	 * @return array
+	 */
+	public function find_all()
+	{
+		//　获得游标
+		$cursor = $this->_db->{$this->_collection}->find($this->_wheres, $this->_data);
+		//　限制游标
 		foreach (array('limit', 'skip', 'sort') as $name)
 		{
 			$value = $this->{"_$name"};
@@ -245,6 +253,61 @@ class Sk_Mongoo_Query_Builder
 	 */
 	public function count($apply_skip_limit = FALSE)
 	{
-		return $this->_db->{$this->_collection}->find($this->_wheres)->limit($this->_limit)->skip($this->_skip)->count($apply_skip_limit);
+		return $this->find_all()->count($apply_skip_limit);
+	}
+	
+	/**
+	 * 插入
+	 * @return MongoId|boolean
+	 */
+	public function insert()
+	{
+		try
+		{
+			$this->_db->{$this->_collection}->insert($this->_data, array('fsync' => true));
+			$this->clear();
+			return Arr::get($this->_data, '_id', FALSE);
+		}
+		catch (MongoCursorException $e)
+		{
+			throw new Db_Exception("插入Mongodb的数据出错: {$e->getMessage()}", $e->getCode());
+		}
+	}
+
+	
+	/**
+	 *	更新
+	 *	@return	bool
+	 */
+	public function update()
+	{
+		try
+		{
+			$this->_db->{$this->_collection}->update($this->_where, $this->_data, array('fsync' => true, 'multiple' => true));
+			$this->clear();
+			return true;
+		}
+		catch (MongoCursorException $e)
+		{
+			throw new Db_Exception("更新Mongodb的数据出错: {$e->getMessage()}", $e->getCode());
+		}
+	}
+	
+	/**
+	 *	删除
+	 *	@return	bool
+	 */
+	public function delete()
+	{
+		try
+		{
+			$this->_db->{$this->_collection}->remove($this->_where, array('fsync' => true, 'justOne' => false));
+			$this->clear();
+			return true;
+		}
+		catch (MongoCursorException $e)
+		{
+			throw new Db_Exception("删除Mongodb的数据出错: {$e->getMessage()}", $e->getCode());
+		}
 	}
 }
