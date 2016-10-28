@@ -86,6 +86,83 @@ class Sk_Arr
 	}
 	
 	/**
+	 * 使用多级路径来设置多维数组中的值，其中路径是以.为分割
+	 *
+	 *     // Set the value of $array['foo']['bar']
+	 *     Arr::set_path($array, 'foo.bar', 'shi');
+	 *
+	 * @param   array   $array      数组
+	 * @param   mixed   $path       多级路径，由多个key组成，以.为分割
+	 * @param   mixed   $value    		要设置的元素值
+	 * @param   string  $delimiter  路径的分割符
+	 * @return  mixed
+	 */
+	public static function set_path(&$array, $path, $value, $delimiter = '.')
+	{
+		// 1 获得路径中的key
+		if(is_array($path))
+			$keys = $path;
+		else // 从多级路径中分离出多个key
+			$keys = explode($delimiter, $path);
+		
+		// 2 准备好路径
+		$last_key = array_pop($keys);
+		$array = self::_prepare_path($array, $path, $delimiter);
+
+		// 3 设置最后一层的元素值
+		$array[$last_key] = $value;
+	}
+	
+	/**
+	 * 使用多级路径来添加多维数组中的值，其中路径是以.为分割
+	 *
+	 *     // Push the value of $array['foo']['bar']
+	 *     Arr::push_path($array, 'foo.bar', 'shi');
+	 *
+	 * @param   array   $array      数组
+	 * @param   mixed   $path       多级路径，由多个key组成，以.为分割
+	 * @param   mixed   $value    		要设置的元素值
+	 * @param   string  $delimiter  路径的分割符
+	 * @return  mixed
+	 */
+	public static function push_path(&$array, $path, $value, $delimiter = '.')
+	{
+		// 1 获得路径中的key
+		if(is_array($path))
+			$keys = $path;
+		else // 从多级路径中分离出多个key
+			$keys = explode($delimiter, $path);
+		
+		// 2 准备好路径
+		$array = self::_prepare_path($array, $path, $delimiter);
+
+		// 3 设置最后一层的元素值
+		$array[] = $value;
+	}
+	
+	/**
+	 * 为多维数组准备好路径中的元素
+	 * 
+	 * @param   array   $array      数组
+	 * @param   mixed   $keys       多级路径
+	 * @return array 准备好的末尾元素
+	 */
+	 protected static function &_prepare_path(&$array, array $keys) 
+	 {
+		// 遍历key来创建中间层
+		foreach ($keys as $key)
+		{
+			if (!isset($array[$key]))
+				$array[$key] = array();
+			
+			$array = &$array[$key];
+		}
+		
+		return $array;
+	}
+
+	
+	/**
 	 * 判断是否数组
 	 * 
 	 * @param array $array
