@@ -20,8 +20,9 @@ class Sk_Container implements Interface_Container
 	
 	/**
 	 * 获得简单的组件
+	 * 
 	 * @param string $class
-	 * @return multitype:
+	 * @return mixed
 	 */
 	public static function component($class)
 	{
@@ -38,7 +39,7 @@ class Sk_Container implements Interface_Container
 	 * 		其中配置的绝对路径为  $class.'.'.$path
 	 * 		如果第一个字符是'_', 表示要使用子类对象, 子类名为 $class.$config 
 	 * 
-	* @return multitype:
+	* @return mixed
 	 */
 	public static function component_config($class, $path)
 	{
