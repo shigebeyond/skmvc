@@ -130,90 +130,6 @@ class Sk_Mongoo_Query_Builder
 	}
 	
 	/**
-	 *	$in条件
-	 *
-	 *	@param	string	$column	 字段名
-	 *	@param	array	$values		多值
-	 *	@return Mongoo_Query_Builder
-	 */
-	public function where_in($column, array $values)
-	{
-		return $this->where($column, '$in', $values);
-	}
-	
-	/**
-	 *	$all条件
-	 *
-	 *	@param	string	$column	 字段名
-	 *	@param	array	$values	 多值
-	 *	@return Mongoo_Query_Builder
-	 */
-	public function where_all($column, array $values)
-	{
-		return $this->where($column, '$all', $values);
-	}
-	
-	/**
-	 *	$nin条件
-	 *
-	 *	@param	string	$column	 字段名
-	 *	@param	array	$values		多值
-	 *	@return Mongoo_Query_Builder
-	 */
-	public function where_not_in($column, array $values)
-	{
-		return $this->where($column, '$nin', $values);
-	}
-	
-	/**
-	 * $gt条件: >
-	 * 
-	 *	@param	string $column
-	 *	@param	mixed $value
-	 *	@return Mongoo_Query_Builder
-	 */
-	public function where_gt($column, $value)
-	{
-		return $this->where($column, '$gt', $value);
-	}
-	
-	/**
-	 *	$gte条件: >=
-	 *
-	 *	@param	string $column
-	 *	@param	mixed $value
-	 *	@return 	Mongoo_Query_Builder
-	 */
-	public function where_gte($column = '', $value)
-	{
-		return $this->where($column, '$gte', $value);
-	}
-	
-	/**
-	 *	$lt条件: <
-	 *
-	 *	@param	string $column
-	 *	@param	mixed $value
-	 *	@return	 Mongoo_Query_Builder
-	 */
-	public function where_lt($column, $value)
-	{
-		return $this->where($column, '$lt', $value);
-	}
-	
-	/**
-	 *	$lte条件: <=
-	 *
-	 *	@param	string $column
-	 *	@param	mixed $value
-	 *	@return	Mongo_Db
-	 */
-	public function where_lte($column, $value)
-	{
-		return $this->where($column, '$lte', $value);
-	}
-	
-	/**
 	 * between条件
 	 * 
 	 * @param string $column
@@ -224,49 +140,6 @@ class Sk_Mongoo_Query_Builder
 	public function where_between($column, $min, $max)
 	{
 		return $this->where($column, '$gte', $min)->where($column, '$lte', $max);
-	}
-	
-	/**
-	 * not between条件
-	 * 
-	 * @param string $column
-	 * @param mixed $min
-	 * @param mixed $max
-	 * @return Mongoo_Query_Builder
-	 */
-	public function where_between_ne($column, $min, $max)
-	{
-		return $this->where($column, '$gt', $max)->where($column, '$lt', $min);
-	}
-	
-	/**
-	 *	$ne条件: !=
-	 *
-	 *	@param	string $column
-	 *	@param	mixed $value
-	 *	@return	 Mongoo_Query_Builder
-	 */
-	public function where_ne($column, $value)
-	{
-		return $this->where($column, '$ne', $value);
-	}
-	
-	/**
-	 *	$near条件: 获得某个经纬度附近的数据, 但是需要建地理空间的索引(geospatial index)
-	 *
-	 * <code>
-	 * 		$query->where_near('place', array('50','50'))->get('address');
-	 * </code>
-	 * 
-	 *	@param	string	$column		the field name
-	 *	@param	array	$coordinates	 经纬度: array(经度, 纬度)
-	 *	@return Mongoo_Query_Builder
-	 */
-	public function where_near($column, array $coordinates)
-	{
-		$this->_where_init($column);
-		$this->where[$column]['$near'] = $coordinates;
-		return $this;
 	}
 	
 	/**
@@ -320,6 +193,7 @@ class Sk_Mongoo_Query_Builder
 	
 	/**
 	 * 排序 
+	 * 
 	 * @param string $column
 	 * @param number $direction
 	 * @return Mongoo_Query_Builder
