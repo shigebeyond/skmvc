@@ -408,18 +408,23 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 		if(is_array($column))
 			return $this->_quote_columns($column, $with_brackets);
 
-		// 表名
 		$table = NULL;
-		$parts = explode('.', $column, 2); //分离"表名.字段名"
-		if(isset($parts[1]))
+		
+		// 非函数表达式
+		if (!Text::contains($column, '('))
 		{
-			list($table, $column) = $parts;
-			$table = "`$table`.";
+			// 表名
+			$parts = explode('.', $column, 2); //分离"表名.字段名"
+			if(isset($parts[1]))
+			{
+				list($table, $column) = $parts;
+				$table = "`$table`.";
+			}
+			
+			// 字段名
+			if($column != '*') // 非*
+				$column = "`$column`"; // 转义
 		}
-
-		// 字段名
-		if($column != '*') // 非*
-			$column = "`$column`"; // 转义
 
 		// 字段别名
 		if($alias)
