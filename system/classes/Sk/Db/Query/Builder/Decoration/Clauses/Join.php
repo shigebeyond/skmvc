@@ -42,7 +42,7 @@ class Sk_Db_Query_Builder_Decoration_Clauses_Join extends Db_Query_Builder_Decor
 		// join子句
 		$join = ' JOIN '.$this->table($this->_table);
 		if($this->_type)
-			$join = ' '.$this->_join_type($this->_type).$join;
+			$join = ' '.$this->join_type($this->_type).$join;
 		
 		// on子句
 		$on = parent::compile();
