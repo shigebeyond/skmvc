@@ -23,8 +23,13 @@ interface Interface_Db_Query_Builder
 	 * 编译 + 执行
 	 * 
 	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_NUM，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
-	 * @return int 影响行数
+	 * @return mixed 结果数据
 	 */
 	public function execute($fetch_value = FALSE);
 
+	/**
+	 * 统计行数
+	 * @return int
+	 */
+	public function count();
 }
