@@ -12,14 +12,16 @@
 abstract class Sk_Orm_Entity implements ArrayAccess, Interface_Orm_Entity 
 {
 	/**
-	 * 获得字段
-	 * @return array
+	 * 判断是否有某字段
+	 *
+	 * @param string $column
+	 * @return
 	 */
-	public static function columns()
+	public static function has_column($column)
 	{
-		throw new Orm_Exception("必须重写该方法");
+		return TRUE;
 	}
-
+	
 	/**
 	 * 原始的字段值：<字段名 => 字段值>
 	 * @var array
@@ -40,7 +42,7 @@ abstract class Sk_Orm_Entity implements ArrayAccess, Interface_Orm_Entity
 	{
 		return array('_original', '_dirty');
 	}
-
+	
 	/**
 	 * 判断对象是否存在指定字段
 	 *
@@ -49,7 +51,7 @@ abstract class Sk_Orm_Entity implements ArrayAccess, Interface_Orm_Entity
 	 */
 	public function __isset($column)
 	{
-		return array_key_exists($column, $this->columns());
+		return static::has_column($column);
 	}
 
 	/**
@@ -79,7 +81,7 @@ abstract class Sk_Orm_Entity implements ArrayAccess, Interface_Orm_Entity
 	public function try_get($column, &$value)
 	{
 		// 判断是否是字段
-		if (!array_key_exists($column, $this->columns()))
+		if (!static::has_column($column))
 			return FALSE;
 
 		// 先找dirty，后找original
@@ -118,7 +120,7 @@ abstract class Sk_Orm_Entity implements ArrayAccess, Interface_Orm_Entity
 	public function try_set($column, $value)
 	{
 		// 判断是否是字段
-		if (!array_key_exists($column, $this->columns()))
+		if (!static::has_column($column))
 			return FALSE;
 
 		// 判断字段值是否真正有改变

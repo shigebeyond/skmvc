@@ -98,6 +98,16 @@ abstract class Sk_Orm_MetaData extends Orm_Entity implements Interface_Orm_MetaD
 		return static::$_tables_cached[$class];
 	}
 	
+	/**
+	 * 判断是否有某字段
+	 *
+	 * @param string $column
+	 * @return
+	 */
+	public static function has_column($column)
+	{
+		return array_key_exists($column, static::columns());
+	}
 	
 	/**
 	 * 获得字段列表

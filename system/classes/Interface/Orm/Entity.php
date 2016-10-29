@@ -12,10 +12,12 @@
 interface Interface_Orm_Entity
 {
 	/**
-	 * 获得字段
-	 * @return array
+	 * 判断是否有某字段
+	 * 
+	 * @param string $column
+	 * @return 
 	 */
-	public static function columns();
+	public static function has_column($column);
 
 	/**
 	 * 判断对象是否存在指定字段
