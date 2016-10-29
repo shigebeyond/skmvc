@@ -12,7 +12,7 @@
  * @date 2016-10-28 下午9:44:43 
  *
  */
-class Sk_Mongoo extends MongoClient
+class Sk_Mongoo extends Container_Component_Configurable
 {
 	/**
 	 *  获得Mongodb连接单例
@@ -22,8 +22,31 @@ class Sk_Mongoo extends MongoClient
 	 */
 	public static function instance($group = 'default')
 	{
+		return Container::component_config('Mongoo', $group);
+	}
+	
+	/**
+	 * Mongodb连接
+	 * @var MongoClient
+	 */
+	protected $_conn;
+	
+	/**
+	 * Mongodb的db
+	 * @var MongoDB
+	 */
+	protected $_db;
+	
+	public function __construct($config, $name)
+	{
+		parent::__construct($config, $name);
+		
+		// 创建mongodb连接
 		try{
-			return Container::component_config('Mongoo', $group);
+			$server = $this->_config['server'];
+			$options = $this->_config['options'];
+			$this->_conn = new MongoClient($server, $options); //　创建连接
+			$this->_db = $this->_conn->selectDB($options['db']); // 选择db
 		}
 		catch (MongoConnectionException $e)
 		{
@@ -31,31 +54,14 @@ class Sk_Mongoo extends MongoClient
 		}
 	}
 	
-	/**
-	 * 配置信息
-	 * @var array
-	 */
-	protected $_config;
-	
-	/**
-	 * 组件名
-	 * @var string
-	 */
-	protected $_name;
-
-	/**
-	 * 构建函数：接收配置信息＋创建连接
-	 * 
-	 * @param array $config
-	 * @param string $name
-	 */
-	public function __construct($config, $name)
-	{
-		$this->_config = $config;
-		$this->_name = $name;
-		
-		parent::__construct($config['server'], $config['options']);
-	}
+    /**
+     * 选择集合
+     * @return MongoCollection
+     */
+    public function __get($collectionName)
+    {
+        return $this->_db->selectCollection($collectionName);
+    }
 	
 	/**
 	 * Mongodb查询构建器
