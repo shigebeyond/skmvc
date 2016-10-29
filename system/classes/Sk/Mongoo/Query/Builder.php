@@ -150,6 +150,17 @@ class Sk_Mongoo_Query_Builder
 	}
 	
 	/**
+	 * 判断是否运算符
+	 * 
+	 * @param mixed $op 
+	 * @return bool
+	 */
+	public function is_operator($op)
+	{
+		return is_string($op) && Text::start_with($op, '$');
+	}
+	
+	/**
 	 * $and一个条件
 	 * 
 	 * @param string $column
@@ -159,10 +170,10 @@ class Sk_Mongoo_Query_Builder
 	 */
 	public function where($column, $op, $value = NULL)
 	{
-		if($value === NULL && $op[0] !== '$') // 无运算符
-			$this->_where[$column] = $op;
-		else // 有运算符
+		if($this->is_operator($op)) // 有运算符
 			Arr::set_path($this->_where, array($column, $op), $value);
+		else // 无运算符
+			$this->_where[$column] = $op;
 		return $this;
 	}
 	
@@ -174,13 +185,13 @@ class Sk_Mongoo_Query_Builder
 	 */
 	public function or_where($column, $op, $value = NULL)
 	{
-		if($value === NULL && $op[0] !== '$') // 无运算符
+		if($this->is_operator($op)) // 有运算符
+			$path = array('$or', $column, $op);
+		else // 无运算符
 		{
 			$path = array('$or', $column, '');
 			$value = $op;
 		}
-		else // 有运算符
-			$path = array('$or', $column, $op);;
 		
 		Arr::set_path($this->_where, $path, $value);
 		return $this;
@@ -249,7 +260,7 @@ class Sk_Mongoo_Query_Builder
 	
 	/**
 	 * 查找多个
-	 * @return array
+	 * @return MongoCursor
 	 */
 	public function find_all()
 	{
@@ -263,6 +274,7 @@ class Sk_Mongoo_Query_Builder
 				$cursor->$name($value);
 		}
 		
+		//return iterator_to_array($cursor);
 		return $cursor;
 	}
 	
@@ -295,21 +307,44 @@ class Sk_Mongoo_Query_Builder
 		}
 	}
 
+	/**
+	 * 判断是否操作单条记录
+	 * 	　查询条件为：主键=某个值
+	 * @return boolean
+	 */
+	public function is_single()
+	{
+		return isset($this->_where['_id']) //　有主键条件
+			&& (!is_array($this->_where['_id']) || isset($this->_where['_id']['$eq'])); //　主键＝某个值
+	}
+
+	/**
+	 * 判断是否操作多条记录
+	 * @return boolean
+	 */
+	public function is_multiple()
+	{
+		return !$this->is_single();
+	}
 	
 	/**
 	 *	更新
 	 *	@return	bool
 	 */
-	public function update($multiple = TRUE)
+	public function update()
 	{
 		try
 		{
+			//　是否更新多条记录
+			$multiple = $this->is_multiple();
+			// fix bug: multi update only works with $ operators
 			$data = $this->_data;
-			if($multiple && !isset($data['$set'])) // fix bug: multi update only works with $ operators
+			if($multiple && !isset($data['$set'])) 
 				$data = array('$set' => $data);
+			//　更新
 			$this->_db->{$this->_collection}->update($this->_where, $data, array('fsync' => true, 'multiple' => $multiple));
 			$this->clear();
-			return true;
+			return TRUE;
 		}
 		catch (MongoCursorException $e)
 		{
@@ -325,9 +360,9 @@ class Sk_Mongoo_Query_Builder
 	{
 		try
 		{
-			$this->_db->{$this->_collection}->remove($this->_where, array('fsync' => true, 'justOne' => false));
+			$this->_db->{$this->_collection}->remove($this->_where, array('fsync' => true, 'justOne' => $this->is_single()));
 			$this->clear();
-			return true;
+			return TRUE;
 		}
 		catch (MongoCursorException $e)
 		{
