@@ -60,11 +60,10 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	 *
 	 * @param Db|Callable $db 数据库连接|回调
 	 * @param string $table 表名
-	 * @param string $data 数据
 	 */
-	public function __construct($db, $table = NULL, $data = NULL)
+	public function __construct($db, $table = NULL)
 	{
-		parent::__construct($db, $table, $data);
+		parent::__construct($db, $table);
 		
 		$column_quoter = array(&$this->_db, 'quote_column'); //　转义列：&$this->_db　此时未赋值，故引用
 		$value_quoter = array($this, 'quote'); //　转移值

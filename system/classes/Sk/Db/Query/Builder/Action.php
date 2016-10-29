@@ -59,9 +59,8 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	 *
 	 * @param Db|Callable $db 数据库连接|回调
 	 * @param string $table 表名
-	 * @param string $data 数据
 	 */
-	public function __construct($db, $table = NULL, $data = NULL) 
+	public function __construct($db, $table = NULL) 
 	{
 		// 设置db
 		$this->_db = $db;
@@ -69,10 +68,6 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 		//　设置表
 		if ($table)
 			$this->table ( $table );
-		
-		//　设置数据
-		if ($data)
-			$this->data ( $data );
 	}
 	
 	/**
