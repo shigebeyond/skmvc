@@ -40,7 +40,6 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration implements Interfa
 		
 		// 2 执行 insert/update/delete 
 		$result = $this->_db->execute($sql, $params);
-		$this->clear();
 		return $result;
 	}
 	
@@ -57,7 +56,6 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration implements Interfa
 	
 		// 2 执行 select
 		$result = $this->_db->query($sql, $params, $fetch_value);
-		$this->clear();
 		return $result;
 	}
 	

@@ -298,7 +298,6 @@ class Sk_Mongoo_Query_Builder
 		try
 		{
 			$this->_db->{$this->_collection}->insert($this->_data, array('fsync' => true));
-			$this->clear();
 			return Arr::get($this->_data, '_id', FALSE);
 		}
 		catch (MongoCursorException $e)
@@ -343,7 +342,6 @@ class Sk_Mongoo_Query_Builder
 				$data = array('$set' => $data);
 			//　更新
 			$this->_db->{$this->_collection}->update($this->_where, $data, array('fsync' => true, 'multiple' => $multiple));
-			$this->clear();
 			return TRUE;
 		}
 		catch (MongoCursorException $e)
@@ -361,7 +359,6 @@ class Sk_Mongoo_Query_Builder
 		try
 		{
 			$this->_db->{$this->_collection}->remove($this->_where, array('fsync' => true, 'justOne' => $this->is_single()));
-			$this->clear();
 			return TRUE;
 		}
 		catch (MongoCursorException $e)
