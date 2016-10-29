@@ -89,7 +89,7 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 		}
 		catch (PDOException $e)
 		{
-			throw new Db_Exception("连接失败: " . $e->getMessage());
+			throw new Db_Exception("连接失败: " . $e->getMessage(), $e->getCode(), $e);
 		}
 
 		// 设置字符集
@@ -187,7 +187,7 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 			// 执行sql + 返回影响行数
 			return $this->_exec($sql, $params)->rowCount();
 		} catch (PDOException $e) {
-			throw new Db_Exception("执行sql出错: {$e->getMessage()}", $e->getCode());
+			throw new Db_Exception("执行sql出错: {$e->getMessage()}", $e->getCode(), $e);
 		}
 	}
 
@@ -215,7 +215,7 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 				return $statement->fetchAll(PDO::FETCH_ASSOC); // fix bug: General error: Extraneous additional parameters => 不需要第二个参数
 			return $statement->fetchAll(static::fetch_mode($fetch_value), $fetch_value);
 		} catch (PDOException $e) {
-			throw new Db_Exception("执行sql出错: {$e->getMessage()}", $e->getCode());
+			throw new Db_Exception("执行sql出错: {$e->getMessage()}", $e->getCode(), $e);
 		}
 	}
 

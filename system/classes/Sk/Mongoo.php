@@ -15,6 +15,23 @@
 class Sk_Mongoo extends MongoClient
 {
 	/**
+	 *  获得Mongodb连接单例
+	 *  
+	 * @param string $group 数据库配置的分组名
+	 * @return Mongoo
+	 */
+	public static function instance($group = 'default')
+	{
+		try{
+			return Container::component_config('Mongoo', $group);
+		}
+		catch (MongoConnectionException $e)
+		{
+			throw new Db_Exception("不能连接Mongodb: {$e->getMessage()}", $e->getCode(), $e);
+		}
+	}
+	
+	/**
 	 * 配置信息
 	 * @var array
 	 */
@@ -25,29 +42,19 @@ class Sk_Mongoo extends MongoClient
 	 * @var string
 	 */
 	protected $_name;
-	
-	/**
-	 *  获得db单例
-	 * @param string $group 数据库配置的分组名
-	 * @return Db
-	 */
-	public static function instance($group = 'default')
-	{
-		return Container::component_config('Mongoo', $group);
-	}
 
 	/**
-	 * 接收配置信息
+	 * 构建函数：接收配置信息＋创建连接
 	 * 
 	 * @param array $config
 	 * @param string $name
 	 */
 	public function __construct($config, $name)
 	{
-		parent::__construct($config['server'], $config['options']);
-		
 		$this->_config = $config;
 		$this->_name = $name;
+		
+		parent::__construct($config['server'], $config['options']);
 	}
 	
 	/**

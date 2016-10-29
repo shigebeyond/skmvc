@@ -58,18 +58,18 @@ class Sk_Mongoo_Query_Builder
 	 * 构造函数
 	 *
 	 * @param string|Db $db 数据库配置的分组名/数据库连接
-	 * @param string $table 表名
+	 * @param string $collection 
 	 * @param string $data 数据
 	 */
-	public function __construct($db = 'default', $table = NULL, $data = NULL)
+	public function __construct($db = 'default', $collection = NULL, $data = NULL)
 	{
 		// 获得db
 		if (! $db instanceof Mongoo)
 			$db = Mongoo::instance ( $db );
 		$this->_db = $db;
 	
-		if ($table)
-			$this->table ( $table );
+		if ($collection)
+			$this->collection ( $collection );
 	
 		if ($data)
 			$this->data ( $data );
@@ -291,7 +291,7 @@ class Sk_Mongoo_Query_Builder
 		}
 		catch (MongoCursorException $e)
 		{
-			throw new Db_Exception("插入Mongodb的数据出错: {$e->getMessage()}", $e->getCode());
+			throw new Db_Exception("插入Mongodb的数据出错: {$e->getMessage()}", $e->getCode(), $e);
 		}
 	}
 
@@ -310,7 +310,7 @@ class Sk_Mongoo_Query_Builder
 		}
 		catch (MongoCursorException $e)
 		{
-			throw new Db_Exception("更新Mongodb的数据出错: {$e->getMessage()}", $e->getCode());
+			throw new Db_Exception("更新Mongodb的数据出错: {$e->getMessage()}", $e->getCode(), $e);
 		}
 	}
 	
@@ -328,7 +328,7 @@ class Sk_Mongoo_Query_Builder
 		}
 		catch (MongoCursorException $e)
 		{
-			throw new Db_Exception("删除Mongodb的数据出错: {$e->getMessage()}", $e->getCode());
+			throw new Db_Exception("删除Mongodb的数据出错: {$e->getMessage()}", $e->getCode(), $e);
 		}
 	}
 }
