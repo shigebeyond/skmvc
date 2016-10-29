@@ -58,11 +58,11 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	/**
 	 * 构造函数
 	 *
-	 * @param string|Db $db 数据库配置的分组名/数据库连接
+	 * @param Db|Callable $db 数据库连接|回调
 	 * @param string $table 表名
 	 * @param string $data 数据
 	 */
-	public function __construct($db = 'default', $table = NULL, $data = NULL)
+	public function __construct($db, $table = NULL, $data = NULL)
 	{
 		parent::__construct($db, $table, $data);
 		

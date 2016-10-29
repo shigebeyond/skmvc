@@ -21,17 +21,14 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 	 * 构造函数
 	 *
 	 * string $class model类名，其基类为Orm
-	 * @param string|Db $db 数据库配置的分组名/数据库连接
-	 * @param string $table 表名
-	 * @param string $data 数据
 	 */
-	public function __construct($class, $db = 'default', $table = NULL, $data = NULL)
+	public function __construct($class)
 	{
-		parent::__construct($db, $table, $data);
-
 		// 检查是否是orm子类
 		if(!is_subclass_of($class, 'Orm'))
 			throw new Orm_Exception('Orm_Query_Builder::_class 必须是 Orm 的子类');
+		
+		parent::__construct(array($class, 'db')/* 获得db的回调  */, $class::table(), $data);
 		$this->_class = $class;
 	}
 

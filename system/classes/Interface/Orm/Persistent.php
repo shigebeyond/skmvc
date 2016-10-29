@@ -13,11 +13,9 @@ interface Interface_Orm_Persistent
 {
 	/**
 	 * 获得sql构建器: (select) sql
-	 *
-	 * @param string $action
 	 * @return Orm_Query_Builder
 	 */
-	public static function query_builder($action = 'select');
+	public static function query_builder();
 
 	/**
 	 * 判断当前记录是否存在于db: 有原始数据就认为它是存在的

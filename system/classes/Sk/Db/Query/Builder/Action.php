@@ -57,26 +57,27 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	/**
 	 * 构造函数
 	 *
-	 * @param string|Db $db 数据库配置的分组名/数据库连接
+	 * @param Db|Callable $db 数据库连接|回调
 	 * @param string $table 表名
 	 * @param string $data 数据
 	 */
-	public function __construct($db = 'default', $table = NULL, $data = NULL) 
+	public function __construct($db, $table = NULL, $data = NULL) 
 	{
-		// 获得db
-		if (! $db instanceof Db)
-			$db = Db::instance ( $db );
+		// 设置db
 		$this->_db = $db;
 		
+		//　设置表
 		if ($table)
 			$this->table ( $table );
 		
+		//　设置数据
 		if ($data)
 			$this->data ( $data );
 	}
 	
 	/**
 	 * 设置动作
+	 * 　　延时设置动作，此时可获得对应的数据库连接
 	 * 
 	 * @param string $action sql动作：select/insert/update/delete
 	 * @return Db_Query_Builder
@@ -84,6 +85,11 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	public function action($action)
 	{
 		$this->_action = $action;
+		
+		//　如果db是回调，则调用他来根据action来获得对应的数据库连接
+		if(is_callable($this->_db))
+			$this->_db = $this->_db($action);
+		
 		return $this;
 	}
 	

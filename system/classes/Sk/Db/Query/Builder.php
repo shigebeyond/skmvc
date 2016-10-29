@@ -19,7 +19,7 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration implements Interfa
 	 * @param string $action sql动作：select/insert/update/delete
 	 * @return array(sql, 参数)
 	 */
-	public function compile($action = NULL)
+	public function compile($action)
 	{
 		// 动作子句 + 修饰子句
 		$action_sql = $this->action($action)->compile_action();

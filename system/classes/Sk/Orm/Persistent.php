@@ -13,13 +13,11 @@ abstract class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_P
 {
 	/**
 	 * 获得sql构建器
-	 *
-	 * @param string $action sql动作：select/insert/update/delete，可以用于区分读写的数据库连接
 	 * @return Orm_Query_Builder
 	 */
-	public static function query_builder($action = 'select')
+	public static function query_builder()
 	{
-		return new Orm_Query_Builder(get_called_class(), static::db($action), static::table());
+		return new Orm_Query_Builder(get_called_class());
 	}
 
 	/**

@@ -15,9 +15,11 @@ interface Interface_Db_Query_Builder
 {
 	/**
 	 * 编译sql
+	 * 
+	 * @param string $action sql动作：select/insert/update/delete
 	 * @return array(sql, 参数)
 	 */
-	public function compile();
+	public function compile($action = NULL);
 
 	/**
 	 * 查找多个： select 语句
