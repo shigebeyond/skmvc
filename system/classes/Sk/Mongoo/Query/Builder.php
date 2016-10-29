@@ -34,7 +34,7 @@ class Sk_Mongoo_Query_Builder
 	 * 查询条件
 	 * @var  array
 	*/
-	public $_wheres = array();
+	public $_where = array();
 	
 	/**
 	 * 排序字段
@@ -81,7 +81,7 @@ class Sk_Mongoo_Query_Builder
 	 */
 	public function clear()
 	{
-		$this->_data = $this->_wheres = $this->_sort = array();
+		$this->_data = $this->_where = $this->_sort = array();
 		$this->_limit = $this->_skip = 0;
 		return $this;
 	}
@@ -145,7 +145,7 @@ class Sk_Mongoo_Query_Builder
 	 */
 	public function wheres($wheres = array())
 	{
-		$this->_wheres += $wheres;
+		$this->_where += $wheres;
 		return $this;
 	}
 	
@@ -160,9 +160,9 @@ class Sk_Mongoo_Query_Builder
 	public function where($column, $op, $value = NULL)
 	{
 		if($value === NULL && $op[0] !== '$') // 无运算符
-			$this->_wheres[$column] = $op;
+			$this->_where[$column] = $op;
 		else // 有运算符
-			Arr::set_path($this->_wheres, array($column, $op), $value);
+			Arr::set_path($this->_where, array($column, $op), $value);
 		return $this;
 	}
 	
@@ -182,7 +182,7 @@ class Sk_Mongoo_Query_Builder
 		else // 有运算符
 			$path = array('$or', $column, $op);;
 		
-		Arr::set_path($this->_wheres, $path, $value);
+		Arr::set_path($this->_where, $path, $value);
 		return $this;
 	}
 	
@@ -244,7 +244,7 @@ class Sk_Mongoo_Query_Builder
 	 */
 	public function find()
 	{
-		return $this->_db->{$this->_collection}->findOne($this->_wheres, $this->_data);
+		return $this->_db->{$this->_collection}->findOne($this->_where, $this->_data);
 	}
 	
 	/**
@@ -254,7 +254,7 @@ class Sk_Mongoo_Query_Builder
 	public function find_all()
 	{
 		//　获得游标
-		$cursor = $this->_db->{$this->_collection}->find($this->_wheres, $this->_data);
+		$cursor = $this->_db->{$this->_collection}->find($this->_where, $this->_data);
 		//　限制游标
 		foreach (array('limit', 'skip', 'sort') as $name)
 		{
@@ -300,11 +300,14 @@ class Sk_Mongoo_Query_Builder
 	 *	更新
 	 *	@return	bool
 	 */
-	public function update()
+	public function update($multiple = TRUE)
 	{
 		try
 		{
-			$this->_db->{$this->_collection}->update($this->_where, $this->_data, array('fsync' => true, 'multiple' => true));
+			$data = $this->_data;
+			if($multiple && !isset($data['$set'])) // fix bug: multi update only works with $ operators
+				$data = array('$set' => $data);
+			$this->_db->{$this->_collection}->update($this->_where, $data, array('fsync' => true, 'multiple' => $multiple));
 			$this->clear();
 			return true;
 		}
