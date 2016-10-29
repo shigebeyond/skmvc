@@ -26,9 +26,9 @@ class Sk_Db_Query_Builder_Decoration_Clauses_Join extends Db_Query_Builder_Decor
 	 */
 	protected $_table;
 	
-	public function __construct($db, $table, $type)
+	public function __construct($table, $type, $operator, array $element_handler)
 	{
-		parent::__construct($db, 'ON', array('column', 'str', 'column'));
+		parent::__construct($operator, $element_handler);
 		$this->_table = $table;
 		$this->_type = $type;
 	}

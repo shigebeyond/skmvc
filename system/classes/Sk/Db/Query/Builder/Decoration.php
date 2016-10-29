@@ -66,18 +66,21 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	{
 		parent::__construct($db, $table, $data);
 		
+		$column_quoter = array(&$this->_db, 'quote_column'); //　转义列：&$this->_db　此时未赋值，故引用
+		$value_quoter = array($this, 'quote'); //　转移值
+		
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		$this->_where = new Db_Query_Builder_Decoration_Clauses_Group($this->_db, 'WHERE', array('column', 'str', array($this, 'quote')/* 转义值 */));
+		$this->_where = new Db_Query_Builder_Decoration_Clauses_Group('WHERE', array($column_quoter, 'str', $value_quoter));
 		// 字段数组
-		$this->_group_by = new Db_Query_Builder_Decoration_Clauses_Simple($this->_db, 'GROUP BY', array('column'));
+		$this->_group_by = new Db_Query_Builder_Decoration_Clauses_Simple('GROUP BY', array($column_quoter));
 		// 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-		$this->_having = new Db_Query_Builder_Decoration_Clauses_Group($this->_db, 'HAVING', array('column', 'str', array($this, 'quote')/* 转义值 */));
+		$this->_having = new Db_Query_Builder_Decoration_Clauses_Group('HAVING', array($column_quoter, 'str', $value_quoter));
 		// 排序数组, 每个排序 = 字段+方向
-		$this->_order_by = new Db_Query_Builder_Decoration_Clauses_Simple($this->_db, 'ORDER BY', array('column', 'order_direction'));
+		$this->_order_by = new Db_Query_Builder_Decoration_Clauses_Simple('ORDER BY', array($column_quoter, 'order_direction'));
 		// 行限数组 limit, offset
-		$this->_limit = new Db_Query_Builder_Decoration_Clauses_Simple($this->_db, 'LIMIT', array('int'));
+		$this->_limit = new Db_Query_Builder_Decoration_Clauses_Simple('LIMIT', array('int'));
         // 联表数组，每个联表join = 表名 + 联表方式 | 每个联表条件on = 字段 + 运算符 + 字段, 都写死在Db_Query_Builder_Decoration_Clauses_Join类
-//  $this->_join = new Db_Query_Builder_Decoration_Clauses_Join($this->_db, $table, $type);
+//  $this->_join = new Db_Query_Builder_Decoration_Clauses_Join($table, $type);
 		$this->_join = array();
 	}
 	
@@ -432,7 +435,8 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	 */
 	public function join($table, $type = NULL)
 	{
-		$this->_join[] = new Db_Query_Builder_Decoration_Clauses_Join($this->_db, $table, $type);
+		$column_quoter = array(&$this->_db, 'quote_column'); //　转义列
+		$this->_join[] = new Db_Query_Builder_Decoration_Clauses_Join($table, $type, 'ON', array($column_quoter, 'str', $column_quoter));
 		return $this;
 	}
 	

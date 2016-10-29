@@ -53,7 +53,7 @@ class Sk_Db_Query_Builder_Decoration_Clauses_Group extends Db_Query_Builder_Deco
 	{
 		$last = end($this->_subexps);
 		if (! $last instanceof Db_Query_Builder_Decoration_Clauses_Simple)
-			$this->_subexps[] = $last = new Db_Query_Builder_Decoration_Clauses_Simple ( $this->_db, NULL, $this->_element_handlers );
+			$this->_subexps[] = $last = new Db_Query_Builder_Decoration_Clauses_Simple ( NULL, $this->_element_handlers );
 		return $last;
 	}
 	

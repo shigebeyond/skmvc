@@ -14,12 +14,6 @@
 abstract class Sk_Db_Query_Builder_Decoration_Clauses implements Interface_Db_Query_Builder_Decoration_Clauses
 {
 	/**
-	 * 
-	 * @var Db
-	 */
-	protected $_db;
-	
-	/**
 	 * 修饰符， 如where/group by
 	 * @var string
 	 */
@@ -37,9 +31,8 @@ abstract class Sk_Db_Query_Builder_Decoration_Clauses implements Interface_Db_Qu
 	 */
 	protected $_element_handlers;
 	
-	public function __construct($db, $operator, array $element_handler)
+	public function __construct($operator, array $element_handler)
 	{
-		$this->_db = $db;
 		$this->_operator = $operator;
 		$this->_element_handlers = $element_handler;
 	}
@@ -106,21 +99,6 @@ abstract class Sk_Db_Query_Builder_Decoration_Clauses implements Interface_Db_Qu
 	public function str($value)
 	{
 		return $value;
-	}
-	
-	public function table($table)
-	{
-		return $this->_db->quote_table($table);
-	}
-	
-	public function column($column)
-	{
-		return $this->_db->quote_column($column);
-	}
-	
-	public function value($value)
-	{
-		return $this->_db->quote($value);
 	}
 	
 	public function order_direction($value)
