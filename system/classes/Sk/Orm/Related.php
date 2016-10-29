@@ -9,7 +9,7 @@
  * @date 2016-10-10 上午12:52:34
  *
  */
-class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Related
+abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Related
 {
 	/**
 	 * 关联关系 - 有一个

@@ -11,7 +11,6 @@
  */
 interface Interface_Orm_Persistent
 {
-
 	/**
 	 * 获得sql构建器: (select) sql
 	 *
@@ -21,19 +20,13 @@ interface Interface_Orm_Persistent
 	public static function query_builder($action = 'select');
 
 	/**
-	 * 校验数据
-	 * @return boolean
-	 */
-	public function check();
-
-	/**
 	 * 判断当前记录是否存在于db: 有原始数据就认为它是存在的
+	 * @return bool
 	 */
 	public function exists();
 
 	/**
 	 * 保存数据
-	 *
 	 * @return int 对insert返回新增数据的主键，对update返回影响行数
 	 */
 	public function save();

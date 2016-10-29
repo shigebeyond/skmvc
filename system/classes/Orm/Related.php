@@ -9,4 +9,4 @@
  * @date 2016-10-10 上午12:52:34 
  *
  */
-class Orm_Related extends Sk_Orm_Related{}
+abstract class Orm_Related extends Sk_Orm_Related{}

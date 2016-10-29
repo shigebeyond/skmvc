@@ -12,19 +12,6 @@
 interface Interface_Orm_Query_Builder
 {
 	/**
-	 * 查询单个
-	 * @return
-	 *
-	 */
-	public function find();
-
-	/**
-	 * 查询多个
-	 * @return array
-	 */
-	public function find_all();
-
-		/**
 	 * 联查表
 	 *
 	 * @param string $name 关联关系名
