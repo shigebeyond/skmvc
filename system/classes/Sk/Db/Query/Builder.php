@@ -39,7 +39,9 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration implements Interfa
 		list ($sql, $params) = $this->compile($action);
 		
 		// 2 执行 insert/update/delete 
-		return $this->_db->execute($sql, $params);
+		$result = $this->_db->execute($sql, $params);
+		$this->clear();
+		return $result;
 	}
 	
 	/**
@@ -54,7 +56,9 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration implements Interfa
 		list ($sql, $params) = $this->compile('select');
 	
 		// 2 执行 select
-		return $this->_db->query($sql, $params, $fetch_value);
+		$result = $this->_db->query($sql, $params, $fetch_value);
+		$this->clear();
+		return $result;
 	}
 	
 	/**
