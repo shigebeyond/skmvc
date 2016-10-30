@@ -12,14 +12,12 @@
 abstract class Sk_Odm_Persistent extends Odm_MetaData implements Interface_Odm_Persistent
 {
 	/**
-	 * 获得mongo操作构建器
-	 *
-	 * @param string $action mongo操作：find/findOne/insert/update/delete，可以用于区分读写的数据库连接
+	 * 获得sql构建器
 	 * @return Odm_Query_Builder
 	 */
-	public static function query_builder($action = 'find')
+	public static function query_builder()
 	{
-		return new Odm_Query_Builder(get_called_class(), static::db($action), static::collection());
+		return new Odm_Query_Builder(get_called_class());
 	}
 
 	/**
@@ -37,8 +35,7 @@ abstract class Sk_Odm_Persistent extends Odm_MetaData implements Interface_Odm_P
 			$query->wheres($id);
 		else // id是主键
 			$query->where('_id', $id);
-		$rows = $query->find_all();
-		$this->_original = Arr::get($rows, 0, array());
+		$query->find($this);
 	}
 
 	/**
@@ -83,7 +80,7 @@ abstract class Sk_Odm_Persistent extends Odm_MetaData implements Interface_Odm_P
 		$this->check();
 
 		// 插入数据库
-		static::query_builder('insert')->data($this->_dirty)->insert();
+		static::query_builder()->data($this->_dirty)->insert();
 
 		// 更新内部数据
 		$this->_original = $this->_dirty + $this->_original;
@@ -116,7 +113,7 @@ abstract class Sk_Odm_Persistent extends Odm_MetaData implements Interface_Odm_P
 		$this->check();
 
 		// 更新数据库
-		$result = static::query_builder('update')->data($this->_dirty)->where('_id', $this->pk())->update();
+		$result = static::query_builder()->data($this->_dirty)->where('_id', $this->pk())->update();
 
 		// 更新内部数据
 		$this->_original = $this->_dirty + $this->_original;
@@ -140,11 +137,12 @@ abstract class Sk_Odm_Persistent extends Odm_MetaData implements Interface_Odm_P
 		if(!$this->exists())
 			throw new Orm_Exception('删除对象['.static::$_name.'#'.$this->pk().']前先检查是否存在');
 
+		// 校验
 		if(!$this->check())
 			return;
 
 		// 删除数据
-		$result = static::query_builder('delete')->where('_id', $this->pk())->delete();
+		$result = static::query_builder()->where('_id', $this->pk())->delete();
 
 		// 更新内部数据
 		$this->_original = $this->_dirty = array();
