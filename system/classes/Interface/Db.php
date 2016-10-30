@@ -153,9 +153,8 @@ interface Interface_Db
 	 * sql构建器
 	 *
 	 * @param string $table 表名
-	 * @param string $data 数据
 	 * @return Sk_Db_Query_Builder
 	 */
-	public function query_builder($table = NULL, $data = NULL);
+	public function query_builder($table = NULL);
 	
 }
