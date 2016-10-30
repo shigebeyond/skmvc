@@ -44,12 +44,13 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 		if(!$data)
 			return NULL;
 		
-		// 1 对已有对象赋值 
-		if($fetch_value instanceof Orm)
-			return $fetch_value->original($data);
+		if($fetch_value instanceof Orm) // 已有对象
+			$model = $fetch_value;
+		else // 新对象
+			$model = new $this->_class;
 		
-		// ２创建新对象赋值
-		return $this->model($data);
+		//　设置原始属性值
+		return $model->original($data);
 	}
 
 	/**
@@ -62,23 +63,8 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 	{
 		$rows = parent::find_all($fetch_value);
 		foreach ($rows as $key => $row)
-		{
-			$rows[$key] = $this->model($row);
-		}
+			$rows[$key] = (new $this->_class)->original($row);
 		return $rows;
-	}
-	
-	/**
-	 * 创建新模型对象
-	 * 
-	 * @param array $data
-	 * @return NULL|Orm
-	 */
-	public function model(array $data)
-	{
-		$model = new $this->_class;
-		$model->original($data); // 设置原始字段值
-		return $model;
 	}
 
 	/**

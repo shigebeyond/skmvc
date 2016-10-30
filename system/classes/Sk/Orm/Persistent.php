@@ -35,8 +35,7 @@ abstract class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_P
 			$query->wheres($id);
 		else // id是主键
 			$query->where(static::$_primary_key, '=', $id);
-		$rows = $query->find_all();
-		$this->_original = Arr::get($rows, 0, array());
+		$query->find($this);
 	}
 
 	/**
@@ -81,12 +80,12 @@ abstract class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_P
 		$this->check();
 
 		// 插入数据库
-		static::query_builder('insert')->data($this->_dirty)->insert();
+		$pk = static::query_builder()->data($this->_dirty)->insert();
 
 		// 更新内部数据
-		$this->_original = $this->_dirty + $this->_original;
-		$this->_original[static::$_primary_key] = $pk = static::db()->last_insert_id(); // 主键
-		$this->_dirty = array();
+		$this->_original = $this->_dirty + $this->_original; //　原始字段值
+		$this->_original[static::$_primary_key] = $pk; // 主键
+		$this->_dirty = array(); // 变化的字段值
 
 		return $pk;
 	}
@@ -114,7 +113,7 @@ abstract class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_P
 		$this->check();
 
 		// 更新数据库
-		$result = static::query_builder('update')->data($this->_dirty)->where(static::$_primary_key, '=', $this->pk())->update();
+		$result = static::query_builder()->data($this->_dirty)->where(static::$_primary_key, '=', $this->pk())->update();
 
 		// 更新内部数据
 		$this->_original = $this->_dirty + $this->_original;
@@ -138,11 +137,12 @@ abstract class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_P
 		if(!$this->exists())
 			throw new Orm_Exception('删除对象['.static::$_name.'#'.$this->pk().']前先检查是否存在');
 
+		//　校验
 		if(!$this->check())
 			return;
 
 		// 删除数据
-		$result = static::query_builder('delete')->where(static::$_primary_key, '=', $this->pk())->delete();
+		$result = static::query_builder()->where(static::$_primary_key, '=', $this->pk())->delete();
 
 		// 更新内部数据
 		$this->_original = $this->_dirty = array();
