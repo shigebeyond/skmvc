@@ -434,8 +434,12 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	 */
 	public function join($table, $type = NULL)
 	{
+		// join　子句
+		$this->_join[] = $join = new Db_Query_Builder_Decoration_Clauses_Group(strtoupper($type).' JOIN', array(array(&$this->_db, 'quote_table')));
+		$join->add_subexp(array($table));
+		// on　子句
 		$column_quoter = array(&$this->_db, 'quote_column'); //　转义列
-		$this->_join[] = new Db_Query_Builder_Decoration_Clauses_Join($table, $type, 'ON', array($column_quoter, 'str', $column_quoter));
+		$this->_join[] = new Db_Query_Builder_Decoration_Clauses_Group('ON', array($column_quoter, 'str', $column_quoter));
 		return $this;
 	}
 	
