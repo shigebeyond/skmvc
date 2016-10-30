@@ -111,14 +111,4 @@ abstract class Sk_Db_Query_Builder_Decoration_Clauses implements Interface_Db_Qu
 		return NULL;
 	}
 	
-	public function join_type($value)
-	{
-		if($value !== NULL){
-			$value = strtoupper($value);
-			if (in_array($value, array('LEFT', 'RIGHT', 'INNER')))
-				return $value;
-		}
-		return NULL;
-	}
-	
 }
