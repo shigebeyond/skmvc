@@ -79,11 +79,14 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	 */
 	public function action($action)
 	{
+		if(!$action)
+			throw new Db_Exception('未指定sql动作');
+		
 		$this->_action = $action;
 		
 		//　如果db是回调，则调用他来根据action来获得对应的数据库连接
 		if(is_callable($this->_db))
-			$this->_db = $this->_db($action);
+			$this->_db = call_user_func($this->_db, $action);
 		
 		return $this;
 	}

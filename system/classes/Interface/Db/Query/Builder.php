@@ -19,7 +19,7 @@ interface Interface_Db_Query_Builder
 	 * @param string $action sql动作：select/insert/update/delete
 	 * @return array(sql, 参数)
 	 */
-	public function compile($action = NULL);
+	public function compile($action);
 
 	/**
 	 * 查找多个： select 语句
