@@ -59,9 +59,8 @@ class Sk_Mongoo_Query_Builder
 	 *
 	 * @param string|Db $db 数据库配置的分组名/数据库连接
 	 * @param string $collection 
-	 * @param string $data 数据
 	 */
-	public function __construct($db = 'default', $collection = NULL, $data = NULL)
+	public function __construct($db = 'default', $collection = NULL)
 	{
 		// 获得db
 		if (! $db instanceof Mongoo)
@@ -70,9 +69,6 @@ class Sk_Mongoo_Query_Builder
 	
 		if ($collection)
 			$this->collection ( $collection );
-	
-		if ($data)
-			$this->data ( $data );
 	}
 	
 	/**
