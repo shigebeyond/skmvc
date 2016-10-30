@@ -67,11 +67,10 @@ class Sk_Mongoo extends Container_Component_Configurable
 	 * Mongodb查询构建器
 	 *
 	 * @param string $collection 集合名
-	 * @param string $data 数据
 	 * @return Mongoo_Query_Builder
 	 */
-	public function query_builder($collection = NULL, $data = NULL)
+	public function query_builder($collection = NULL)
 	{
-		return new Mongoo_Query_Builder($this, $collection, $data);
+		return new Mongoo_Query_Builder($this, $collection);
 	}
 }
