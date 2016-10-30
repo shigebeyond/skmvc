@@ -4,7 +4,7 @@ class Test_Mongoo_Query_Builder extends PHPUnit_Framework_TestCase
 {
 // 	public function test_insert()
 // 	{
-// 		$query = Mongoo::instance()->query_builder('user', array('name' => 'kkk', 'age' => 12));
+// 		$query = Mongoo::instance()->query_builder('user')->data(array('name' => 'kkk', 'age' => 12));
 // 		echo "insert result: ".$query->insert();
 // 	}
 

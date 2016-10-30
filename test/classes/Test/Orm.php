@@ -2,10 +2,10 @@
 
 class Test_Orm extends PHPUnit_Framework_TestCase
 {
-	/* public function test_orm(){
+	public function test_orm(){
 		$user = new Model_User(1);
 		print_r($user->as_array());
-		$this->assertEquals(true, $user->exists());
+		//$this->assertEquals(true, $user->exists());
 	}
 	
 	public function test_exists(){
@@ -62,7 +62,7 @@ class Test_Orm extends PHPUnit_Framework_TestCase
 	public function test_find_all(){
 		$users = Model_User::query_builder()->find_all();
 		print_r($users);
-	} */
+	} 
 	
 	public function test_array_access(){
 		$user = new Model_User(2);

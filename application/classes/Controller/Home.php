@@ -31,6 +31,11 @@ class Controller_Home extends Controller
 	
 	public function action_query_builder()
 	{
+		$query = Db::instance()->query_builder('user', array('name' => 'kkk', 'age' => 12));
+		list($sql, $params) = $query->compile('insert');
+		$result = "insert sql: $sql, params: ".implode(',', $params);
+		$result .= "insert result: ".$query->insert();
+		
 // 		$result = Db::instance()->query_builder('user', array('name' => 'kkk', 'age' => 12))->insert();
 // 		$result = Db::instance()->query_builder('user')->where('id', '=', '1')->delete();
 	
@@ -40,19 +45,23 @@ class Controller_Home extends Controller
 // 		$result = "select sql: $sql, params: ".implode(',', $params);
 // 		$result .= " select result: ".print_r($query->select());
 	
-		$query = Db::instance()->select('user')->where('name', '=', 'li');
-		$result = print_r($query->count());
+// 		$query = Db::instance()->select('user')->where('name', '=', 'li');
+// 		$result = print_r($query->count());
 		
 		$this->res->body($result);
 	}
 	
 	public function action_orm()
 	{
-		$user = new Model_User(7);
-		$user->name = 'shi';
-		$user->age = 24;
-		$result = $user->update();
-		print_r($user->as_array());
+		$user = new Model_User(4);
+		if ($user->exists()) {
+			print_r($user->as_array());
+			$result = $user->delete();
+			echo '删除成功';
+			$this->assertEquals(1, $result);
+		}else {
+			echo '对象不存在';
+		}
 	
 		$this->res->body($result);
 	}
