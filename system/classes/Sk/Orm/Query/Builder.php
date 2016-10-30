@@ -28,7 +28,7 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 		if(!is_subclass_of($class, 'Orm'))
 			throw new Orm_Exception('Orm_Query_Builder::_class 必须是 Orm 的子类');
 		
-		parent::__construct(array($class, 'db')/* 获得db的回调  */, $class::table(), $data);
+		parent::__construct(array($class, 'db')/* 获得db的回调  */, $class::table());
 		$this->_class = $class;
 	}
 
@@ -40,7 +40,16 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 	 */
 	public function find($fetch_value = FALSE)
 	{
-		return $this->model(parent::find());
+		$data = parent::find();
+		if(!$data)
+			return NULL;
+		
+		// 1 对已有对象赋值 
+		if($fetch_value instanceof Orm)
+			return $fetch_value->original($data);
+		
+		// ２创建新对象赋值
+		return $this->model($data);
 	}
 
 	/**
@@ -67,9 +76,6 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 	 */
 	public function model(array $data)
 	{
-		if(empty($data))
-			return NULL;
-		
 		$model = new $this->_class;
 		$model->original($data); // 设置原始字段值
 		return $model;
