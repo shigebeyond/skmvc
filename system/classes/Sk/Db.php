@@ -203,17 +203,19 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 	 * @param string $sql
 	 * @param array  $params
 	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
+	 * @param bool $multiple 是否查询多条
 	 * @return array
 	 */
-	public function query($sql, $params = [], $fetch_value = FALSE)
+	public function query($sql, $params = [], $fetch_value = FALSE, $multiple = TRUE)
 	{
 		try {
 			// 执行sql
 			$statement = $this->_exec($sql, $params);
 			// 直接查出所有数据, 因为PDOStatement::rowCount是不可靠的
+			$fetch_method = $multiple ? 'fetchAll' : 'fetch';
 			if($fetch_value === FALSE)
-				return $statement->fetchAll(PDO::FETCH_ASSOC); // fix bug: General error: Extraneous additional parameters => 不需要第二个参数
-			return $statement->fetchAll(static::fetch_mode($fetch_value), $fetch_value);
+				return $statement->$fetch_method(PDO::FETCH_ASSOC); // fix bug: General error: Extraneous additional parameters => 不需要第二个参数
+			return $statement->$fetch_method(static::fetch_mode($fetch_value), $fetch_value);
 		} catch (PDOException $e) {
 			throw new Db_Exception("执行sql出错: {$e->getMessage()}", $e->getCode(), $e);
 		}
@@ -491,12 +493,11 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 	 * sql构建器
 	 *
 	 * @param string $table 表名
-	 * @param string $data 数据
 	 * @return Db_Query_Builder
 	 */
-	public function query_builder($table = NULL, $data = NULL)
+	public function query_builder($table = NULL)
 	{
-		return new Db_Query_Builder($this, $table, $data);
+		return new Db_Query_Builder($this, $table);
 	}
 
 }

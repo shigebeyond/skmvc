@@ -44,6 +44,23 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration implements Interfa
 	}
 	
 	/**
+	 * 编译 + 查询
+	 *
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
+	 * @param bool $multiple 是否查询多条
+	 * @return array
+	 */
+	public function _query($fetch_value = FALSE, $multiple = TRUE)
+	{
+		// 1 编译
+		list ($sql, $params) = $this->compile('select');
+	
+		// 2 执行 select
+		$result = $this->_db->query($sql, $params, $fetch_value, $multiple);
+		return $result;
+	}
+	
+	/**
 	 * 查找多个： select 语句
 	 *
 	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
@@ -51,12 +68,7 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration implements Interfa
 	 */
 	public function find_all($fetch_value = FALSE)
 	{
-		// 1 编译
-		list ($sql, $params) = $this->compile('select');
-	
-		// 2 执行 select
-		$result = $this->_db->query($sql, $params, $fetch_value);
-		return $result;
+		return $this->_query($fetch_value, TRUE);
 	}
 	
 	/**
@@ -67,8 +79,7 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration implements Interfa
 	 */
 	public function find($fetch_value = FALSE)
 	{
-		$rows = $this->limit(1)->find_all($fetch_value);
-		return isset($rows[0]) ? $rows[0] : NULL;
+		return $this->limit(1)->_query($fetch_value, FALSE);
 	}
 	
 	/**
