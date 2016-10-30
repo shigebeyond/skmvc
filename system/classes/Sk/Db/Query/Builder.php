@@ -97,7 +97,8 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration implements Interfa
 	 */
 	public function insert()
 	{
-		return $this->_execute('insert');
+		$this->_execute('insert');
+		return $this->_db->last_insert_id();
 	}
 	
 	/**
