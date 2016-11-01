@@ -150,7 +150,7 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	}
 	
 	/**
-	 * 设置更新的值, update时用
+	 * 设置更新的单个值, update时用
 	 *
 	 * @param string $column
 	 * @param mixed $value
@@ -163,14 +163,14 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	}
 	
 	/**
-	 * 设置更新的值, update时用
+	 * 设置更新的多个值, update时用
 	 *
-	 * @param array $data
+	 * @param array $row
 	 * @return Db_Query_Builder
 	 */
-	public function sets(array $data)
+	public function sets(array $row)
 	{
-		$this->_data = $data;
+		$this->_data = $row;
 		return $this;
 	}
 	
@@ -248,12 +248,13 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	
 	/**
 	 * 编译多个字段名: 转义
+	 *     select/insert时用
+	 *     
 	 * @return string
 	 */
 	protected function _fill_columns()
 	{
-		// 转换 $this->_data
-		// 1 select子句: 是要查询的字段名, [alias => column]
+		// 1 select子句:  $this->_data是要查询的字段名, [alias => column]
 		if($this->_action == 'select')
 		{
 			if(empty($this->_data))
@@ -262,7 +263,7 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 			return $this->_db->quote_column($this->_data);
 		}
 		
-		// 2 insert子句: 是要插入的多行: [<column => value>]
+		// 2 insert子句:  $this->_data是要插入的多行: [<column => value>]
 		if(empty($this->_data))
 			return NULL;
 		
@@ -273,25 +274,31 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	
 	/**
 	 * 编译多个字段值: 转义
+	 *     insert时用
+	 *     
 	 * @return string
 	 */
 	protected function _fill_values()
 	{
+		// insert子句:  $this->_data是要插入的多行: [<column => value>]
 		if(empty($this->_data))
 			return NULL;
 		
-		return $this->_db->quote($this->_data);
+		//对每行执行$this->_db->quote($row);
+		return implode(', ', array_map(array($this->_db, 'quote'), $this->_data));
 	}
 	
 	/**
 	 * 编译字段谓句: 转义 + 拼接谓句
-	 * 
+	 *    update时用
+	 *    
 	 * @param stirng $operator 谓语
 	 * @param string $delimiter 拼接谓句的连接符
 	 * @return string
 	 */
 	protected function _fill_column_predicate($operator, $delimiter = ', ')
 	{
+		// update子句:  $this->_data是要更新字段值: <column => value>
 		if(empty($this->_data))
 			return NULL;
 		
