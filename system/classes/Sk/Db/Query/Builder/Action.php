@@ -56,6 +56,12 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	protected $_distinct = FALSE;
 	
 	/**
+	 * sql参数
+	 * @var array
+	 */
+	protected $_params = NULL;
+	
+	/**
 	 * 构造函数
 	 *
 	 * @param Db|Callable $db 数据库连接|回调
@@ -208,6 +214,7 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 		$this->_table = NULL;
 		$this->_data = array();
 		$this->_distinct = FALSE;
+		$this->_params = NULL;
 	}
 	
 	/**
@@ -216,6 +223,9 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	 */
 	public function compile_action()
 	{
+		// 清空sql参数
+		$this->_params = array();
+		
 		// 实际上是填充子句的参数，如将行参表名替换为真实表名
 		$sql = Arr::get(static::$sql_templates, $this->_action);
 		
@@ -235,6 +245,22 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 		
 		// 3 填充distinct
 		return str_replace(':distinct', $this->_distinct ? 'distinct' : '', $sql);
+	}
+	
+	/**
+	 * 改写转义值的方法，搜集sql参数
+	 *
+	 * @param mixed $value
+	 * @return string
+	 */
+	public function quote($value)
+	{
+		// 1 将参数值直接拼接到sql
+		//return $this->_db->quote($value);
+	
+		// 2 sql参数化: 将参数名拼接到sql, 独立出参数值, 以便执行时绑定参数值
+		$this->_params[] = $value;
+		return '?';
 	}
 	
 	/**
@@ -284,8 +310,8 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 		if(empty($this->_data))
 			return NULL;
 		
-		//对每行执行$this->_db->quote($row);
-		return implode(', ', array_map(array($this->_db, 'quote'), $this->_data));
+		//对每行执行$this->quote($row);
+		return implode(', ', array_map(array($this, 'quote'), $this->_data));
 	}
 	
 	/**
@@ -306,7 +332,7 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 		foreach ($this->_data as $column => $value)
 		{
 			$column = $this->_db->quote_column($column);
-			$value = $this->_db->quote($value);
+			$value = $this->quote($value);
 			$sql .= $column.' '.$operator.' '.$value.$delimiter;
 		}
 		

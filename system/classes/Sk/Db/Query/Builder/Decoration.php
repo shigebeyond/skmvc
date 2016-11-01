@@ -12,12 +12,6 @@
 abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action implements Interface_Db_Query_Builder_Decoration
 {
 	/**
-	 * sql参数
-	 * @var array
-	 */
-	protected $_params = array();
-	
-	/**
 	 * 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
 	 * @var array
 	 */
@@ -90,7 +84,6 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	public function compile_decoration()
 	{
 		$sql = '';
-		$this->_params = array(); // 清空参数
 		// 逐个处理修饰词及其表达式
 		foreach (array('join', 'where', 'group_by', 'having', 'order_by', 'limit') as $name)
 		{
@@ -101,7 +94,7 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 				$exp = implode(' ', $exp); 
 			$sql .= ' '.$exp;
 		}
-		return array($sql, $this->_params);
+		return $sql;
 	}
 	
 	/**
@@ -113,25 +106,9 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 		foreach (array('where', 'group_by', 'having', 'order_by', 'limit') as $name)
 			$this->$name->clear();
 		
-		$this->_join = $this->_params = array();
+		$this->_join = array();
 		
 		return parent::clear();
-	}
-	
-	/**
-	 * 改写转义值的方法，搜集sql参数
-	 * 
-	 * @param mixed $value
-	 * @return string
-	 */
-	public function quote($value)
-	{
-		// 1 将参数值直接拼接到sql
-		//return $this->_db->quote($value);
-		
-		// 2 sql参数化: 将参数名拼接到sql, 独立出参数值, 以便执行时绑定参数值
-		$this->_params[] = $value;
-		return '?';
 	}
 	
 	/**
