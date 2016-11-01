@@ -23,8 +23,8 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration implements Interfa
 	{
 		// 动作子句 + 修饰子句
 		$action_sql = $this->action($action)->compile_action();
-		list($decoration_sql, $params) = $this->compile_decoration();
-		return array($action_sql.$decoration_sql, $params);
+		$decoration_sql = $this->compile_decoration();
+		return array($action_sql.$decoration_sql, $this->_params);
 	}
 	
 	/**
