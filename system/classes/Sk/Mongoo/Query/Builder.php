@@ -24,11 +24,12 @@ class Sk_Mongoo_Query_Builder
 	protected $_collection;
 	
 	/**
-	 * 要插入/更新字段: <column => value>
-	 * 要查询的字段名: [column]
-	 * @var  array
+	 * 要插入的多行: [<column => value>]
+	 * 要更新字段值: <column => value>
+	 * 要查询的字段名: [alias => column]
+	 * @var array
 	 */
-	protected $_data = array();
+	protected $_data = array ();
 	
 	/**
 	 * 查询条件
@@ -108,28 +109,51 @@ class Sk_Mongoo_Query_Builder
 	}
 	
 	/**
-	 * 设置插入/更新的值
+	 * 设置插入的单行, insert时用
 	 *
-	 * @param array $data
-	 * @param　bool $partial 是否部分更新
-	 * @return Db_Query_Builder
+	 * @param array $row
+	 * @return Mongoo_Query_Builder
 	 */
-	public function data(array $data, $partial = FALSE)
+	public function value(array $row)
 	{
-		$this->_data = $partial ? array('$set' => $data) : $data;
+		$this->_data[] = $row;
 		return $this;
 	}
 	
 	/**
-	 * 设置插入/更新的值
+	 * 设置插入的多行, insert时用
+	 *
+	 * @param array $rows
+	 * @return Mongoo_Query_Builder
+	 */
+	public function values(array $rows)
+	{
+		$this->_data += $rows;
+		return $this;
+	}
+	
+	/**
+	 * 设置更新的单个值, update时用
 	 *
 	 * @param string $column
 	 * @param string $value
-	 * @return Db_Query_Builder
+	 * @return Mongoo_Query_Builder
 	 */
 	public function set($column, $value)
 	{
 		Arr::set_path($this->_data, array('$set', $column), $value);
+		return $this;
+	}
+	
+	/**
+	 * 设置更新的多个值, update时用
+	 *
+	 * @param array $row
+	 * @return Mongoo_Query_Builder
+	 */
+	public function sets(array $row)
+	{
+		$this->_data['$set'] = $row;
 		return $this;
 	}
 	
@@ -293,8 +317,19 @@ class Sk_Mongoo_Query_Builder
 	{
 		try
 		{
-			$this->_db->{$this->_collection}->insert($this->_data, array('fsync' => true));
-			return Arr::get($this->_data, '_id', FALSE);
+			if(empty($this->_data))
+				throw new Db_Exception("插入Mongodb的数据为空");
+			
+			// 插入一行: insert + 返回新增id
+			if(count($this->_data) === 1)
+			{
+				$row = &$this->_data[0];
+				$this->_db->{$this->_collection}->insert($row, array('fsync' => true));
+				return Arr::get($row, '_id', FALSE);
+			}
+			
+			// 插入多行: batchInsert + 返回bool
+			return $this->_db->{$this->_collection}->batchInsert($this->_data, array('fsync' => true));
 		}
 		catch (MongoCursorException $e)
 		{
@@ -330,6 +365,9 @@ class Sk_Mongoo_Query_Builder
 	{
 		try
 		{
+			if(empty($this->_data))
+				throw new Db_Exception("更新Mongodb的数据为空");
+			
 			//　是否更新多条记录
 			$multiple = $this->is_multiple();
 			// fix bug: multi update only works with $ operators
