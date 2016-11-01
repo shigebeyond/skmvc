@@ -113,7 +113,7 @@ abstract class Sk_Odm_Persistent extends Odm_MetaData implements Interface_Odm_P
 		$this->check();
 
 		// 更新数据库
-		$result = static::query_builder()->data($this->_dirty)->where('_id', $this->pk())->update();
+		$result = static::query_builder()->sets($this->_dirty)->where('_id', $this->pk())->update();
 
 		// 更新内部数据
 		$this->_original = $this->_dirty + $this->_original;

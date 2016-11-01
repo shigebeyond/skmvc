@@ -4,7 +4,7 @@ class Test_Db_Query_Builder extends PHPUnit_Framework_TestCase
 {
 	public function test_insert()
 	{
-		$query = Db::instance()->query_builder('user')->data(array('name' => 'kkk', 'age' => 12));
+		$query = Db::instance()->query_builder('user')->value(array('name' => 'kkk', 'age' => 12));
 		list($sql, $params) = $query->compile('insert');
 		echo "insert sql: $sql, params: ".implode(',', $params);
 		echo "insert result: ".$query->insert();

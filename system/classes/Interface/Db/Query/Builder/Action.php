@@ -29,21 +29,37 @@ interface Interface_Db_Query_Builder_Action
 	public function from($tables);
 
 	/**
-	 * 设置插入/更新的值
+	 * 设置插入的单行, insert时用
 	 *
-	 * @param array $data
+	 * @param array $row
 	 * @return Db_Query_Builder
 	 */
-	public function data(array $data);
+	public function value(array $row);
 	
 	/**
-	 * 设置更新的值, update时用
+	 * 设置插入的多行, insert时用
+	 *
+	 * @param array $rows
+	 * @return Db_Query_Builder
+	 */
+	public function values(array $rows);
+	
+	/**
+	 * 设置更新的单个值, update时用
 	 *
 	 * @param string $column
 	 * @param string $value
 	 * @return Db_Query_Builder
 	 */
 	public function set($column, $value);
+	
+	/**
+	 * 设置更新的多个值, update时用
+	 *
+	 * @param array $row
+	 * @return Db_Query_Builder
+	 */
+	public function sets($row);
 	
 	/**
 	 * 设置查询的字段, select时用

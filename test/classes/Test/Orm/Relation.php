@@ -2,7 +2,7 @@
 
 class Test_Orm_Relation extends PHPUnit_Framework_TestCase
 {
-	/* public function test_set()
+	public function test_set()
 	{
 		$user = new Model_User();
 		$user->name = 'xie';
@@ -16,18 +16,18 @@ class Test_Orm_Relation extends PHPUnit_Framework_TestCase
 		$contact->address = 'nanning';
 		$contact->create();
 		print_r($contact->as_array());
-	} */
+	}
 	
-	/* public function test_get()
+	public function test_get()
 	{
 		$user = new Model_User(2);
 		print_r($user->as_array());
 		if($user->contacts)
 			foreach ($user->contacts as $contact)
 				print_r($contact->as_array());
-	} */
+	} 
 	
-	/* public function test_query_with(){
+	public function test_query_with(){
 		$user = Model_User::query_builder()->with('contacts')->where('user.id', '=', 2)->find();
 		if($user)
 		{
@@ -36,6 +36,5 @@ class Test_Orm_Relation extends PHPUnit_Framework_TestCase
 				print_r($user->contacts->as_array());
 		}
 	}
-	 */
 
 }

@@ -42,8 +42,9 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	protected $_table;
 	
 	/**
-	 * 要插入/更新字段: <column => value>
-	 * 要查询的字段名: [column]
+	 * 要插入的多行: [<column => value>]
+	 * 要更新字段值: <column => value>
+	 * 要查询的字段名: [alias => column]
 	 * @var array
 	 */
 	protected $_data = array ();
@@ -125,14 +126,26 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	}
 
 	/**
-	 * 设置插入/更新的值
+	 * 设置插入的单行, insert时用
 	 *
-	 * @param array $data
+	 * @param array $row
 	 * @return Db_Query_Builder
 	 */
-	public function data(array $data)
+	public function value(array $row)
 	{
-		$this->_data = $data;
+		$this->_data[] = $row;
+		return $this;
+	}
+	
+	/**
+	 * 设置插入的多行, insert时用
+	 *
+	 * @param array $rows
+	 * @return Db_Query_Builder
+	 */
+	public function values(array $rows)
+	{
+		$this->_data += $rows;
 		return $this;
 	}
 	
@@ -140,12 +153,24 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	 * 设置更新的值, update时用
 	 *
 	 * @param string $column
-	 * @param string $value
+	 * @param mixed $value
 	 * @return Db_Query_Builder
 	 */
-	public function set($column, $value)
+	public function set($column, $value = NULL)
 	{
 		$this->_data[$column] = $value;
+		return $this;
+	}
+	
+	/**
+	 * 设置更新的值, update时用
+	 *
+	 * @param array $data
+	 * @return Db_Query_Builder
+	 */
+	public function sets(array $data)
+	{
+		$this->_data = $data;
 		return $this;
 	}
 	
@@ -227,7 +252,8 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	 */
 	protected function _fill_columns()
 	{
-		// select
+		// 转换 $this->_data
+		// 1 select子句: 是要查询的字段名, [alias => column]
 		if($this->_action == 'select')
 		{
 			if(empty($this->_data))
@@ -236,11 +262,13 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 			return $this->_db->quote_column($this->_data);
 		}
 		
-		// update/insert
+		// 2 insert子句: 是要插入的多行: [<column => value>]
 		if(empty($this->_data))
 			return NULL;
 		
-		return $this->_db->quote_column(array_keys($this->_data));
+		// 取得第一行的keys
+		$columns = array_keys(current($this->_data));
+		return $this->_db->quote_column($columns);
 	}
 	
 	/**
