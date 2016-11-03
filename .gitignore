@@ -3,4 +3,5 @@
 /.idea
 /.settings
 /.externalToolBuilders
-
+logs
+cache
