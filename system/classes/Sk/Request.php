@@ -11,7 +11,6 @@
  */
 class Sk_Request implements Interface_Request
 {
-
 	/**
 	 * 当前请求对象
 	 * @var  Request
@@ -23,15 +22,6 @@ class Sk_Request implements Interface_Request
 	 * @var array
 	 */
 	public static $proxy_ips = array('127.0.0.1', 'localhost', 'localhost.localdomain');
-
-	/**
-	 * 获得当前请求对象
-	 * @return Request
-	 */
-	public static function current()
-	{
-		return static::$current;
-	}
 
 	/**
 	 * 从$_SERVER中解析出相对路径
@@ -335,4 +325,5 @@ class Sk_Request implements Interface_Request
 	{
 		return Arr::get($_SERVER, 'HTTP_USER_AGENT');
 	}
+
 }

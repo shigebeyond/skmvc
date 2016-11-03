@@ -11,13 +11,6 @@
  */
 interface Interface_Request
 {
-
-	/**
-	 * 获得当前请求对象
-	 * @return Request
-	 */
-	public static function current();
-
 	/**
 	 * 从$_SERVER中解析出相对路径
 	 * @return string
