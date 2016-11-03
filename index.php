@@ -5,9 +5,11 @@ define('ENV', 'debug');
 define('DEBUG', ENV == 'debug');
 
 // 定义相关目录的常量
-define('ROOTPATH', dirname(__FILE__).DIRECTORY_SEPARATOR);
-define('APPPATH', ROOTPATH.'application'.DIRECTORY_SEPARATOR);
-define('SYSPATH', ROOTPATH.'system'.DIRECTORY_SEPARATOR);
+define('ROOTPATH', dirname(__FILE__).DIRECTORY_SEPARATOR); // 根目录
+define('APPPATH', ROOTPATH.'application'.DIRECTORY_SEPARATOR); // 应用目录，存放业务代码
+define('SYSPATH', ROOTPATH.'system'.DIRECTORY_SEPARATOR); //　系统目录，存放框架代码
+define('LOGPATH', ROOTPATH.'application'.DIRECTORY_SEPARATOR.'logs'.DIRECTORY_SEPARATOR); //　日志目录
+define('CACHEPATH', ROOTPATH.'application'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR); //　缓存目录
 
 // 配置错误输出
 if(DEBUG)
