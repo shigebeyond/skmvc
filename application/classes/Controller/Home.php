@@ -117,4 +117,11 @@ class Controller_Home extends Controller
 // 		$this->res->body($view->render()); // 显示渲染视图: 调用view::render()
 		$this->res->body($view); // 隐式渲染视图
 	}
+	
+	public function action_mongo_query_builder()
+	{
+		$query = Mongoo::instance()->query_builder('user')->set('age', 33)->set('name', 'uuu')->where('_id', new MongoId('581b0438980edd8f7a8b4567'))->limit(0, 0);
+		$result = "update result: ".$query->count();
+		$this->res->body($result);
+	}
 }
