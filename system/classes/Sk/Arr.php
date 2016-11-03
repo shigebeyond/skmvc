@@ -107,7 +107,7 @@ class Sk_Arr
 		
 		// 2 准备好路径
 		$last_key = array_pop($keys);
-		$array = self::_prepare_path($array, $path, $delimiter);
+		$array = &self::_prepare_path($array, $keys, $delimiter);
 
 		// 3 设置最后一层的元素值
 		if($last_key === '') // 如果最后一个key是空字符串, 则直接追加
