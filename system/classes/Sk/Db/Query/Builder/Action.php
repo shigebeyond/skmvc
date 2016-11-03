@@ -229,6 +229,9 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 		// 实际上是填充子句的参数，如将行参表名替换为真实表名
 		$sql = Arr::get(static::$sql_templates, $this->_action);
 		
+		if(!$sql)
+			throw new Db_Exception("无效sql动作: $this->_action");
+		
 		// 1 填充表名/多个字段名/多个字段值
 		// 针对 select :columns from :table / insert into :table :columns values :values
 		$sql = preg_replace_callback('/:(table|columns|values)/', function($mathes){
