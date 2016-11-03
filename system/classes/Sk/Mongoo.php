@@ -54,14 +54,15 @@ class Sk_Mongoo extends Container_Component_Configurable
 		}
 	}
 	
-    /**
-     * 选择集合
-     * @return MongoCollection
-     */
-    public function __get($collectionName)
-    {
-        return $this->_db->selectCollection($collectionName);
-    }
+	/**
+	 * 选择集合
+	 * @return MongoCollection
+	 */
+	public function __get($collectionName) 
+	{
+		return $this->_db->selectCollection($collectionName);
+// 		return new MongoCollection($this->_db, $collectionName);
+	}
 	
 	/**
 	 * Mongodb查询构建器

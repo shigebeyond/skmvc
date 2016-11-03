@@ -112,6 +112,17 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	}
 	
 	/**
+	 * 检查是否是sql操作符
+	 *
+	 * @param	string
+	 * @return	bool
+	 */
+	public function is_operator($str)
+	{
+		return preg_match("/(\s|<|>|!|=|is|is not)/i", $str);
+	}
+	
+	/**
 	 * 多个where条件
 	 * @param array $conditions
 	 * @return Db_Query_Builder

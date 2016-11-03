@@ -12,6 +12,24 @@
 class Sk_Mongoo_Query_Builder
 {
 	/**
+	 * 命令模板
+	 * @var array
+	 */
+	public static $command_templates = array(
+			'findOne' => "db.:collection.findOne(:where)",
+			'find' => "db.:collection.find(:where).limit(:limit).skip(:skip).sort(:sort).count(:apply_skip_limit)",
+			'insert' => "db.:collection.insert(:data)",
+			'update' => "db.:collection.update(:where, :data, false, :multiple)",
+			'delete' => "db.:collection.remove(:where, :justOne)",
+	);
+	
+	/**
+	 * 命令动作: find/find_all/insert/update/delete
+	 * @var string 
+	 */
+	protected $_action;
+	
+	/**
 	 * 数据库连接
 	 * @var string|MongoClient|Mongoo
 	 */
@@ -274,11 +292,104 @@ class Sk_Mongoo_Query_Builder
 	}
 	
 	/**
+	 *	设置结果集的位移
+	 *
+	 *	@param	int $offset
+	 *	@return Mongoo_Query_Builder
+	 */
+	public function offset($offset)
+	{
+		$this->_skip = (int)$offset;
+		return $this;
+	}
+	
+	/**
+	 * 设置命令动作
+	 * 
+	 * @param string $action 动作: find/find_all/insert/update/delete
+	 *	@return Mongoo_Query_Builder
+	 */
+	public function action($action)
+	{
+		$this->_action = $action;
+		return $this;
+	}
+	
+	/**
+	 * 编译为命令
+	 * 
+	 * @param array $options
+	 * @return string
+	 */
+	public function compile(array $options = array())
+	{
+		// 获得命令模板
+		$command = Arr::get(static::$command_templates, $this->_action);
+		// 编译模板: 替换参数
+		$command = preg_replace_callback('/:(\w+)/', function($mathes) use ($options){
+			$key = $mathes[1];
+			//１查询参数
+			if(isset($this->{"_$key"}))
+				return $this->quote($this->{"_$key"}, $key);
+			
+			// 2 命令选项
+			if(isset($options[$key]))
+				return $this->quote($options[$key]);
+				
+			return $key;
+		}, $command);
+		//　删除多余代码
+		return preg_replace('/\.limit\(0\)|\.skip\(0\)|\.sort\(\[\]\)/', '', $command);
+	}
+	
+	/**
+	 * 转义值
+	 * 
+	 * @param mixed $value
+	 * @param string $key
+	 * @return string
+	 */
+	public function quote($value, $key = NULL)
+	{
+		//　对bool
+		if(is_bool($value))
+			return $value ? 'true' : 'false';
+			
+		//　对数组
+		if(is_array($value))
+		{
+			//　如果是insert的data，则取第一条数据
+			if($this->_action == 'insert' && $key == 'data')
+				$value = $value[0];
+			
+			// 对where/data中的MongId数值转为字符串
+			$has_id = FALSE;
+			if (in_array($key, array('where', 'data')))
+				array_walk_recursive($value, function(&$v, $k) use (&$has_id){
+					if($v instanceof MongoId)
+					{
+						$v = "ObjectId('$v')";
+						$has_id = TRUE;
+					}
+				});
+			
+			$json = json_encode($value);
+			if($has_id)
+				return preg_replace('/\"(ObjectId\(.+\))\"/', '$1', $json);
+			
+			return $json;
+		}
+		
+		return $value;
+	}
+	
+	/**
 	 * 查找一个
 	 * @return object
 	 */
 	public function find()
 	{
+		die($this->action('findOne')->compile());
 		return $this->_db->{$this->_collection}->findOne($this->_where, $this->_data);
 	}
 	
@@ -288,6 +399,7 @@ class Sk_Mongoo_Query_Builder
 	 */
 	public function find_all()
 	{
+		die($this->action('find')->compile());
 		//　获得游标
 		$cursor = $this->_db->{$this->_collection}->find($this->_where, $this->_data);
 		//　限制游标
@@ -310,6 +422,7 @@ class Sk_Mongoo_Query_Builder
 	 */
 	public function count($apply_skip_limit = FALSE)
 	{
+		die($this->action('find')->compile(array('apply_skip_limit' => $apply_skip_limit)));
 		return $this->find_all()->count($apply_skip_limit);
 	}
 	
@@ -323,6 +436,8 @@ class Sk_Mongoo_Query_Builder
 		{
 			if(empty($this->_data))
 				throw new Db_Exception("插入Mongodb的数据为空");
+			
+			die($this->action('insert')->compile());
 			
 			// 插入一行: insert + 返回新增id
 			if(count($this->_data) === 1)
@@ -380,6 +495,8 @@ class Sk_Mongoo_Query_Builder
 				$data = array('$set' => $data);
 			//　更新
 			$this->_db->{$this->_collection}->update($this->_where, $data, array('fsync' => true, 'multiple' => $multiple));
+			
+			die($this->action('update')->compile(array('multiple' => $multiple)));
 			return TRUE;
 		}
 		catch (MongoCursorException $e)
@@ -397,6 +514,8 @@ class Sk_Mongoo_Query_Builder
 		try
 		{
 			$this->_db->{$this->_collection}->remove($this->_where, array('fsync' => true, 'justOne' => $this->is_single()));
+			
+			die($this->action('delete')->compile(array('justOne' => $this->is_single())));
 			return TRUE;
 		}
 		catch (MongoCursorException $e)
