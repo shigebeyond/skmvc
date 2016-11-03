@@ -24,7 +24,7 @@ class Sk_Mongoo_Query_Builder
 	);
 	
 	/**
-	 * 命令动作: find/find_all/insert/update/delete
+	 * 命令动作: findOne/find/insert/update/delete
 	 * @var string 
 	 */
 	protected $_action;
@@ -306,13 +306,29 @@ class Sk_Mongoo_Query_Builder
 	/**
 	 * 设置命令动作
 	 * 
-	 * @param string $action 动作: find/find_all/insert/update/delete
+	 * @param string $action 动作: findOne/find/insert/update/delete
 	 *	@return Mongoo_Query_Builder
 	 */
 	public function action($action)
 	{
 		$this->_action = $action;
 		return $this;
+	}
+	
+	/**
+	 * 记录日志
+	 * @param string $action 动作: findOne/find/insert/update/delete
+	 * @param array $options
+	 */
+	public function log($action, array $options = array())
+	{
+		if($this->_db->is_debug())
+		{
+			//编译为命令
+			$cmd = $this->action($action)->compile($options);
+			// 打日志
+			Log::debug('mongo: '.$cmd);
+		}
 	}
 	
 	/**
@@ -389,7 +405,7 @@ class Sk_Mongoo_Query_Builder
 	 */
 	public function find()
 	{
-		die($this->action('findOne')->compile());
+		$this->log('findOne');
 		return $this->_db->{$this->_collection}->findOne($this->_where, $this->_data);
 	}
 	
@@ -399,7 +415,7 @@ class Sk_Mongoo_Query_Builder
 	 */
 	public function find_all()
 	{
-		die($this->action('find')->compile());
+		$this->log('find');
 		//　获得游标
 		$cursor = $this->_db->{$this->_collection}->find($this->_where, $this->_data);
 		//　限制游标
@@ -422,7 +438,7 @@ class Sk_Mongoo_Query_Builder
 	 */
 	public function count($apply_skip_limit = FALSE)
 	{
-		die($this->action('find')->compile(array('apply_skip_limit' => $apply_skip_limit)));
+		$this->log('find', array('apply_skip_limit' => $apply_skip_limit));
 		return $this->find_all()->count($apply_skip_limit);
 	}
 	
@@ -437,7 +453,7 @@ class Sk_Mongoo_Query_Builder
 			if(empty($this->_data))
 				throw new Db_Exception("插入Mongodb的数据为空");
 			
-			die($this->action('insert')->compile());
+			$this->log('insert');
 			
 			// 插入一行: insert + 返回新增id
 			if(count($this->_data) === 1)
@@ -495,8 +511,7 @@ class Sk_Mongoo_Query_Builder
 				$data = array('$set' => $data);
 			//　更新
 			$this->_db->{$this->_collection}->update($this->_where, $data, array('fsync' => true, 'multiple' => $multiple));
-			
-			die($this->action('update')->compile(array('multiple' => $multiple)));
+			$this->log('update', array('multiple' => $multiple));
 			return TRUE;
 		}
 		catch (MongoCursorException $e)
@@ -514,8 +529,7 @@ class Sk_Mongoo_Query_Builder
 		try
 		{
 			$this->_db->{$this->_collection}->remove($this->_where, array('fsync' => true, 'justOne' => $this->is_single()));
-			
-			die($this->action('delete')->compile(array('justOne' => $this->is_single())));
+			$this->log('delete', array('justOne' => $this->is_single()));
 			return TRUE;
 		}
 		catch (MongoCursorException $e)

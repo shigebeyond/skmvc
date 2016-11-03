@@ -55,6 +55,15 @@ class Sk_Mongoo extends Container_Component_Configurable
 	}
 	
 	/**
+	 * 是否调试
+	 * @return bool
+	 */
+	public function is_debug()
+	{
+		return Arr::get($this->_config, 'config', FALSE);
+	}
+	
+	/**
 	 * 选择集合
 	 * @return MongoCollection
 	 */
