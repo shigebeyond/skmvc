@@ -149,11 +149,15 @@ class Sk_Mongoo_Query_Builder
 	 * 设置更新的多个值, update时用
 	 *
 	 * @param array $row
+	 * @param bool $partial 是否部分更新
 	 * @return Mongoo_Query_Builder
 	 */
-	public function sets(array $row)
+	public function sets(array $row, $partial = FALSE)
 	{
-		$this->_data['$set'] = $row;
+		if($partial)
+			$this->_data['$set'] = $row;
+		else 
+			$this->_data = $row;
 		return $this;
 	}
 	
