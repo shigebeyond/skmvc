@@ -13,31 +13,31 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 {
 	/**
 	 * 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-	 * @var array
+	 * @var Db_Query_Builder_Decoration_Clauses_Group
 	 */
 	protected $_where;
 	
 	/**
 	 * 字段数组
-	 * @var array
+	 * @var Db_Query_Builder_Decoration_Clauses_Simple
 	 */
 	protected $_group_by;
 	
 	/**
 	 * 条件数组, 每个条件 = 字段名 + 运算符 + 字段值
-	 * @var array
+	 * @var Db_Query_Builder_Decoration_Clauses_Group
 	 */
 	protected $_having;
 	
 	/**
 	 * 排序数组, 每个排序 = 字段+方向
-	 * @var array
+	 * @var Db_Query_Builder_Decoration_Clauses_Simple
 	 */
 	protected $_order_by;
 	
 	/**
 	 * 行限数组 limit, offset
-	 * @var array
+	 * @var Db_Query_Builder_Decoration_Clauses_Simple
 	 */
 	protected $_limit;
 	
@@ -166,7 +166,8 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	 * @param   mixed   $value   column value
 	 * @return Db_Query_Builder
 	 */
-	public function where($column, $op, $value) {
+	public function where($column, $op, $value = NULL) 
+	{
 		return $this->and_where ( $column, $op, $value );
 	}
 	
@@ -178,10 +179,11 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	 * @param   mixed   $value   column value
 	 * @return Db_Query_Builder
 	 */
-	public function and_where($column, $op, $value)
+	public function and_where($column, $op, $value = NULL)
 	{
-		if($value === NULL && $op == '=')
-			$op = 'IS';
+		// 修正操作符与值
+		$this->_prepare_operator($op, $value);
+		
 		$this->_where->add_subexp(array($column, $op, $value), 'AND');
 		return $this;
 	}
@@ -194,13 +196,37 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	 * @param   mixed   $value   column value
 	 * @return Db_Query_Builder
 	 */
-	public function or_where($column, $op, $value)
+	public function or_where($column, $op, $value = NULL)
 	{
-		if($value === NULL && $op == '=')
-			$op = 'IS';
+		// 修正操作符与值
+		$this->_prepare_operator($op, $value);
+		
 		$this->_where->add_subexp(array($column, $op, $value), 'OR');
 		return $this;
+
 	}
+	
+	/**
+	 * Prepare operator
+	 * 
+	 * @param   string  $op      logic operator
+	 * @param   mixed   $value   column value
+	 * @return Sk_Db_Query_Builder_Decoration
+	 */
+	 protected function _prepare_operator(&$op, &$value) 
+	 {
+		if($value === NULL && !$this->is_operator($op)) // 非操作符
+		{
+			$value = $op; // 第二个参数是值
+			$op = '=';// 符号为=
+		}
+		
+		if($value === NULL && $op == '=') // IS NULL
+			$op = 'IS';
+		
+		return $this;
+	 }
+
 	
 	/**
 	 * Alias of and_where_open()
@@ -439,8 +465,11 @@ abstract class Sk_Db_Query_Builder_Decoration extends Db_Query_Builder_Action im
 	 * @param   mixed   $c2  column name or array($column, $alias) or object
 	 * @return Db_Query_Builder
 	 */
-	public function on($c1, $op, $c2)
+	public function on($c1, $op, $c2 = NULL)
 	{
+		// 修正操作符与值
+		$this->_prepare_operator($op, $c2);
+		
 		end($this->_join)->add_subexp(func_get_args(), 'AND');
 		return $this;
 	}
