@@ -59,7 +59,7 @@ interface Interface_Db_Query_Builder_Action
 	 * @param array $row
 	 * @return Db_Query_Builder
 	 */
-	public function sets($row);
+	public function sets(array $row);
 	
 	/**
 	 * 设置查询的字段, select时用
