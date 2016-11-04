@@ -20,7 +20,7 @@ class Sk_Mongoo_Query_Builder
 			'find' => "db.:collection.find(:where).limit(:limit).skip(:skip).sort(:sort).count(:apply_skip_limit)",
 			'insert' => "db.:collection.insert(:data)",
 			'update' => "db.:collection.update(:where, :data, false, :multiple)",
-			'delete' => "db.:collection.remove(:where, :justOne)",
+			'remove' => "db.:collection.remove(:where, :justOne)",
 	);
 	
 	/**
@@ -341,6 +341,9 @@ class Sk_Mongoo_Query_Builder
 	{
 		// 获得命令模板
 		$command = Arr::get(static::$command_templates, $this->_action);
+		if(!$command)
+			throw new Db_Exception("无效mongo动作: $this->_action");
+		
 		// 编译模板: 替换参数
 		$command = preg_replace_callback('/:(\w+)/', function($mathes) use ($options){
 			$key = $mathes[1];
@@ -352,10 +355,10 @@ class Sk_Mongoo_Query_Builder
 			if(isset($options[$key]))
 				return $this->quote($options[$key]);
 				
-			return $key;
+			return $mathes[0];
 		}, $command);
 		//　删除多余代码
-		return preg_replace('/\.limit\(0\)|\.skip\(0\)|\.sort\(\[\]\)/', '', $command);
+		return preg_replace('/\.limit\(0\)|\.skip\(0\)|\.sort\(\[\]\)|.count\(:apply_skip_limit\)/', '', $command);
 	}
 	
 	/**
@@ -506,12 +509,12 @@ class Sk_Mongoo_Query_Builder
 			//　是否更新多条记录
 			$multiple = $this->is_multiple();
 			// fix bug: multi update only works with $ operators
-			$data = $this->_data;
-			if($multiple && !isset($data['$set'])) 
-				$data = array('$set' => $data);
+			if($multiple && !isset($this->_data['$set'])) 
+				$this->_data = array('$set' => $this->_data);
 			//　更新
-			$this->_db->{$this->_collection}->update($this->_where, $data, array('fsync' => true, 'multiple' => $multiple));
-			$this->log('update', array('multiple' => $multiple));
+			$options = array('fsync' => true, 'multiple' => $multiple);
+			$this->_db->{$this->_collection}->update($this->_where, $this->_data, $options);
+			$this->log('update', $options);
 			return TRUE;
 		}
 		catch (MongoCursorException $e)
@@ -528,8 +531,9 @@ class Sk_Mongoo_Query_Builder
 	{
 		try
 		{
-			$this->_db->{$this->_collection}->remove($this->_where, array('fsync' => true, 'justOne' => $this->is_single()));
-			$this->log('delete', array('justOne' => $this->is_single()));
+			$options = array('fsync' => true, 'justOne' => $this->is_single());
+			$this->_db->{$this->_collection}->remove($this->_where, $options);
+			$this->log('remove', $options);
 			return TRUE;
 		}
 		catch (MongoCursorException $e)
