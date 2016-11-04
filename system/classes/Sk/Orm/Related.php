@@ -211,7 +211,7 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 	 */
 	protected function _query_slave($class, $foreign_key)
 	{
-		return $class::query_builder()->where($foreign_key, '=', $this->pk()); // 从表.外键 = 主表.主键
+		return $class::query_builder()->where($foreign_key, $this->pk()); // 从表.外键 = 主表.主键
 	}
 
 	/**
@@ -223,7 +223,7 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 	 */
 	protected function _query_master($class, $foreign_key)
 	{
-		return $class::query_builder()->where($class::$_primary_key, '=', $this->$foreign_key); // 主表.主键 = 从表.外键
+		return $class::query_builder()->where($class::$_primary_key, $this->$foreign_key); // 主表.主键 = 从表.外键
 	}
 
 	/**

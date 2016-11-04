@@ -34,7 +34,7 @@ abstract class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_P
 		if(is_array($id)) // id是多个查询条件
 			$query->wheres($id);
 		else // id是主键
-			$query->where(static::$_primary_key, '=', $id);
+			$query->where(static::$_primary_key, $id);
 		$query->find($this);
 	}
 
@@ -94,7 +94,7 @@ abstract class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_P
 	 * 更新数据: update sql
 	 *
 	 * <code>
-	 *    $user = Model_User::query_builder()->where('id', '=', 1)->find();
+	 *    $user = Model_User::query_builder()->where('id', 1)->find();
 	 *    $user->name = "li";
 	 *    $user->update();
 	 * </code>
@@ -113,7 +113,7 @@ abstract class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_P
 		$this->check();
 
 		// 更新数据库
-		$result = static::query_builder()->sets($this->_dirty)->where(static::$_primary_key, '=', $this->pk())->update();
+		$result = static::query_builder()->sets($this->_dirty)->where(static::$_primary_key, $this->pk())->update();
 
 		// 更新内部数据
 		$this->_original = $this->_dirty + $this->_original;
@@ -142,7 +142,7 @@ abstract class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_P
 			return;
 
 		// 删除数据
-		$result = static::query_builder()->where(static::$_primary_key, '=', $this->pk())->delete();
+		$result = static::query_builder()->where(static::$_primary_key, $this->pk())->delete();
 
 		// 更新内部数据
 		$this->_original = $this->_dirty = array();

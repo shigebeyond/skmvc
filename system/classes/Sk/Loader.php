@@ -16,7 +16,7 @@ class Sk_Loader implements Interface_Loader
 {
 	
 	/**
-	 * 顶级目录
+	 * 顶级目录数组
 	 * @var array 
 	 */
 	protected static $_paths = array(APPPATH, /* SYSPATH */); // 排除系统目录，因为要支持动态插入顶级目录
