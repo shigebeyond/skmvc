@@ -53,8 +53,10 @@ class Sk_Log extends Container_Component_Configurable
 		if(Arr::get(static::LEVELS, $level, 7) < $this->_config['threshold'])
 			return FALSE;
 
-		// 创建并打开文件
+		// 获得日志文件名
 		$file = LOGPATH.str_replace(':date', date('Y-m-d'), $this->_config['file']);
+		
+		// 创建并打开文件
 		if (!$fp = fopen($file, 'ab'))
 			return FALSE;
 
@@ -68,8 +70,9 @@ class Sk_Log extends Container_Component_Configurable
 		
 		// 格式化日志
 		$content = strtr($this->_config['log_format'], $params);
-
+		
 		// 写日志
+// 		file_put_contents($file, $content . "\r\n", FILE_APPEND); // 没有创建没有锁
 		flock($fp, LOCK_EX);
 		fwrite($fp, $content);
 		flock($fp, LOCK_UN);
