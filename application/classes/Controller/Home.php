@@ -31,20 +31,21 @@ class Controller_Home extends Controller
 	
 	public function action_query_builder()
 	{
-		$query = Db::instance()->query_builder('user', array('name' => 'kkk', 'age' => 12));
-		list($sql, $params) = $query->compile('insert');
-		$result = "insert sql: $sql, params: ".implode(',', $params);
-		$result .= "insert result: ".$query->insert();
+// 		$query = Db::instance()->query_builder('user', array('name' => 'kkk', 'age' => 12));
+// 		list($sql, $params) = $query->compile('insert');
+// 		$result = "insert sql: $sql, params: ".implode(',', $params);
+// 		$result .= "insert result: ".$query->insert();
 		
 // 		$result = Db::instance()->query_builder('user', array('name' => 'kkk', 'age' => 12))->insert();
 // 		$result = Db::instance()->query_builder('user')->where('id', '=', '1')->delete();
 	
-// 		$query = Db::instance()->query_builder('user')->where('user.id', '=', 2);
-// // 		$query = Db::instance()->query_builder('user')->where('id', '=', 2)->where_open()->where('name', '=', 'li')->where_close();
-// 		list($sql, $params) = $query->compile('select');
-// 		$result = "select sql: $sql, params: ".implode(',', $params);
-// 		$result .= " select result: ".print_r($query->select());
-	
+// 		$query = Db::instance()->query_builder('user')->where('id', '=', 2);
+		$query = Db::instance()->query_builder('user')->where('id', 2);
+// 		$query = Db::instance()->query_builder('user')->where('id', '=', 2)->where_open()->where('name', '=', 'li')->where_close();
+		list($sql, $params) = $query->compile('select');
+		$result = "select sql: $sql, params: ".implode(',', $params);
+		$result .= " select result: ".print_r($query->find_all());
+		
 // 		$query = Db::instance()->select('user')->where('name', '=', 'li');
 // 		$result = print_r($query->count());
 		
