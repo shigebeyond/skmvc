@@ -361,6 +361,8 @@ class Sk_Mongoo_Query_Builder
 				
 			return $mathes[0];
 		}, $command);
+		// 将[] 转为{}
+		$command = str_replace('[]', '{}', $command);
 		//　删除多余代码
 		return preg_replace('/\.limit\(0\)|\.skip\(0\)|\.sort\(\[\]\)|.count\(:apply_skip_limit\)/', '', $command);
 	}
