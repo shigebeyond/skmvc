@@ -287,7 +287,7 @@ class Sk_Mongoo_Query_Builder
 	public function limit($limit, $offset = 0)
 	{
 		$this->_limit = (int)$limit;
-		$this->_skip = (int)$offset;
+		$this->offset($offset);
 		return $this;
 	}
 	
@@ -300,6 +300,10 @@ class Sk_Mongoo_Query_Builder
 	public function offset($offset)
 	{
 		$this->_skip = (int)$offset;
+		
+		if($this->_skip < 0)
+			throw new Db_Exception("Skip value in MongoDb' query must be non-negative");
+		
 		return $this;
 	}
 	
@@ -357,6 +361,8 @@ class Sk_Mongoo_Query_Builder
 				
 			return $mathes[0];
 		}, $command);
+		// 将[] 转为{}
+		$command = str_replace('[]', '{}', $command);
 		//　删除多余代码
 		return preg_replace('/\.limit\(0\)|\.skip\(0\)|\.sort\(\[\]\)|.count\(:apply_skip_limit\)/', '', $command);
 	}
