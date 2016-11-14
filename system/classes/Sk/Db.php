@@ -325,7 +325,7 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 		// 无嵌套事务
 		if (--$this->_trans_depth === 0)
 		{
-			$result = $this->_rollbacked ?  $this->_pdo->rollBack() : $this->_pdo->commit(); // 回滚 or 提交事务
+			$result = $this->_rollbacked ?  ($this->_pdo->rollBack() && FALSE) : $this->_pdo->commit(); // 回滚 or 提交事务: 回滚的话,返回false
 			$this->_rollbacked = FALSE; // 清空回滚标记
 			return $result;
 		}
