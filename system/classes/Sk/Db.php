@@ -37,7 +37,13 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 	 * 当前事务的嵌套层级
 	 * @var int
 	 */
-	protected $_trans_level = 0;
+	protected $_trans_depth = 0;
+
+	/**
+	 * 标记当前事务是否回滚
+	 * @var bool
+	 */
+	protected $_rollbacked = FALSE;
 
 	/**
 	 * pdo连接
@@ -279,29 +285,9 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 	 */
 	public function begin()
 	{
-		if($this->_trans_level++ === 0)
+		if($this->_trans_depth++ === 0)
 			return $this->_pdo->beginTransaction();
 
-		return TRUE;
-	}
-
-	/**
-	 * 结束事务
-	 *
-	 * @param bool $commited 提交 or 回滚
-	 * @return boolean
-	 */
-	protected function _end($commited)
-	{
-		// 未开启事务
-		if ($this->_trans_level === 0)
-			return FALSE;
-
-		// 无嵌套事务
-		if (--$this->_trans_level === 0)
-			return $commited ?  $this->_pdo->commit() : $this->_pdo->rollBack(); // 提交 or 回滚事务
-
-		// 有嵌套事务
 		return TRUE;
 	}
 
@@ -310,7 +296,21 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 	 */
 	public function rollback()
 	{
-		return $this->_end(FALSE);
+		// 未开启事务
+		if ($this->_trans_depth <= 0)
+			return FALSE;
+
+		// 无嵌套事务
+		if (--$this->_trans_depth === 0)
+		{
+			$this->_rollbacked = FALSE; // 清空回滚标记
+			return $this->_pdo->rollBack(); // 回滚事务
+		}
+
+		$this->_rollbacked = TRUE; // 标记回滚
+
+		// 有嵌套事务
+		return TRUE;
 	}
 
 	/**
@@ -318,7 +318,20 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 	 */
 	public function commit()
 	{
-		return $this->_end(TRUE);
+		// 未开启事务
+		if ($this->_trans_depth <= 0)
+			return FALSE;
+
+		// 无嵌套事务
+		if (--$this->_trans_depth === 0)
+		{
+			$result = $this->_rollbacked ?  $this->_pdo->rollBack() : $this->_pdo->commit(); // 回滚 or 提交事务
+			$this->_rollbacked = FALSE; // 清空回滚标记
+			return $result;
+		}
+
+		// 有嵌套事务
+		return TRUE;
 	}
 
 	/**
