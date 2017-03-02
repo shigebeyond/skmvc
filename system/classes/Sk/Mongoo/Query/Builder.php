@@ -2,6 +2,12 @@
 
 /**
  * Mongodb查询构建器
+ *  方法与 Interface_Db_Query_Builder_Action + Interface_Db_Query_Builder 的差不多，兼容部分 Db_Query_Builder 的api
+ *  
+ *  关系型数据库与mongodb的3个层次的兼容：
+ *    1 Db层：Db 与 Mongoo 不用兼容
+ *    2 Query_Builder层：Db_Query_Builder 与 Mongoo_Query_Builder 尽量兼容
+ *    3 ORM层：ORM 与 ODM 完全兼容，终极目标
  * 
  * @Package package_name 
  * @category 
@@ -9,7 +15,7 @@
  * @date 2016-10-28 下午10:18:27 
  *
  */
-class Sk_Mongoo_Query_Builder
+class Sk_Mongoo_Query_Builder implements Interface_Mongoo_Query_Builder
 {
 	/**
 	 * 命令模板
@@ -87,7 +93,7 @@ class Sk_Mongoo_Query_Builder
 		$this->_db = $db;
 	
 		if ($collection)
-			$this->collection ( $collection );
+			$this->table ( $collection );
 	}
 	
 	/**
@@ -104,12 +110,12 @@ class Sk_Mongoo_Query_Builder
 	/**
 	 * 设置当前查询的集合
 	 * 
-	 * @param string $collection
+	 * @param string $table
 	 * @return Mongoo_Query_Builder
 	 */
-	public function collection($collection)
+	public function table($table)
 	{
-		$this->_collection = $collection;
+		$this->_collection = $table;
 		return $this;
 	}
 	
@@ -368,7 +374,7 @@ class Sk_Mongoo_Query_Builder
 	}
 	
 	/**
-	 * 转义值
+	 * 编译时的转义值
 	 * 
 	 * @param mixed $value
 	 * @param string $key

@@ -1,7 +1,16 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * Odm
+ * ODM
+ * 	实现：
+ *     重用ORM的代码，只是变动部分属性 $_primary_key / 方法 db()
+ *     重用关系型数据的概念，mongo的collection对应db的table
+ *  
+ *  关系型数据库与mongodb的3个层次的兼容：
+ *    1 Db层：Db 与 Mongoo 不用兼容
+ *    2 Query_Builder层：Db_Query_Builder 与 Mongoo_Query_Builder 尽量兼容
+ *    3 ORM层：ORM 与 ODM 完全兼容，终极目标
+ * 
  * @Package package_name 
  * @category 
  * @author shijianhang

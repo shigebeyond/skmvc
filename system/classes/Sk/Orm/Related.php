@@ -178,6 +178,8 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 
 		// 获得关联关系
 		extract(static::$_relations[$name]);
+		
+		// 获得关联模型类
 		$class = 'Model_'.ucfirst($model);
 
 		// 创建新对象

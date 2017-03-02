@@ -14,6 +14,12 @@
 interface Interface_Db_Query_Builder
 {
 	/**
+	 * 清空条件
+	 * @return Db_Query_Builder
+	 */
+	public function clear();
+	
+	/**
 	 * 编译sql
 	 * 
 	 * @param string $action sql动作：select/insert/update/delete
