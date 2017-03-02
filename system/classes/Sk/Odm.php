@@ -38,4 +38,13 @@ class Sk_Odm extends Orm_Related
 	
 		return static::$_db;
 	}
+	
+	/**
+	 * 获得查询构建器
+	 * @return Odm_Query_Builder
+	 */
+	public static function query_builder()
+	{
+		return new Odm_Query_Builder(get_called_class());
+	}
 }
