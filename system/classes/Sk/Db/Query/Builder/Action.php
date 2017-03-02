@@ -187,9 +187,11 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	 * 													如 array('name', 'age', 'birt' => 'birthday'), 其中 name 与 age 字段不带别名, 而 birthday 字段带别名 birt
 	 * @return Db_Query_Builder
 	 */
-	public function select(array $columns)
+	public function select(array $columns = NULL)
 	{
-		$this->_data = $this->_data + $columns; // 假设: 有先后, 无覆盖
+		if($columns)
+			$this->_data = $this->_data + $columns; // 假设: 有先后, 无覆盖
+		
 		return $this;
 	}
 	

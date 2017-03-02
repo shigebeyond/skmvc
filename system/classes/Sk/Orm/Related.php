@@ -168,9 +168,11 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 	 *
 	 * @param string $name 关联对象名
 	 * @param boolean $new 是否创建新对象：在查询db后设置原始字段值original()时使用
+	 * @param array $columns 字段名数组: array($column1, $column2, $alias => $column3), 
+	 * 													如 array('name', 'age', 'birt' => 'birthday'), 其中 name 与 age 字段不带别名, 而 birthday 字段带别名 birt
 	 * @return Orm
 	 */
-	public function related($name, $new = FALSE)
+	public function related($name, $new = FALSE, $columns = NULL)
 	{
 		// 已缓存
 		if(isset($this->_related[$name]))
@@ -191,13 +193,13 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 		switch ($type)
 		{
 			case static::RELATION_BELONGS_TO: // belongs_to: 查主表
-				$obj = $this->_query_master($class, $foreign_key)->find();
+				$obj = $this->_query_master($class, $foreign_key)->select($columns)->find();
 				break;
 			case static::RELATION_HAS_ONE: // has_xxx: 查从表
-				$obj = $this->_query_slave($class, $foreign_key)->limit(1)->find();
+				$obj = $this->_query_slave($class, $foreign_key)->select($columns)->find();
 				break;
 			case static::RELATION_HAS_MANY: // has_xxx: 查从表
-				$obj = $this->_query_slave($class, $foreign_key)->find_all();
+				$obj = $this->_query_slave($class, $foreign_key)->select($columns)->find_all();
 				break;
 		}
 
