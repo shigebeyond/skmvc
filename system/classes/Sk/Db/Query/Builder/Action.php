@@ -253,22 +253,6 @@ abstract class Sk_Db_Query_Builder_Action implements Interface_Db_Query_Builder_
 	}
 	
 	/**
-	 * 改写转义值的方法，搜集sql参数
-	 *
-	 * @param mixed $value
-	 * @return string
-	 */
-	public function quote($value)
-	{
-		// 1 将参数值直接拼接到sql
-		//return $this->_db->quote($value);
-	
-		// 2 sql参数化: 将参数名拼接到sql, 独立出参数值, 以便执行时绑定参数值
-		$this->_params[] = $value;
-		return '?';
-	}
-	
-	/**
 	 * 编译表名: 转义
 	 * @return string
 	 */
