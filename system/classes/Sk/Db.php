@@ -346,19 +346,19 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 	/**
 	 * 转义多个表名
 	 *
-	 * @param string|array $column 表名, 可以是表数组: <alias, column>
+	 * @param string|array $table 表名, 可以是表数组: <alias, column>
 	 * @return string
 	 */
 	protected function _quote_tables($tables, $with_brackets = FALSE)
 	{
 		// 遍历多个表转义
 		$str = '';
-		foreach ($tables as $alias => $column)
+		foreach ($tables as $alias => $table)
 		{
 			if (is_int($alias)) // 无别名
 				$alias = NULL;
 			// 单个表转义
-			$str .= $this->quote_table($column, $alias).', ';
+			$str .= $this->quote_table($table, $alias).', ';
 		}
 		$str = rtrim($str, ', ');
 		return $with_brackets ? "($str)" : $str;
@@ -440,7 +440,7 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 			if($column != '*') // 非*
 				$column = "`$column`"; // 转义
 		}
-
+		
 		// 字段别名
 		if($alias)
 			$alias = " AS `$alias`"; // 转义
