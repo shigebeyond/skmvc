@@ -86,12 +86,6 @@ interface Interface_Orm_Entity
 	public function original(array $original = NULL);
 
 	/**
-	 * 获得变化的字段值
-	 * @return array
-	 */
-	public function dirty();
-
-	/**
 	 * 获得字段值
 	 * @return array
 	 */

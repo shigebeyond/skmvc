@@ -178,15 +178,6 @@ abstract class Sk_Orm_Entity implements ArrayAccess, Interface_Orm_Entity
 	}
 
 	/**
-	 * 获得变化的字段值
-	 * @return array
-	 */
-	public function dirty()
-	{
-		return $this->_dirty;
-	}
-
-	/**
 	 * 获得字段值
 	 * @return array
 	 */
