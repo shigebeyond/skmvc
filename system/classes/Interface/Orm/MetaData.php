@@ -13,10 +13,9 @@ interface Interface_Orm_MetaData
 {
 	/**
 	 * 获得数据库
-	 * @param string $action sql动作：select/insert/update/delete，可以用于区分读写的数据库连接
 	 * @return Db
 	 */
-	public static function db($action = 'select');
+	public static function db();
 	
 	/**
 	 * 获得模型名

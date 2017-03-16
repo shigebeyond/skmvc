@@ -144,7 +144,6 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 			return $this->_original;
 
 		// setter
-		$related = array();
 		foreach ($original as $column => $value)
 		{
 			// 关联查询时，会设置关联表字段的列别名（列别名 = 表别名 : 列名），可以据此来设置关联对象的字段值
