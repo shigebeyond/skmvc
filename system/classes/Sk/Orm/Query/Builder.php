@@ -118,8 +118,8 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 	{
 		// 联查从表
 		$master = $this->_class;
-		$master_pk = $master::table().'.'.$master::primary_key();
-		$slave_fk = $table_alias.'.'.$foreign_key;
+		$master_pk = $master::table().'.'.$master::primary_key(); // 主表.主键
+		$slave_fk = $table_alias.'.'.$foreign_key; // 从表.外键
 		return $this->join(array($table_alias => $slave::table()), 'LEFT')->on($slave_fk, '=', $master_pk); // 从表.外键 = 主表.主键
 	}
 
@@ -136,9 +136,9 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 	{
 		// 联查主表
 		$slave = $this->_class;
-		$master_pk = $master::table().'.'.$master::primary_key();
-		$slave_fk = $slave::table().'.'.$foreign_key;
-		return $this->join($master::table(), 'LEFT')->on($master_pk, '=', $slave_fk); // 主表.主键 = 从表.外键
+		$master_pk = $table_alias.'.'.$master::primary_key(); // 主表.主键
+		$slave_fk = $slave::table().'.'.$foreign_key; // 从表.外键
+		return $this->join(array($table_alias => $master::table()), 'LEFT')->on($master_pk, '=', $slave_fk); // 主表.主键 = 从表.外键
 	}
 
 	/**
