@@ -99,7 +99,7 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 					$this->_join_slave($class, $foreign_key, $name);
 			}
 			// select关联表字段
-			$this->_select_related($class, $name);
+			$this->_select_related($class, $name, $columns);
 		}
 
 		return $this;
@@ -134,7 +134,7 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 	 */
 	protected function _join_master($master, $foreign_key, $table_alias)
 	{
-		// 联查从表
+		// 联查主表
 		$slave = $this->_class;
 		$master_pk = $master::table().'.'.$master::primary_key();
 		$slave_fk = $slave::table().'.'.$foreign_key;
