@@ -34,6 +34,16 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 	 * @var array
 	 */
 	protected static $_relations = array();
+	
+	/**
+	 * 检查是否有关联关系
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public static function has_relation($name = NULL){
+		return isset(static::$_relations[$column]);
+	}
 
 	/**
 	 * 获得关联关系
@@ -74,7 +84,7 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 	 */
 	public function __isset($column)
 	{
-		return isset(static::$_relations[$column]) && parent::__isset($column);
+		return static::has_relation($column) && parent::__isset($column);
 	}
 	
 	/**
@@ -87,7 +97,7 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 	public function try_get($column, &$value)
 	{
 		// 获得关联对象
-		if (isset(static::$_relations[$column]))
+		if (static::has_relation($column))
 		{
 			$value = $this->related($column);
 			return TRUE;
@@ -106,7 +116,7 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 	public function try_set($column, $value)
 	{
 		// 设置关联对象
-		if (isset(static::$_relations[$column]))
+		if (static::has_relation($column))
 		{
 			$this->_related[$column] = $value;
 			// 如果关联的是主表，则更新从表的外键
@@ -188,21 +198,25 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 			return $this->_related[$name] = new $class;
 
 		// 根据关联关系来构建查询
-		$obj = NULL;
+		$result = NULL;
+		
+		if(!isset($conditions))// 关联查询的额外条件
+			$conditions = array();
+		
 		switch ($type)
 		{
 			case static::RELATION_BELONGS_TO: // belongs_to: 查主表
-				$obj = $this->_query_master($class, $foreign_key)->select($columns)->find();
+				$result = $this->_query_master($class, $foreign_key, $conditions)->select($columns)->find();
 				break;
 			case static::RELATION_HAS_ONE: // has_xxx: 查从表
-				$obj = $this->_query_slave($class, $foreign_key)->select($columns)->find();
+				$result = $this->_query_slave($class, $foreign_key, $conditions)->select($columns)->find();
 				break;
 			case static::RELATION_HAS_MANY: // has_xxx: 查从表
-				$obj = $this->_query_slave($class, $foreign_key)->select($columns)->find_all();
+				$result = $this->_query_slave($class, $foreign_key, $conditions)->select($columns)->find_all();
 				break;
 		}
 
-		return $this->_related[$name] = $obj;
+		return $this->_related[$name] = $result;
 	}
 
 	/**
@@ -210,11 +224,12 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 	 *
 	 * @param string $class 从类
 	 * @param string $foreign_key 外键
+	 * @param array $conditions 关联查询的额外条件
 	 * @return Orm_Query_Builder
 	 */
-	protected function _query_slave($class, $foreign_key)
+	protected function _query_slave($class, $foreign_key, $conditions)
 	{
-		return $class::query_builder()->where($foreign_key, $this->pk()); // 从表.外键 = 主表.主键
+		return $class::query_builder()->wheres($conditions)->where($foreign_key, $this->pk()); // 从表.外键 = 主表.主键
 	}
 
 	/**
@@ -222,11 +237,12 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 	 *
 	 * @param string $class 主类
 	 * @param string $foreign_key 外键
+	 * @param array $conditions 关联查询的额外条件
 	 * @return Orm_Query_Builder
 	 */
-	protected function _query_master($class, $foreign_key)
+	protected function _query_master($class, $foreign_key, $conditions)
 	{
-		return $class::query_builder()->where($class::$_primary_key, $this->$foreign_key); // 主表.主键 = 从表.外键
+		return $class::query_builder()->wheres($conditions)->where($class::$_primary_key, $this->$foreign_key); // 主表.主键 = 从表.外键
 	}
 
 	/**
