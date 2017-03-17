@@ -12,6 +12,14 @@
 interface Interface_Orm_Related
 {
 	/**
+	 * 检查是否有关联关系
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public static function has_relation($name = NULL);
+	
+	/**
 	 * 获得关联关系
 	 *
 	 * @param string $name
