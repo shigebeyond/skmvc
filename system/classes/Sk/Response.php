@@ -237,6 +237,7 @@ class Sk_Response implements Interface_Response
 		// setter
 		if ($expires) { // 有过期时间, 则缓存
 			$expires = is_int($expires) ? $expires : strtotime($expires);
+			$this->_headers['Last-Modified'] = gmdate('D, d M Y H:i:s', time()) . ' GMT';
 			$this->_headers['Expires'] = gmdate('D, d M Y H:i:s', $expires) . ' GMT';
 			$this->_headers['Cache-Control'] = 'max-age='.($expires - time());
 			if (isset($this->_headers['Pragma']) && $this->_headers['Pragma'] == 'no-cache')
