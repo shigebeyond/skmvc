@@ -91,7 +91,8 @@ class Controller_Home extends Controller
 // 		$result = $exp->execute(' model ', NULL);
 
 		$exp = new Validation_Expression('trim . strtoupper . substr(2)');
-		$result = $exp->execute(' model ', NULL);
+		$str = ' model ';
+		$result = $exp->execute($str, NULL);
 		$this->res->body($result);
 	}
 	

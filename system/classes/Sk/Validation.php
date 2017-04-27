@@ -91,7 +91,7 @@ class Sk_Validation implements Interface_Validation
 	public static function length($value, $min, $max = NULL)
 	{
 		$len = strlen($value);
-		return $len >= $min && ($max === NULL ? TRUE : $len <= $max);
+		return $len >= $min && ($max === NULL || $len <= $max);
 	}
 	
 	/**
