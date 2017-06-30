@@ -133,11 +133,11 @@ class Sk_Validation_Expression implements Interface_Validation_Expression
 	 * </code>
 	 * 
 	 * @param mixed $value 要校验的数值，该值可能被修改
-	 * @param array|ArrayAccess $data 其他参数
+	 * @param array|ArrayAccess $binds 变量
 	 * @param array $last_subexp 短路时的最后一个子表达式
 	 * @return mixed
 	 */
-	public function execute(&$value, $data = NULL, array &$last_subexp = NULL)
+	public function execute(&$value, $binds = NULL, array &$last_subexp = NULL)
 	{
 		if(empty($this->_subexps))
 			return NULL;
@@ -160,7 +160,7 @@ class Sk_Validation_Expression implements Interface_Validation_Expression
 				$value = $result;
 			
 			// 运算子表达式
-			$curr = $this->execute_subexp($func, $params, $value, $data);
+			$curr = $this->execute_subexp($func, $params, $value, $binds);
 			
 			// 处理结果
 			switch ($op)

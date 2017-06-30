@@ -32,11 +32,11 @@ class Sk_Validation implements Interface_Validation
 	 *
 	 * @param string $exp 校验表达式
 	 * @param unknown $value 要校验的数值，该值可能被修改
-	 * @param array|ArrayAccess $data 其他参数
+	 * @param array|ArrayAccess $binds 变量
 	 * @param string message
 	 * @return mixed
 	 */
-	public static function execute($exp, &$value, $data = NULL, &$message = NULL)
+	public static function execute($exp, &$value, $binds = NULL, &$message = NULL)
 	{
 		if(!$exp)
 			return $value;
@@ -46,7 +46,7 @@ class Sk_Validation implements Interface_Validation
 			static::$_exps_cached[$exp] = new Validation_Expression($exp);
 		
 		// 执行
-		$result = static::$_exps_cached[$exp]->execute($value, $data, $last_subexp);
+		$result = static::$_exps_cached[$exp]->execute($value, $binds, $last_subexp);
 		
 		// 构建结果消息
 		if(!$result)
