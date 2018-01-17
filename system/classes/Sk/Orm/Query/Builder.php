@@ -35,7 +35,7 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 	/**
 	 * 查询单个: select　语句
 	 * 
-	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回该列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
 	 * @return Orm
 	 */
 	public function find($fetch_value = FALSE)
@@ -56,7 +56,7 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 	/**
 	 * 查找多个： select 语句
 	 *
-	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回该列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
 	 * @return array
 	 */
 	public function find_all($fetch_value = FALSE)

@@ -208,7 +208,7 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 	 * 
 	 * @param string $sql
 	 * @param array  $params
-	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回该列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
 	 * @param bool $multiple 是否查询多条
 	 * @return array
 	 */
@@ -230,7 +230,7 @@ class Sk_Db extends Container_Component_Configurable implements Interface_Db
 	/**
 	 * 根据$pdo->setFetchMode()的第二个参数来确定fetchMode
 	 *
-	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回该列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
 	 * @return number
 	 */
 	public static function fetch_mode($fetch_value)

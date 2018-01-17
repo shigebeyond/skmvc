@@ -39,31 +39,29 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration implements Interfa
 		list ($sql, $params) = $this->compile($action);
 		
 		// 2 执行 insert/update/delete 
-		$result = $this->_db->execute($sql, $params);
-		return $result;
+		return $this->_db->execute($sql, $params);
 	}
 	
 	/**
 	 * 编译 + 查询
 	 *
-	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回该列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
 	 * @param bool $multiple 是否查询多条
 	 * @return array
 	 */
-	public function _query($fetch_value = FALSE, $multiple = TRUE)
+	protected function _query($fetch_value = FALSE, $multiple = TRUE)
 	{
 		// 1 编译
 		list ($sql, $params) = $this->compile('select');
 	
 		// 2 执行 select
-		$result = $this->_db->query($sql, $params, $fetch_value, $multiple);
-		return $result;
+		return $this->_db->query($sql, $params, $fetch_value, $multiple);
 	}
 	
 	/**
 	 * 查找多个： select 语句
 	 *
-	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回该列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
 	 * @return array
 	 */
 	public function find_all($fetch_value = FALSE)
@@ -74,7 +72,7 @@ class Sk_Db_Query_Builder extends Db_Query_Builder_Decoration implements Interfa
 	/**
 	 * 查找一个： select ... limit 1语句
 	 *
-	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回某列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
+	 * @param bool|int|string|Orm $fetch_value $fetch_value 如果类型是int，则返回该列FETCH_COLUMN，如果类型是string，则返回指定类型的对象，如果类型是object，则给指定对象设置数据, 其他返回关联数组
 	 * @return object
 	 */
 	public function find($fetch_value = FALSE)
