@@ -162,17 +162,12 @@ abstract class Sk_Orm_Entity implements ArrayAccess, Interface_Orm_Entity
 	}
 
 	/**
-	 * 获得/设置原始的字段值
+	 * 设置原始的字段值
 	 * @param array $original
-	 * @return Orm|array
+	 * @return Orm
 	 */
-	public function original(array $original = NULL)
+	public function setOriginal(array $original)
 	{
-		// getter
-		if ($original === NULL)
-			return $this->_original;
-
-		// setter
 		$this->_original = $original;
 		return $this;
 	}

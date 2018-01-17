@@ -142,18 +142,13 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 	}
 
 	/**
-	 * 获得/设置原始的字段值
+	 * 设置原始的字段值
 	 *
 	 * @param array $original
-	 * @return Orm|array
+	 * @return Orm
 	 */
-	public function original(array $original = NULL)
+	public function setOriginal(array $original)
 	{
-		// getter
-		if ($original === NULL)
-			return $this->_original;
-
-		// setter
 		foreach ($original as $column => $value)
 		{
 			// 关联查询时，会设置关联表字段的列别名（列别名 = 表别名 : 列名），可以据此来设置关联对象的字段值
@@ -176,7 +171,7 @@ abstract class Sk_Orm_Related extends Orm_Persistent implements Interface_Orm_Re
 	 * 获得关联对象
 	 *
 	 * @param string $name 关联对象名
-	 * @param boolean $new 是否创建新对象：在查询db后设置原始字段值original()时使用
+	 * @param boolean $new 是否创建新对象：在查询db后设置原始字段值setOriginal()时使用
 	 * @param array $columns 字段名数组: array($column1, $column2, $alias => $column3), 
 	 * 													如 array('name', 'age', 'birt' => 'birthday'), 其中 name 与 age 字段不带别名, 而 birthday 字段带别名 birt
 	 * @return Orm

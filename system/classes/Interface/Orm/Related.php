@@ -31,7 +31,7 @@ interface Interface_Orm_Related
 	 * 获得关联对象
 	 *
 	 * @param string $name 关联对象名
-	 * @param boolean $new 是否创建新对象：在查询db后设置原始字段值original()时使用
+	 * @param boolean $new 是否创建新对象：在查询db后设置原始字段值setOriginal()时使用
 	 * @return Orm
 	 */
 	public function related($name, $new = FALSE);

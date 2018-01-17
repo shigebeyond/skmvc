@@ -50,7 +50,7 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 			$model = new $this->_class;
 		
 		//　设置原始属性值
-		return $model->original($data);
+		return $model->setOriginal($data);
 	}
 
 	/**
@@ -63,7 +63,7 @@ class Sk_Orm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 	{
 		$rows = parent::find_all($fetch_value);
 		foreach ($rows as $key => $row)
-			$rows[$key] = (new $this->_class)->original($row);
+			$rows[$key] = (new $this->_class)->setOriginal($row);
 		return $rows;
 	}
 

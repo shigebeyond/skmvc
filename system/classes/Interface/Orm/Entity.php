@@ -79,11 +79,11 @@ interface Interface_Orm_Entity
 	public function values(array $values, array $expected = NULL);
 
 	/**
-	 * 获得/设置原始的字段值
+	 * 设置原始的字段值
 	 * @param array $original
-	 * @return Orm|array
+	 * @return Orm
 	 */
-	public function original(array $original = NULL);
+	public function setOriginal(array $original);
 
 	/**
 	 * 获得字段值

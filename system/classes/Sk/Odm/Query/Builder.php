@@ -67,7 +67,7 @@ class Sk_Odm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 			$model = new $this->_class;
 		
 		// 设置原始属性值
-		$model->original($data);
+		$model->setOriginal($data);
 		
 		// 关联查询
 		foreach ($this->_withs as $name => $columns)
@@ -89,7 +89,7 @@ class Sk_Odm_Query_Builder extends Db_Query_Builder implements Interface_Orm_Que
 		{
 			// 设置原始属性值
 			$model = new $this->_class;
-			$model->original($row);
+			$model->setOriginal($row);
 			
 			// 关联查询
 			foreach ($this->_withs as $name => $columns)
