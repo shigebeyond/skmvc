@@ -9,7 +9,7 @@
  * @date 2016-10-10
  *
  */
-abstract class Sk_Orm_Persistent extends Orm_MetaData implements Interface_Orm_Persistent
+abstract class Sk_Orm_Persistent extends Orm_Meta implements Interface_Orm_Persistent
 {
 	/**
 	 * 获得sql构建器

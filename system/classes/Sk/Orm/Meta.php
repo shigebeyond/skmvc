@@ -9,7 +9,7 @@
  * @date 2016-10-10
  *
  */
-abstract class Sk_Orm_MetaData extends Orm_Valid implements Interface_Orm_MetaData
+abstract class Sk_Orm_Meta extends Orm_Valid implements Interface_Orm_Meta
 {
 	/****************** 部分元数据有不一样的默认值, 不能在基类定义 => 默认值不能保存在类结构中, 因此只能缓存默认值 ********************/
 	/**

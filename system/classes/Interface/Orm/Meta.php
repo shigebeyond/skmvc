@@ -9,7 +9,7 @@
  * @date 2016-10-10
  *
  */
-interface Interface_Orm_MetaData
+interface Interface_Orm_Meta
 {
 	/**
 	 * 获得数据库

@@ -9,4 +9,4 @@
  * @date 2016-10-10
  *
  */
-abstract class Orm_MetaData extends Sk_Orm_MetaData{}
+abstract class Orm_Meta extends Sk_Orm_Meta{}
