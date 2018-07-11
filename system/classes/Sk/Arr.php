@@ -166,6 +166,7 @@ class Sk_Arr
 	
 	/**
 	 * 将多个对象中的指定的key字段与value字段给抽取为关联数组
+	 *   如果 $value_field 不为空, 则建议直接使用 array_column($value_field, $key_field);
 	 * 
 	 * @param array $arr
 	 * @param string $key_field 
