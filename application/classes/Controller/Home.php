@@ -11,6 +11,11 @@
  */
 class Controller_Home extends Controller
 {
+    public function action_index()
+    {
+        $this->res->body("hello world");
+    }
+
 	public function action_db()
 	{
 // 		$result = Db::instance()->preview('select * from user where id = ?', array(3));
@@ -19,15 +24,11 @@ class Controller_Home extends Controller
 // 		$columns = Db::instance()->list_columns('user');
 // 		$result = print_r($columns);
 		
-		$users = Db::instance()->query('select * from user', array($this, 'handle_user'));
+		$users = Db::instance()->query('select * from user');
 		$result = print_r($users);
-		
 		$this->res->body($result);
 	}
-	
-	public function handle_user($name, $age) {
-		return "{$name}: {$age}";
-	}
+
 	
 	public function action_query_builder()
 	{
@@ -106,19 +107,20 @@ class Controller_Home extends Controller
 	
 		$this->res->body($result);
 	}
-	
-	public function action_view()
-	{
-		// 自定义视图
-// 		$view = new View('test0', array('name' => 'shi'));
-		// 默认视图
-		$view = $this->view(array('name' => 'shi'));
-		
-		$view->set('age', 24);	
-		
-// 		$this->res->body($view->render()); // 显示渲染视图: 调用view::render()
-		$this->res->body($view); // 隐式渲染视图
-	}
+
+    public function action_view()
+    {
+        // 创建视图
+ 		$view = new View('test', array('name' => 'shi')); // 自定义视图, 视图文件 application/views/test.php
+        // $view = $this->view(array('name' => 'shi')); // 默认视图, 视图文件 application/views/$controller/$action.php
+
+        // 设置变量
+        $view->set('age', 24);
+
+        // 渲染
+ 		// $this->res->body($view->render()); // 显示渲染视图: 调用view::render()
+        $this->res->body($view); // 隐式渲染视图
+    }
 	
 	public function action_mongo_query_builder()
 	{
