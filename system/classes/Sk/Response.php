@@ -10,7 +10,14 @@
  * @date 2016-10-7 下午11:32:07 
  *
  */
-class Sk_Response{
+class Sk_Response implements Interface_Response
+{
+	
+	/**
+	 * 过期的期限
+	 * @var string
+	 */
+	const EXPIRES_OVERDUE = 'Mon, 26 Jul 1997 05:00:00 GMT';
 	
 	// http状态码及其消息
 	public static $messages = array(
@@ -91,12 +98,6 @@ class Sk_Response{
 	protected $_body = '';
 	
 	/**
-	 * cookies
-	 * @var array
-	 */
-	protected $_cookies = array();
-	
-	/**
 	 * 获得与设置响应主体
 	 * 
 	 * @param string $content
@@ -109,7 +110,25 @@ class Sk_Response{
 			return $this->_body;
 	
 		//setter
+		if($content instanceof View)
+			$content = $content->render();
+		
 		$this->_body = (string) $content;
+		return $this;
+	}
+	
+	/**
+	 * 追加响应主体
+	 *
+	 * @param string $content
+	 * @return string|Sk_Response
+	 */
+	public function append($content = NULL)
+	{
+		if($content instanceof View)
+			$content = $content->render();
+		
+		$this->_body .= $content;
 		return $this;
 	}
 	
@@ -201,25 +220,36 @@ class Sk_Response{
 	 * 设置响应缓存
 	 *
 	 * @param int|string $expires 过期时间
-	 * @return Response
+	 * @return string|Response
 	 */
-	public function cache($expires = FALSE) {
-		if ($expires === FALSE) {
-			$this->headers['Expires'] = 'Mon, 26 Jul 1997 05:00:00 GMT';
-			$this->headers['Cache-Control'] = array(
+	public function cache($expires = NULL) {
+		// getter
+		if ($expires === NULL) 
+		{
+			// 无缓存
+			if(!isset($this->_headers['Expires']) OR $this->_headers['Expires'] == static::EXPIRES_OVERDUE)
+				return FALSE;
+			
+			// 有缓存
+			return $this->_headers['Expires'];
+		}
+		
+		// setter
+		if ($expires) { // 有过期时间, 则缓存
+			$expires = is_int($expires) ? $expires : strtotime($expires);
+			$this->_headers['Last-Modified'] = gmdate('D, d M Y H:i:s', time()) . ' GMT';
+			$this->_headers['Expires'] = gmdate('D, d M Y H:i:s', $expires) . ' GMT';
+			$this->_headers['Cache-Control'] = 'max-age='.($expires - time());
+			if (isset($this->_headers['Pragma']) && $this->_headers['Pragma'] == 'no-cache')
+				unset($this->_headers['Pragma']);
+		}else{ // 否则, 不缓存
+			$this->_headers['Expires'] = static::EXPIRES_OVERDUE;
+			$this->_headers['Cache-Control'] = array(
 					'no-store, no-cache, must-revalidate',
 					'post-check=0, pre-check=0',
 					'max-age=0'
 			);
-			$this->headers['Pragma'] = 'no-cache';
-		}
-		else 
-		{
-			$expires = is_int($expires) ? $expires : strtotime($expires);
-			$this->headers['Expires'] = gmdate('D, d M Y H:i:s', $expires) . ' GMT';
-			$this->headers['Cache-Control'] = 'max-age='.($expires - time());
-			if (isset($this->headers['Pragma']) && $this->headers['Pragma'] == 'no-cache')
-				unset($this->headers['Pragma']);
+			$this->_headers['Pragma'] = 'no-cache';
 		}
 		return $this;
 	}
@@ -266,36 +296,12 @@ class Sk_Response{
 	 */
 	public function send()
 	{
+		// 先略过, 不排除有其他输出
 		// 清空内容缓存
-		if (ob_get_length() > 0)
-			ob_end_clean();
+		/* if (ob_get_length() > 0)
+			ob_end_clean(); */
 		
 		// 先头部，后主体
 		echo $this->send_headers()->body();
-		
-		// 输出内容缓存
-		$this->flush();
-	}
-	
-	/**
-	 * 将响应内容刷到客户端
-	 */
-	public function flush()
-	{
-		if (function_exists('fastcgi_finish_request')) {
-			fastcgi_finish_request();
-		} elseif ('cli' !== PHP_SAPI) {
-			// ob_get_level() never returns 0 on some Windows configurations, so if
-			// the level is the same two times in a row, the loop should be stopped.
-			$previous = null;
-			$obStatus = ob_get_status(1);
-			while (($level = ob_get_level()) > 0 && $level !== $previous) {
-				$previous = $level;
-				if ($obStatus[$level - 1] && isset($obStatus[$level - 1]['del']) && $obStatus[$level - 1]['del']) {
-					ob_end_flush();
-				}
-			}
-			flush();
-		}
 	}
 }

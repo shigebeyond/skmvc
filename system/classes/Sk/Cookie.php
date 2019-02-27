@@ -10,13 +10,16 @@
  * @date 2016-10-8 上午12:52:35 
  *
  */
-class Sk_Cookie {
+class Sk_Cookie implements Interface_Cookie
+{
 
 	/**
 	 * 获得cookie值
-	 *
+	 * 
+	 * <code>
 	 *     $theme = Cookie::get('theme', 'blue');
-	 *
+	 * </code>
+	 * 
 	 * @param   string  $key        cookie名
 	 * @param   mixed   $default    默认值
 	 * @return  string
@@ -32,8 +35,10 @@ class Sk_Cookie {
 	/**
 	 * 设置cookie值
 	 *
+	 * <code>
 	 *     static::set('theme', 'red');
-	 *
+	 * </code>
+	 * 
 	 * @param   string  $name       cookie名
 	 * @param   string  $value      cookie值
 	 * @param   integer $expiration 期限
@@ -48,6 +53,7 @@ class Sk_Cookie {
 				// 递归调用
 				static::set($key, $value['value'], $value['expiration']);
 			}
+			return;
 		}
 		
 		// 获得配置
@@ -71,8 +77,10 @@ class Sk_Cookie {
 	/**
 	 * 删除cookie
 	 *
+	 * <code>
 	 *     static::delete('theme');
-	 *
+	 * </code>
+	 * 
 	 * @param   string  $name   cookie名
 	 * @return  boolean
 	 */

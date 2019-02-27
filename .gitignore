@@ -1,2 +1,7 @@
 /.buildpath
 /.project
+/.idea
+/.settings
+/.externalToolBuilders
+logs
+cache
