@@ -36,7 +36,7 @@ class Controller_Home extends Controller
 
 visit http://localhost/skmvc/
 
-![](https://raw.githubusercontent.com/shigebeyond/skmvc/master/img/webpage.png)
+![](https://github.com/shigebeyond/skmvc/blob/master/img/webpage.png)
 
 # usage - view
 
